@@ -1,4 +1,5 @@
-import { lazy } from "react";
+import { Suspense, lazy } from "react";
+import { Skeleton, Stack } from "@mui/material";
 
 import { Config } from "./Config";
 
@@ -31,44 +32,127 @@ interface Routes {
   };
 }
 
-export const publicRoutes: Routes[] = [
+export const publicRoutes = [
   {
     path: Config.Routes.homePage,
-    element: <LazyHome />,
+    element: (
+      <Suspense fallback={<Skeleton variant="rectangular" height={400} />}>
+        <LazyHome />
+      </Suspense>
+    ),
   },
   {
     path: Config.Routes.projectsPage,
-    element: <LazyProjects />,
+    element: (
+      <Suspense fallback={<Skeleton variant="rectangular" height={400} />}>
+        <LazyProjects />
+      </Suspense>
+    ),
   },
   {
     path: Config.Routes.projectDetailsPage,
-    element: <LazyProjectsDetails />,
+    element: (
+      <Suspense fallback={<Skeleton variant="rectangular" height={400} />}>
+        <LazyProjectsDetails />
+      </Suspense>
+    ),
   },
   {
     path: Config.Routes.aboutPage,
-    element: <LazyAbout />,
+    element: (
+      <Suspense fallback={<Skeleton variant="rectangular" height={400} />}>
+        <LazyAbout />
+      </Suspense>
+    ),
   },
   {
     path: Config.Routes.registerationPage,
-    element: <LazyRegisteration />,
+    element: (
+      <Suspense fallback={<Skeleton variant="rectangular" height={400} />}>
+        <LazyRegisteration />
+      </Suspense>
+    ),
   },
   {
     path: Config.Routes.logOutPage,
-    element: <LazyLogOut />,
+    element: (
+      <Suspense fallback={<Skeleton variant="rectangular" height={400} />}>
+        <LazyLogOut />
+      </Suspense>
+    ),
   },
   {
     path: Config.Routes.userProfilePage,
-    element: <LazyUserProfile />,
+    element: (
+      <Suspense
+        fallback={
+          <Stack sx={{ flexDirection: "column", gap: 2 }}>
+            <Skeleton variant="rectangular" width="100%" height={363} />
+            <Skeleton variant="rectangular" width="100%" height={48} />
+            <Skeleton variant="rectangular" width="100%" height={400} />
+          </Stack>
+        }
+      >
+        <LazyUserProfile />
+      </Suspense>
+    ),
     children: {
       path: Config.Routes.chatPage,
-      element: <LazyChatRoom socket={null} />,
+      element: (
+        <Suspense fallback={<Skeleton variant="rectangular" height={400} />}>
+          <LazyChatRoom socket={null} />
+        </Suspense>
+      ),
     },
   },
   {
     path: Config.Routes.pageNotFound,
-    element: <LazyNotFound />,
+    element: (
+      <Suspense fallback={<Skeleton variant="rectangular" height={400} />}>
+        <LazyNotFound />
+      </Suspense>
+    ),
   },
 ];
+
+// export const publicRoutes: Routes[] = [
+//   {
+//     path: Config.Routes.homePage,
+//     element: <LazyHome />,
+//   },
+//   {
+//     path: Config.Routes.projectsPage,
+//     element: <LazyProjects />,
+//   },
+//   {
+//     path: Config.Routes.projectDetailsPage,
+//     element: <LazyProjectsDetails />,
+//   },
+//   {
+//     path: Config.Routes.aboutPage,
+//     element: <LazyAbout />,
+//   },
+//   {
+//     path: Config.Routes.registerationPage,
+//     element: <LazyRegisteration />,
+//   },
+//   {
+//     path: Config.Routes.logOutPage,
+//     element: <LazyLogOut />,
+//   },
+//   {
+//     path: Config.Routes.userProfilePage,
+//     element: <LazyUserProfile />,
+//     children: {
+//       path: Config.Routes.chatPage,
+//       element: <LazyChatRoom socket={null} />,
+//     },
+//   },
+//   {
+//     path: Config.Routes.pageNotFound,
+//     element: <LazyNotFound />,
+//   },
+// ];
 
 export const privateRoutes: Routes[] = [
   {

@@ -1,3 +1,4 @@
+import { memo } from "react";
 import TuneIcon from "@mui/icons-material/Tune";
 import {
   Autocomplete,
@@ -58,10 +59,10 @@ type Filters = {
 interface FiltertModalProps {
   setQueryString: React.Dispatch<React.SetStateAction<string>>;
 }
-export default function FiltertModal({ setQueryString }: FiltertModalProps) {
+function FiltertModal({ setQueryString }: FiltertModalProps) {
   const theme = useTheme();
   const { handleSubmit, control } = useForm();
-
+  console.log("hi from filter");
   const formatFilters = (filters: Filters) => {
     const queryString = Object.entries(filters)
       .filter(([, value]) => value !== undefined && value !== null) // Remove undefined and null values
@@ -367,3 +368,5 @@ export default function FiltertModal({ setQueryString }: FiltertModalProps) {
     </Box>
   );
 }
+
+export default memo(FiltertModal);

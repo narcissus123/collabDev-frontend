@@ -18,10 +18,7 @@ export default function UnAuth() {
         {publicRoutes.map((route, index) => (
           <Route key={index} path={route.path} element={route.element}>
             {route.children && (
-              <Route
-                path={route.children.path}
-                element={route.children.element}
-              />
+              <Route path={route.children.path} element={route.children.path} />
             )}
           </Route>
         ))}

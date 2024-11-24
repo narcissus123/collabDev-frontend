@@ -14,8 +14,6 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { ToastContainer, toast } from "react-toastify";
 
-import GoogleLogo from "../../../assets/icons/google-logo.png";
-import Logo from "../../../assets/logo/logo-light.png";
 import { SignInInputData } from "../../../configs/data/RegistrationInputData";
 import { useAuth } from "../../../context/AuthContext/AuthContext";
 import { SignInDeveloper } from "../../../core/services/api/developer-authentication.api";
@@ -118,7 +116,7 @@ export default function SignInContainer({
             alt="Logo"
           >
             <img
-              src={Logo}
+              src={`${process.env.PUBLIC_URL}/assets/logo/logo-light.webp`}
               alt="Logo"
               width={isMediumScreen ? "90" : "135"}
               height={isMediumScreen ? "30" : "45"}
@@ -203,7 +201,7 @@ export default function SignInContainer({
               }}
               startIcon={
                 <img
-                  src={GoogleLogo}
+                  src={`${process.env.PUBLIC_URL}/assets/icons/google-logo.webp`}
                   alt="Google Logo"
                   style={{
                     width: "22px",

@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router";
 import { instance } from "../interceptor/Interceptor";
 import { setItem, clearStorage } from "../storage/Storage";
 
@@ -36,6 +37,8 @@ const SignUpDeveloper = async (obj: any) => {
 const SignOutDeveloper = async () => {
   try {
     clearStorage();
+    const navigate = useNavigate();
+    navigate("/login");
   } catch (error) {
     return error;
   }

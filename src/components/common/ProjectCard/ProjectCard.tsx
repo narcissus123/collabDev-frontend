@@ -18,12 +18,9 @@ import {
   Box,
 } from "@mui/material";
 import { red } from "@mui/material/colors";
-import * as React from "react";
-import { Key } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
-import JoinIcon from "../../../assets/icons/join.png";
-import JoinIconDark from "../../../assets/icons/TeamDark.png";
 import { ProjectType } from "../../../configs/types/projectTypes";
 import { useAuth } from "../../../context/AuthContext/AuthContext";
 import { getItem } from "../../../core/services/storage/Storage";
@@ -32,7 +29,6 @@ import RequestModal from "../RequestForm/RequestForm";
 
 interface ProjectCardProps {
   project: ProjectType;
-  index: Key;
 }
 
 function getStatusColor(status: string) {
@@ -48,9 +44,9 @@ function getStatusColor(status: string) {
   }
 }
 
-const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
+function ProjectCard({ project }: ProjectCardProps) {
   const ITEM_HEIGHT = 48;
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -59,11 +55,11 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
     setAnchorEl(null);
   };
   const theme = useTheme();
-  const [openRequestModal, setOpenRequestModal] = React.useState(false);
+  const [openRequestModal, setOpenRequestModal] = useState(false);
 
   const user = useAuth();
   const developer = user.isUser ? JSON.parse(getItem("user")) : undefined;
-
+  // console.log("hi from card");
   return (
     <Grid item xs={12} md={5.8} lg={3.8} sx={{ Width: "100.33px" }}>
       <Card>
@@ -283,11 +279,15 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
               }}
             >
               <img
-                src={theme.palette.mode === "dark" ? JoinIconDark : JoinIcon}
+                src={
+                  theme.palette.mode === "dark"
+                    ? `${process.env.PUBLIC_URL}/assets/icons/TeamDark.webp`
+                    : `${process.env.PUBLIC_URL}/assets/icons/join.webp`
+                }
                 alt="join project icon"
                 style={{
-                  width: "27px",
-                  height: "27px",
+                  width: "32px",
+                  height: "32px",
                   marginRight: "0.7rem",
                   borderColor:
                     theme.palette.mode === "dark" ? "white" : "black",
@@ -318,6 +318,6 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
       </Card>
     </Grid>
   );
-};
+}
 
 export default ProjectCard;

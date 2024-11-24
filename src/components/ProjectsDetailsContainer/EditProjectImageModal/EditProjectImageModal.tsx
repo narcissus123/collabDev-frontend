@@ -1,3 +1,4 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Box, Stack, Typography, useTheme } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { ToastContainer, toast } from "react-toastify";
@@ -17,7 +18,7 @@ interface FormValues {
 interface Props {
   openEditImageModal: boolean;
   handleClose: () => void;
-  handleProjectImage: (updatedProjectInfo: ProjectType) => void;
+  handleProjectImage: () => void;
   project: ProjectType;
 }
 
@@ -43,6 +44,21 @@ export const EditProjectImageModal = ({
     []
   );
 
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: (updateProjectInfo: { id: string; data: any }) =>
+      updateProject(updateProjectInfo.id, updateProjectInfo.data),
+    onSuccess: (data: any) => {
+      toast.success("Your project info updated successfully!");
+      queryClient.invalidateQueries({ queryKey: ["updateProject", data._id] });
+      handleProjectImage();
+    },
+    onError: (error: any) => {
+      toast.error("Something went wrong. Please try later!");
+      console.error(error);
+    },
+  });
   const onSubmit = async () => {
     try {
       const updatedInfo = {
@@ -55,17 +71,7 @@ export const EditProjectImageModal = ({
         name: "coverImage",
       });
 
-      const response = (await updateProject(updatedInfo._id, formData)) as any;
-
-      if (response.status === 200) {
-        handleProjectImage(response.data);
-
-        toast.success("Your project images updated successfully!");
-      } else {
-        if (response.status === 400 || response.status === 403) {
-          toast.error("You are not signed in! Please sign in.");
-        }
-      }
+      mutation.mutate({ id: updatedInfo._id, data: formData });
     } catch (error) {
       toast.error("Something went wrong. Please try later!");
       console.error(error);

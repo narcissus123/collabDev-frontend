@@ -3,12 +3,12 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import FormControl from "@mui/material/FormControl";
 import Menu from "@mui/material/Menu";
-import { useState } from "react";
+import { memo, useState } from "react";
 import { useForm } from "react-hook-form";
 
-export default function SortModal() {
+function SortModal() {
   const { handleSubmit } = useForm();
-
+  // console.log("hi from sort");
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = (event: any) => {
@@ -51,3 +51,5 @@ export default function SortModal() {
     </Box>
   );
 }
+
+export default memo(SortModal);
