@@ -2,13 +2,13 @@ import { IconButton, useTheme } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import { useState } from "react";
+import { useNavigate } from "react-router";
+import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 
 import SignInContainer from "./SignInContainer/SignInContainer";
 import SignUpContainer from "./SignUpContainer/SignUpContainer";
 
 import "./RegisterationContainer.scss";
-import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
-import { useNavigate } from "react-router";
 
 export default function RegisterationContainer() {
   const theme = useTheme();
