@@ -19,13 +19,11 @@ import { useTheme } from "@mui/material";
 import Skeleton from "@mui/material/Skeleton";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
-// import { Request } from "../../../configs/types/requestTypes";
 import {
   deleteRequestById,
   getUserRequests,
 } from "../../../core/services/api/manage-requests.api";
 import formattedDate from "../../../core/utils/DateFormatter/formatDate";
-// import { QueryErrorBoundary } from "../../common/QueryErrorBoundary/QueryErrorBoundary";
 
 import AcceptanceForm from "./Forms/AcceptanceForm";
 import RejectionForm from "./Forms/RejectionForm";
@@ -52,14 +50,10 @@ const InboxTab = () => {
   const { data, error, isFetching } = useSuspenseQuery({
     queryKey: ["getUserRequests", userId],
     queryFn: () => getUserRequests(userId!),
+    select: (response) => response?.data ?? [],
   });
 
-  // const request = data?.data;
-  console.log("data", data);
-  console.log("error", error);
-
   if (error) {
-    console.log("error", error);
     let parsedError;
     try {
       parsedError = JSON.parse((error as Error).message);
@@ -69,19 +63,6 @@ const InboxTab = () => {
     toast.error(parsedError.message);
     console.error("Error details:", parsedError);
   }
-  // if (!data) {
-  //   return <Box>hiiii</Box>;
-  // }
-  // console.log("hi", data);
-  // if (error) {
-  //   console.log("hi", error);
-  //   // throw error;
-  // }
-
-  // if (error && !isFetching) {
-  //   console.log("hi", error);
-  //   throw error;
-  // }
 
   const deleteMutation = useMutation({
     mutationFn: (requestId: string) => deleteRequestById(requestId),
@@ -122,261 +103,274 @@ const InboxTab = () => {
       ) : (
         <List>
           <ToastContainer />
-          {data
-            ?.filter((req: any) => {
-              const isCollaborationRequest =
-                req.messageType === "collaboration_request";
-              const isInvitationRequest =
-                req.messageType === "invitation_request";
-              const sentRequests =
-                (req.contributor._id !== userId && isInvitationRequest) ||
-                (req.contributor._id === userId && isCollaborationRequest);
-              const pendingReceivedRequests =
-                (req.contributor._id === userId &&
-                  isInvitationRequest &&
-                  req.status === "pending") ||
-                (req.contributor._id !== userId &&
-                  isCollaborationRequest &&
-                  req.status === "pending");
-              return sentRequests || pendingReceivedRequests;
-            })
-            .map((req: any) => {
-              const isCollaborationRequest =
-                req.messageType === "collaboration_request";
-              const isInvitationRequest =
-                req.messageType === "invitation_request";
-              const isSender = userId === req.owner._id;
-              const isReceiver = userId === req.contributor._id;
-              const sentRequests =
-                (req.contributor._id !== userId && isInvitationRequest) ||
-                (req.contributor._id === userId && isCollaborationRequest);
+          {!data?.length ? (
+            <Stack alignItems="center" spacing={2} mt={4}>
+              <Typography color="text.secondary">No requests found</Typography>
+            </Stack>
+          ) : (
+            data
+              ?.filter((req: any) => {
+                const isCollaborationRequest =
+                  req.messageType === "collaboration_request";
+                const isInvitationRequest =
+                  req.messageType === "invitation_request";
+                const sentRequests =
+                  (req.contributor._id !== userId && isInvitationRequest) ||
+                  (req.contributor._id === userId && isCollaborationRequest);
+                const pendingReceivedRequests =
+                  (req.contributor._id === userId &&
+                    isInvitationRequest &&
+                    req.status === "pending") ||
+                  (req.contributor._id !== userId &&
+                    isCollaborationRequest &&
+                    req.status === "pending");
+                return sentRequests || pendingReceivedRequests;
+              })
+              .map((req: any) => {
+                const isCollaborationRequest =
+                  req.messageType === "collaboration_request";
+                const isInvitationRequest =
+                  req.messageType === "invitation_request";
+                const isSender = userId === req.owner._id;
+                const isReceiver = userId === req.contributor._id;
+                const sentRequests =
+                  (req.contributor._id !== userId && isInvitationRequest) ||
+                  (req.contributor._id === userId && isCollaborationRequest);
 
-              const avatarSrc =
-                req.contributor._id !== userId
-                  ? `http://localhost:8080/public/userProfileImages/${req.contributor.avatar}`
-                  : `http://localhost:8080/public/userProfileImages/${req.owner.avatar}`;
+                const avatarSrc =
+                  req.contributor._id !== userId
+                    ? `http://localhost:8080/public/userProfileImages/${req.contributor.avatar}`
+                    : `http://localhost:8080/public/userProfileImages/${req.owner.avatar}`;
 
-              const name =
-                req.contributor._id !== userId
-                  ? isInvitationRequest
-                    ? `To: ${req.contributor.name}`
-                    : `From: ${req.contributor.name}`
-                  : isCollaborationRequest
-                    ? `To: ${req.owner.name}`
-                    : `From: ${req.owner.name}`;
+                const name =
+                  req.contributor._id !== userId
+                    ? isInvitationRequest
+                      ? `To: ${req.contributor.name}`
+                      : `From: ${req.contributor.name}`
+                    : isCollaborationRequest
+                      ? `To: ${req.owner.name}`
+                      : `From: ${req.owner.name}`;
 
-              return (
-                <Box component="form" key={req._id}>
-                  <Stack
-                    display="flex"
-                    flexDirection="column"
-                    alignItems="flex-start"
-                    px={1}
-                    py={2.5}
-                  >
+                return (
+                  <Box component="form" key={req._id}>
                     <Stack
                       display="flex"
-                      flexDirection="row"
-                      alignItems="center"
-                      justifyContent="space-between"
-                      width="100%"
+                      flexDirection="column"
+                      alignItems="flex-start"
+                      px={1}
+                      py={2.5}
                     >
                       <Stack
                         display="flex"
                         flexDirection="row"
                         alignItems="center"
-                        gap={2}
+                        justifyContent="space-between"
+                        width="100%"
                       >
-                        <Link
-                          to={
-                            req.contributor._id !== userId
-                              ? `/profile/${req.contributor._id}`
-                              : `/profile/${req.owner._id}`
-                          }
+                        <Stack
+                          display="flex"
+                          flexDirection="row"
+                          alignItems="center"
+                          gap={2}
                         >
-                          <Avatar alt={name} src={avatarSrc} />
-                        </Link>
-                        <Stack>
-                          <Typography
-                            variant="h6"
-                            sx={{
-                              color:
-                                theme.palette.mode === "dark"
-                                  ? "primary.main"
-                                  : "black",
-                            }}
+                          <Link
+                            to={
+                              req.contributor._id !== userId
+                                ? `/profile/${req.contributor._id}`
+                                : `/profile/${req.owner._id}`
+                            }
                           >
-                            {name}
-                          </Typography>
-                          <Typography variant="body2" sx={{ color: "#ACACAC" }}>
-                            {formattedDate(req.createdAt)}
-                          </Typography>
+                            <Avatar alt={name} src={avatarSrc} />
+                          </Link>
+                          <Stack>
+                            <Typography
+                              variant="h6"
+                              sx={{
+                                color:
+                                  theme.palette.mode === "dark"
+                                    ? "primary.main"
+                                    : "black",
+                              }}
+                            >
+                              {name}
+                            </Typography>
+                            <Typography
+                              variant="body2"
+                              sx={{ color: "#ACACAC" }}
+                            >
+                              {formattedDate(req.createdAt)}
+                            </Typography>
+                          </Stack>
+                        </Stack>
+                        <Stack
+                          display="flex"
+                          flexDirection="row"
+                          alignItems="center"
+                          gap={1}
+                        >
+                          {sentRequests && req.status === "accepted" && (
+                            <IconButton
+                              aria-label="close"
+                              onClick={() => handleDeleteRequest(req._id)}
+                            >
+                              <CloseIcon />
+                            </IconButton>
+                          )}
                         </Stack>
                       </Stack>
-                      <Stack
-                        display="flex"
-                        flexDirection="row"
-                        alignItems="center"
-                        gap={1}
-                      >
-                        {sentRequests && req.status === "accepted" && (
-                          <IconButton
-                            aria-label="close"
-                            onClick={() => handleDeleteRequest(req._id)}
-                          >
-                            <CloseIcon />
-                          </IconButton>
-                        )}
-                      </Stack>
-                    </Stack>
-                    <ListItemText
-                      sx={{ width: "100%" }}
-                      secondary={
-                        <Box component="span">
-                          <Box
-                            mb={2}
-                            component="span"
-                            sx={{ display: "inline" }}
-                          >
-                            <Typography
-                              variant="body1"
+                      <ListItemText
+                        sx={{ width: "100%" }}
+                        secondary={
+                          <Box component="span">
+                            <Box
+                              mb={2}
                               component="span"
-                              color="text.secondary"
-                              sx={{ mt: 1, pl: 4.5, py: 0.5 }}
+                              sx={{ display: "inline" }}
                             >
-                              {req.message}
-                            </Typography>
-                            <Stack
-                              component="span"
-                              display="flex"
-                              flexDirection="row"
-                              flexWrap="wrap"
-                              alignItems="center"
-                              justifyContent="space-between"
-                              width="100%"
-                            >
-                              {(isCollaborationRequest && isReceiver) ||
-                              (isInvitationRequest && isSender) ? (
+                              <Typography
+                                variant="body1"
+                                component="span"
+                                color="text.secondary"
+                                sx={{ mt: 1, pl: 4.5, py: 0.5 }}
+                              >
+                                {req.message}
+                              </Typography>
+                              <Stack
+                                component="span"
+                                display="flex"
+                                flexDirection="row"
+                                flexWrap="wrap"
+                                alignItems="center"
+                                justifyContent="space-between"
+                                width="100%"
+                              >
+                                {(isCollaborationRequest && isReceiver) ||
+                                (isInvitationRequest && isSender) ? (
+                                  <Stack
+                                    component="span"
+                                    display="flex"
+                                    flexDirection="row"
+                                    alignItems="center"
+                                    justifyContent="flex-start"
+                                    gap={2}
+                                    mt={2}
+                                  >
+                                    <Typography
+                                      component="span"
+                                      sx={{
+                                        fontSize: "1rem",
+                                        pl: 4.5,
+                                        color:
+                                          theme.palette.mode === "dark"
+                                            ? "primary.main"
+                                            : "neutral.dark",
+                                      }}
+                                    >
+                                      status:
+                                    </Typography>
+                                    <Typography
+                                      component="span"
+                                      sx={{
+                                        display: "inline-block",
+                                        py: 0.5,
+                                        px: 2,
+                                        width: "auto",
+                                        border: "1px solid",
+                                        borderColor: getStatusColor(req.status),
+                                        borderRadius: "2rem",
+                                        color: getStatusColor(req.status),
+                                      }}
+                                    >
+                                      {req.status}
+                                    </Typography>
+                                  </Stack>
+                                ) : (
+                                  <Stack
+                                    component="span"
+                                    sx={{
+                                      ml: 4.5,
+                                      display: "flex",
+                                      flexDirection: "row",
+                                      flexWrap: "nowrap",
+                                    }}
+                                  >
+                                    <Button
+                                      type="button"
+                                      variant="contained"
+                                      sx={{ mt: 2, mr: 1 }}
+                                      onClick={() =>
+                                        setOpenAcceptModal(req._id)
+                                      }
+                                    >
+                                      Accept
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      sx={{ mt: 2 }}
+                                      variant="outlined"
+                                      onClick={() =>
+                                        setOpenRejectModal(req._id)
+                                      }
+                                    >
+                                      Reject
+                                    </Button>
+                                  </Stack>
+                                )}
                                 <Stack
                                   component="span"
                                   display="flex"
                                   flexDirection="row"
                                   alignItems="center"
-                                  justifyContent="flex-start"
-                                  gap={2}
-                                  mt={2}
+                                  gap={1}
+                                  order={isMediumScreen ? -1 : 1}
+                                  ml={isMediumScreen ? 4.5 : 0}
+                                  my={isMediumScreen ? 1 : 0}
                                 >
-                                  <Typography
-                                    component="span"
-                                    sx={{
-                                      fontSize: "1rem",
-                                      pl: 4.5,
-                                      color:
-                                        theme.palette.mode === "dark"
-                                          ? "primary.main"
-                                          : "neutral.dark",
+                                  <Link
+                                    style={{
+                                      textDecoration: "none",
                                     }}
+                                    to={`http://localhost:3000/projects/${req.project}`}
                                   >
-                                    status:
-                                  </Typography>
-                                  <Typography
-                                    component="span"
-                                    sx={{
-                                      display: "inline-block",
-                                      py: 0.5,
-                                      px: 2,
-                                      width: "auto",
-                                      border: "1px solid",
-                                      borderColor: getStatusColor(req.status),
-                                      borderRadius: "2rem",
-                                      color: getStatusColor(req.status),
-                                    }}
-                                  >
-                                    {req.status}
-                                  </Typography>
+                                    <Typography
+                                      component="span"
+                                      sx={{
+                                        color:
+                                          theme.palette.mode === "dark"
+                                            ? "primary.main"
+                                            : "neutral.dark",
+                                      }}
+                                    >
+                                      Go to project
+                                    </Typography>
+                                  </Link>
+                                  <LaunchIcon />
                                 </Stack>
-                              ) : (
-                                <Stack
-                                  component="span"
-                                  sx={{
-                                    ml: 4.5,
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    flexWrap: "nowrap",
-                                  }}
-                                >
-                                  <Button
-                                    type="button"
-                                    variant="contained"
-                                    sx={{ mt: 2, mr: 1 }}
-                                    onClick={() => setOpenAcceptModal(req._id)}
-                                  >
-                                    Accept
-                                  </Button>
-                                  <Button
-                                    type="button"
-                                    sx={{ mt: 2 }}
-                                    variant="outlined"
-                                    onClick={() => setOpenRejectModal(req._id)}
-                                  >
-                                    Reject
-                                  </Button>
-                                </Stack>
-                              )}
-                              <Stack
-                                component="span"
-                                display="flex"
-                                flexDirection="row"
-                                alignItems="center"
-                                gap={1}
-                                order={isMediumScreen ? -1 : 1}
-                                ml={isMediumScreen ? 4.5 : 0}
-                                my={isMediumScreen ? 1 : 0}
-                              >
-                                <Link
-                                  style={{
-                                    textDecoration: "none",
-                                  }}
-                                  to={`http://localhost:3000/projects/${req.project}`}
-                                >
-                                  <Typography
-                                    component="span"
-                                    sx={{
-                                      color:
-                                        theme.palette.mode === "dark"
-                                          ? "primary.main"
-                                          : "neutral.dark",
-                                    }}
-                                  >
-                                    Go to project
-                                  </Typography>
-                                </Link>
-                                <LaunchIcon />
                               </Stack>
-                            </Stack>
+                            </Box>
+                            {openRejectModal === req._id && (
+                              <RejectionForm
+                                openRejectModal={Boolean(openRejectModal)}
+                                handleClose={() => setOpenRejectModal(null)}
+                                req={req}
+                              />
+                            )}
+                            {openAcceptModal === req._id && (
+                              <AcceptanceForm
+                                openAcceptModal={Boolean(openAcceptModal)}
+                                handleClose={() => setOpenAcceptModal(null)}
+                                req={req}
+                              />
+                            )}
                           </Box>
-                          {openRejectModal === req._id && (
-                            <RejectionForm
-                              openRejectModal={Boolean(openRejectModal)}
-                              handleClose={() => setOpenRejectModal(null)}
-                              req={req}
-                            />
-                          )}
-                          {openAcceptModal === req._id && (
-                            <AcceptanceForm
-                              openAcceptModal={Boolean(openAcceptModal)}
-                              handleClose={() => setOpenAcceptModal(null)}
-                              req={req}
-                            />
-                          )}
-                        </Box>
-                      }
-                    />
-                  </Stack>
-                  <Divider sx={{ mx: 2 }} />
-                </Box>
-              );
-            })}
+                        }
+                      />
+                    </Stack>
+                    <Divider sx={{ mx: 2 }} />
+                  </Box>
+                );
+              })
+          )}
         </List>
       )}
     </>
