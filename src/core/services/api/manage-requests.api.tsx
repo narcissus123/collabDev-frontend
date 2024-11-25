@@ -52,69 +52,11 @@ const createRequest = async (obj: any) => {
   }
 };
 
-const getUserRequests = async (args?: string) => {
-  try {
-    const response = await instance.get(`/api/v1/request/${args}`);
-
-    if (response.status === 200) {
-      return response.data;
-    }
-  } catch (error) {
-    return error;
-  }
+const getUserRequests = async (userId: string) => {
+  const response = await instance.get<{ data: Request[] }>(
+    `/api/v1/request/${userId}`
+  );
+  return response.data;
 };
 
 export { createRequest, getUserRequests, rejectRequestById, acceptRequestById };
-
-// const delay = (ms: any) => new Promise((resolve) => setTimeout(resolve, ms));
-
-// const getUserRequests = async (userId?: string) => {
-//   try {
-//     const response = await instance.get(`/api/v1/request/${userId}`);
-//     // if (response.data.message) {
-//     //   // Handle the case where no requests are found
-//     //   console.log("No requests found:", response.data.message);
-//     //   return []; // Return an empty array or handle appropriately
-//     // }
-//     return response.data; // Return the array of requests
-//   } catch (error: any) {
-//     console.error("Failed to retrieve requests:", error);
-//     // const errorMessage = "Failed to retrieve requests.";
-//     // console.error("errorMessage", errorMessage);
-//     // throw new Error(errorMessage);
-//     if (axios.isAxiosError(error) && error.response) {
-//       throw new Error(
-//         error.response.data.message || "Failed to retrieve requests."
-//       );
-//     } else {
-//       throw new Error(
-//         error.message || "Network error: Please check your internet connection."
-//       );
-//     }
-//   }
-// };
-
-// const getUserRequests = async (args?: string) => {
-//   try {
-//     await delay(2000);
-//     const response = await instance.get(`/api/v1/request/${args}`);
-//     console.error("response:", response);
-//     // if (response && response.status === 200) {
-//     //   return response.data;
-//     // }
-//     // if (!response || response?.status !== 200) {
-//     //   throw new Error("Failed to fetch user requests");
-//     // }
-//     return response.data;
-//   } catch (error: any) {
-//     console.error("Something went wrong:", error);
-//     // if (error.handled) {
-//     //   // Error was already handled, no need to throw it again
-//     //   return;
-//     // }
-
-//     const errorMessage = error?.data?.message || "Failed to retrieve requests.";
-//     console.error("errorMessage", errorMessage);
-//     throw new Error(errorMessage);
-//   }
-// };
