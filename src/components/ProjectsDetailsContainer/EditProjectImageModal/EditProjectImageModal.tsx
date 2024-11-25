@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Box, Stack, Typography, useTheme } from "@mui/material";
+import { Box, Stack, useTheme } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { ToastContainer, toast } from "react-toastify";
 
@@ -84,7 +84,6 @@ export const EditProjectImageModal = ({
       handleClose={() => handleClose()}
       framesx={{
         width: 600,
-        border: "2px solid #000",
       }}
       headersx={{
         borderBottom: "1px solid",
@@ -95,9 +94,6 @@ export const EditProjectImageModal = ({
     >
       <ToastContainer />
       <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)}>
-        <Typography variant="h4" sx={{ mb: 2, mt: 4, color: "text.secondary" }}>
-          Project Cover Image
-        </Typography>
         <Box
           sx={{
             border: "1px solid",
@@ -129,7 +125,7 @@ export const EditProjectImageModal = ({
             );
           })}
         </Stack>
-        <CustomButton righButtonText="Edit" />
+        <CustomButton righButtonText="UPload" />
       </Box>
     </CustomModal>
   );
