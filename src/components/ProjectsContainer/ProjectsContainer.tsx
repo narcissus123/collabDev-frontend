@@ -22,7 +22,7 @@ import { useTheme } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
 import ErrorFallback from "../common/ErrorFallback/ErrorFallback";
-import { getAllProjectss } from "../../core/services/api/manage-projects.api";
+import { getAllProjects } from "../../core/services/api/manage-projects.api";
 import { ProjectType } from "../../configs/types/projectTypes";
 
 import ProjectCard from "../common/ProjectCard/ProjectCard";
@@ -47,8 +47,8 @@ function ProjectsList({
   onDataChange: (data: ProjectData) => void;
 }) {
   const { data: project } = useSuspenseQuery({
-    queryKey: ["getAllProjectss", queryString],
-    queryFn: () => getAllProjectss(queryString),
+    queryKey: ["getAllProjects", queryString],
+    queryFn: () => getAllProjects(queryString),
   });
 
   useEffect(() => {

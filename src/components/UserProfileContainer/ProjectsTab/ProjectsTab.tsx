@@ -12,7 +12,7 @@ import Stack from "@mui/material/Stack";
 
 import { ProjectType } from "../../../configs/types/projectTypes";
 import { FormProvider } from "../../../context/FormContext/FormContext";
-import { getAllProjectss } from "../../../core/services/api/manage-projects.api";
+import { getAllProjects } from "../../../core/services/api/manage-projects.api";
 import categorizeProjects from "../../../core/utils/CategorizeProjects/CategorizeProjects";
 
 import CustomModal from "../../common/CustomModal/CustomModal";
@@ -52,7 +52,7 @@ export default function ProjectsTab() {
 
   const { data, error, isFetching } = useSuspenseQuery({
     queryKey: ["getAllProjects", queryString],
-    queryFn: () => getAllProjectss(queryString),
+    queryFn: () => getAllProjects(queryString),
     select: (response) => response?.data ?? [],
   });
 
