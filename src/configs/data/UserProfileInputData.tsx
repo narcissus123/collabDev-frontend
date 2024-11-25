@@ -36,7 +36,7 @@ interface ProfileDetail {
 
 type ProfileAccountDetailsDataType = (
   developer: User,
-  theme: Theme
+  theme: any
 ) => ProfileDetail[];
 
 const AccountDetailsData: ProfileAccountDetailsDataType = (
