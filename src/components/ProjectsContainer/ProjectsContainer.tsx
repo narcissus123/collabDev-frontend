@@ -9,7 +9,6 @@ import {
 import { useLocation, useNavigate } from "react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { ErrorBoundary } from "react-error-boundary";
-import { toast } from "react-toastify";
 
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -30,6 +29,60 @@ import ProjectCard from "../common/ProjectCard/ProjectCard";
 import SortModal from "./modals/SortModal";
 import FilterModal from "./modals/FilterModal";
 
+type ProjectData = {
+  data: {
+    projects: ProjectType[];
+    total: number;
+  };
+};
+
+function ProjectsList({
+  queryString,
+  onDataChange,
+}: {
+  queryString: string;
+  pageSize: number;
+  currentPage: number;
+  onPageChange: (page: number) => void;
+  onDataChange: (data: ProjectData) => void;
+}) {
+  const { data: project } = useSuspenseQuery({
+    queryKey: ["getAllProjectss", queryString],
+    queryFn: () => getAllProjectss(queryString),
+  });
+
+  useEffect(() => {
+    if (project) {
+      onDataChange(project);
+    }
+  }, [project, onDataChange]);
+
+  if (!project?.data?.projects) {
+    return null;
+  }
+
+  return (
+    <Grid container gap={2}>
+      {project.data.projects.length === 0 ? (
+        <Stack
+          alignItems="center"
+          spacing={2}
+          mt={4}
+          sx={{ width: "100%", pt: "1rem", pb: "4rem" }}
+        >
+          <Typography color="text.secondary" sx={{ fontSize: "16px" }}>
+            No projects found
+          </Typography>
+        </Stack>
+      ) : (
+        project.data.projects.map((prj: ProjectType, index: Key) => {
+          return <ProjectCard project={prj} key={index} />;
+        })
+      )}
+    </Grid>
+  );
+}
+
 export default function ProjectsContainer() {
   const theme = useTheme();
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
@@ -43,6 +96,7 @@ export default function ProjectsContainer() {
   const [pageSize, setPageSize] = useState(
     parseInt(queryParams.get("limit") || defaultPageSize.toString(), 10)
   );
+  const [projectData, setProjectData] = useState<ProjectData | null>(null);
   const [queryString, setQueryString] = useState(
     `?page=${currentPage}&limit=${pageSize}`
   );
@@ -69,196 +123,177 @@ export default function ProjectsContainer() {
     [pageSize]
   );
 
-  const { data: project, error } = useSuspenseQuery({
-    queryKey: ["getAllProjectss", queryString],
-    queryFn: () => getAllProjectss(queryString),
-  });
-
-  if (error) {
-    toast.error("Sorry. Something went wrong.");
-  }
+  const handlePageChange = (page: number) => {
+    queryParams.set("page", page.toString());
+    startTransition(() => {
+      navigate({ search: queryParams.toString() });
+      setQueryString(`?${queryParams.toString()}`);
+    });
+  };
 
   return (
-    <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <Suspense
-        fallback={
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              border: "1px solid red",
-              mt: 20,
-              bg: "red",
-            }}
-          >
-            Yessssssssssssssssssssss
-          </Box>
-        }
+    <Stack
+      direction="column"
+      justifyContent="space-between"
+      spacing={2}
+      sx={{
+        py: 14,
+        px: 3,
+        bgcolor:
+          theme.palette.mode === "dark"
+            ? "background.secondary"
+            : "background.default",
+      }}
+    >
+      <Grid
+        item
+        xs={12}
+        sx={{
+          width: "100%",
+        }}
       >
         <Stack
-          direction="column"
-          justifyContent="space-between"
-          spacing={2}
+          direction="row"
           sx={{
-            py: 14,
-            px: 3,
+            justifyContent: "flex-start",
+            alignItems: "flex-end",
+            flexWrap: "wrap",
+            mr: isMediumScreen ? "0rem" : "1.5rem",
+            p: 1,
+          }}
+          gap={isMediumScreen ? 2 : 1}
+        >
+          <Stack direction="row" gap={2} sx={{ flex: 1, alignItems: "center" }}>
+            <Typography color="text.secondary">Items per page:</Typography>
+            <Select
+              value={pageSize}
+              onChange={(event: SelectChangeEvent<number>) => {
+                const newSize = event.target.value as number;
+                setPageSize(newSize);
+                queryParams.set("limit", newSize.toString());
+                queryParams.set("page", "1"); // Reset to the first page when changing page size
+                startTransition(() => {
+                  navigate({ search: queryParams.toString() });
+                  setQueryString(`?${queryParams.toString()}`);
+                });
+              }}
+              disabled={projectData?.data?.projects.length === 0}
+              displayEmpty
+              inputProps={{ "aria-label": "Items per page" }}
+              size="small"
+              sx={{ color: "text.secondary" }}
+            >
+              {[2, 5, 10, 20].map((size) => (
+                <MenuItem
+                  key={size}
+                  value={size}
+                  sx={{ color: "text.secondary" }}
+                >
+                  {size}
+                </MenuItem>
+              ))}
+            </Select>
+          </Stack>
+          <Stack
+            display="flex"
+            flexDirection="row"
+            flexWrap="nowrap"
+            justifyContent="flex-end"
+            alignItems="flex-start"
+            gap={1}
+          >
+            <SortModal />
+            <FilterModal
+              setQueryString={handleApplyFilters}
+              disabled={projectData?.data?.projects.length === 0}
+            />
+          </Stack>
+        </Stack>
+      </Grid>
+      <Grid
+        item
+        xs={12}
+        sx={{
+          width: "100%",
+        }}
+      >
+        <Box
+          sx={{
             bgcolor:
               theme.palette.mode === "dark"
                 ? "background.secondary"
                 : "background.default",
+            display: "flex",
+            alignItems: "flex-end",
+            flexDirection: "column",
+            minHeight: "100vh",
           }}
         >
-          <Grid
-            item
-            xs={12}
-            sx={{
-              width: "100%",
+          <ErrorBoundary
+            FallbackComponent={ErrorFallback}
+            onReset={() => {
+              // Reset the error state
+              const defaultParams = new URLSearchParams();
+              defaultParams.set("page", "1");
+              defaultParams.set("limit", defaultPageSize.toString());
+              navigate({ search: defaultParams.toString() });
+              setQueryString(`?${defaultParams.toString()}`);
             }}
           >
-            <Stack
-              direction="row"
-              sx={{
-                justifyContent: "flex-start",
-                alignItems: "flex-end",
-                flexWrap: "wrap",
-                mr: isMediumScreen ? "0rem" : "1.5rem",
-                p: 1,
-              }}
-              gap={isMediumScreen ? 2 : 1}
+            <Suspense
+              fallback={
+                <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+                  Loading...
+                </Box>
+              }
             >
-              <Stack
-                direction="row"
-                gap={2}
-                sx={{ flex: 1, alignItems: "center" }}
-              >
-                <Typography color="text.secondary">Items per page:</Typography>
-                <Select
-                  value={pageSize}
-                  onChange={(event: SelectChangeEvent<number>) => {
-                    const newSize = event.target.value as number;
-                    setPageSize(newSize);
-                    queryParams.set("limit", newSize.toString());
-                    queryParams.set("page", "1"); // Reset to the first page when changing page size
-                    startTransition(() => {
-                      navigate({ search: queryParams.toString() });
-                      setQueryString(`?${queryParams.toString()}`);
-                    });
-                  }}
-                  displayEmpty
-                  inputProps={{ "aria-label": "Items per page" }}
-                  size="small"
-                  sx={{ color: "text.secondary" }}
-                >
-                  {[2, 5, 10, 20].map((size) => (
-                    <MenuItem
-                      key={size}
-                      value={size}
-                      sx={{ color: "text.secondary" }}
-                    >
-                      {size}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </Stack>
-              <Stack
-                display="flex"
-                flexDirection="row"
-                flexWrap="nowrap"
-                justifyContent="flex-end"
-                alignItems="flex-start"
-                gap={1}
-              >
-                <SortModal />
-                <FilterModal setQueryString={handleApplyFilters} />
-              </Stack>
-            </Stack>
-          </Grid>
-          <Grid
-            item
-            xs={12}
-            sx={{
-              width: "100%",
-            }}
+              <ProjectsList
+                queryString={queryString}
+                pageSize={pageSize}
+                currentPage={currentPage}
+                onPageChange={handlePageChange}
+                onDataChange={setProjectData}
+              />
+            </Suspense>
+          </ErrorBoundary>
+          <Stack
+            display="flex"
+            direction="row"
+            spacing={2}
+            mt={2}
+            sx={{ justifyContent: "center" }}
           >
-            <Box
-              sx={{
-                bgcolor:
-                  theme.palette.mode === "dark"
-                    ? "background.secondary"
-                    : "background.default",
-                display: "flex",
-                alignItems: "flex-end",
-                flexDirection: "column",
-                minHeight: "100vh",
+            <Button
+              onClick={() => {
+                const nextPage = currentPage - 1;
+                queryParams.set("page", nextPage.toString());
+                startTransition(() => {
+                  navigate({ search: queryParams.toString() });
+                  setQueryString(`?${queryParams.toString()}`);
+                });
               }}
+              disabled={currentPage === 1}
             >
-              <ErrorBoundary FallbackComponent={ErrorFallback}>
-                <Suspense
-                  fallback={
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        border: "1px solid red",
-                        mt: 24,
-                        bg: "red",
-                      }}
-                    >
-                      Yessssssssssssssssssssss
-                    </Box>
-                  }
-                >
-                  <Grid container gap={2}>
-                    {project?.data?.projects?.map(
-                      (prj: ProjectType, index: Key) => {
-                        return <ProjectCard project={prj} key={index} />;
-                      }
-                    )}
-                  </Grid>
-                </Suspense>
-              </ErrorBoundary>
-              <Stack
-                display="flex"
-                direction="row"
-                spacing={2}
-                mt={2}
-                sx={{ justifyContent: "center" }}
+              Previous
+            </Button>
+            {projectData?.data?.total && (
+              <Button
+                disabled={currentPage * pageSize >= projectData?.data?.total}
+                onClick={() => {
+                  const nextPage = currentPage + 1;
+                  queryParams.set("page", nextPage.toString());
+                  startTransition(() => {
+                    navigate({ search: queryParams.toString() });
+                    setQueryString(`?${queryParams.toString()}`);
+                  });
+                }}
               >
-                <Button
-                  onClick={() => {
-                    const nextPage = currentPage - 1;
-                    queryParams.set("page", nextPage.toString());
-                    startTransition(() => {
-                      navigate({ search: queryParams.toString() });
-                      setQueryString(`?${queryParams.toString()}`);
-                    });
-                  }}
-                  disabled={currentPage === 1}
-                >
-                  Previous
-                </Button>
-                {project?.data?.total && (
-                  <Button
-                    disabled={currentPage * pageSize >= project?.data?.total}
-                    onClick={() => {
-                      const nextPage = currentPage + 1;
-                      queryParams.set("page", nextPage.toString());
-                      startTransition(() => {
-                        navigate({ search: queryParams.toString() });
-                        setQueryString(`?${queryParams.toString()}`);
-                      });
-                    }}
-                  >
-                    Next
-                  </Button>
-                )}
-              </Stack>
-            </Box>
-          </Grid>
-        </Stack>
-      </Suspense>
-    </ErrorBoundary>
+                Next
+              </Button>
+            )}
+          </Stack>
+        </Box>
+      </Grid>
+    </Stack>
   );
 }
