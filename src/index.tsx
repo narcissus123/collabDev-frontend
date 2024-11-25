@@ -28,7 +28,7 @@ const root = ReactDOM.createRoot(
 );
 
 const LazyApp = lazy(() =>
-  import("./App/App").then((module) => ({ default: module.default }))
+  import("./app/App").then((module) => ({ default: module.default }))
 );
 
 root.render(
