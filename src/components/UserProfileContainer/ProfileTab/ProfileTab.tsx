@@ -1,18 +1,16 @@
+import { useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import EditIcon from "@mui/icons-material/Edit";
-import {
-  Button,
-  Chip,
-  IconButton,
-  Paper,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import Button from "@mui/material/Button";
+import Chip from "@mui/material/Chip";
+import IconButton from "@mui/material/IconButton";
+import Paper from "@mui/material/Paper";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { useEffect, useState } from "react";
 import { SocialIcon } from "react-social-icons";
-import { v4 as uuidv4 } from "uuid";
 
 import { User } from "../../../configs/types/userTypes";
 import { useAuth } from "../../../context/AuthContext/AuthContext";

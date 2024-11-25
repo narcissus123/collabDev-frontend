@@ -13,6 +13,8 @@ interface CustomButtonProps {
   leftButtonsx?: any;
   leftButtonText?: string;
   righButtonText?: string;
+  variantLeft?: "contained" | "text" | "outlined" | undefined;
+  variantRight?: "contained" | "text" | "outlined" | undefined;
 }
 
 const CustomButton = ({
@@ -25,6 +27,8 @@ const CustomButton = ({
   leftButtonsx = {},
   leftButtonText,
   righButtonText,
+  variantLeft,
+  variantRight,
 }: CustomButtonProps) => {
   const theme = useTheme();
   const isLargeScreen = useMediaQuery(theme.breakpoints.down("lg"));
@@ -43,12 +47,14 @@ const CustomButton = ({
           onClick={leftHandleClick}
           disabled={leftButtonDisabled}
           type="submit"
+          variant={variantLeft}
           sx={{
             my: 1,
             mx: 1,
             py: { md: 1 },
             px: { md: 2 },
-            fontSize: { md: "1rem" },
+            border: "1px solid #000000",
+            fontSize: { md: "0.8rem" },
             color: "text.secondary",
             ...leftButtonsx,
           }}
@@ -62,14 +68,15 @@ const CustomButton = ({
           size={isLargeScreen ? "small" : "large"}
           onClick={rightHandleClick}
           type="submit"
-          variant="contained"
+          variant={variantRight}
           disabled={righButtonDisabled}
           sx={{
             my: 1,
             mx: 1,
             py: { md: 1 },
             px: { md: 2 },
-            fontSize: { md: "1rem" },
+            border: "1px solid #000000",
+            fontSize: { md: "0.8rem" },
             ...buttonRightsx,
           }}
         >

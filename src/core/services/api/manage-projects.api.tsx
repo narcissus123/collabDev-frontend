@@ -20,19 +20,12 @@ const addProject = async (obj: any) => {
   }
 };
 
-const getAllProjects = async (params?: any) => {
-  try {
-    const response = await instance.get(`/api/v1/project${params}`);
-
-    if (response.status === 200) {
-      return response.data;
-    }
-  } catch (error) {
-    return error;
-  }
+const getAllProjects = async (params: any) => {
+  const response = await instance.get(`/api/v1/project${params}`);
+  return response.data;
 };
 
-const getProjectById = async (projectId: any) => {
+export const getProjectById = async (projectId: any) => {
   try {
     const response = await instance.get(`/api/v1/project/${projectId}`);
     return response.data;
@@ -51,4 +44,4 @@ export const getProjectByownerId = async (ownerId: any) => {
   }
 };
 
-export { updateProject, getAllProjects, addProject, getProjectById };
+export { updateProject, getAllProjects, addProject };

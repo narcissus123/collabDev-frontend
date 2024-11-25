@@ -4,7 +4,6 @@ export const createFormData = (
   image?: { file: File[] | string[]; name: string }
 ) => {
   const formData = new FormData();
-
   if (images) {
     if (images?.files.length === 0) {
       formData.append(images?.name, "[]");

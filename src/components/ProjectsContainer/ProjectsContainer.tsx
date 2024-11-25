@@ -1,43 +1,102 @@
 import {
-  useTheme,
-  Box,
-  Button,
-  Grid,
-  MenuItem,
-  Typography,
-  Select,
-  SelectChangeEvent,
-  useMediaQuery,
-} from "@mui/material";
-import Stack from "@mui/material/Stack";
-import { Key, useEffect, useState } from "react";
+  Key,
+  Suspense,
+  startTransition,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { useLocation, useNavigate } from "react-router";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { ErrorBoundary } from "react-error-boundary";
 
-import { ProjectType } from "../../configs/types/projectTypes";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
+import MenuItem from "@mui/material/MenuItem";
+import Typography from "@mui/material/Typography";
+import Select from "@mui/material/Select";
+import Stack from "@mui/material/Stack";
+import { SelectChangeEvent } from "@mui/material";
+import { useTheme } from "@mui/material";
+import useMediaQuery from "@mui/material/useMediaQuery";
+
+import ErrorFallback from "../common/ErrorFallback/ErrorFallback";
 import { getAllProjects } from "../../core/services/api/manage-projects.api";
-import useFetch from "../../hooks/useFetch";
+import { ProjectType } from "../../configs/types/projectTypes";
+
 import ProjectCard from "../common/ProjectCard/ProjectCard";
-
-import FilterModal from "./modals/FilterModal";
 import SortModal from "./modals/SortModal";
+import FilterModal from "./modals/FilterModal";
 
-interface ProjectsResponse {
-  projects: ProjectType[];
-  total: number;
+type ProjectData = {
+  data: {
+    projects: ProjectType[];
+    total: number;
+  };
+};
+
+function ProjectsList({
+  queryString,
+  onDataChange,
+}: {
+  queryString: string;
+  pageSize: number;
+  currentPage: number;
+  onPageChange: (page: number) => void;
+  onDataChange: (data: ProjectData) => void;
+}) {
+  const { data: project } = useSuspenseQuery({
+    queryKey: ["getAllProjects", queryString],
+    queryFn: () => getAllProjects(queryString),
+  });
+
+  useEffect(() => {
+    if (project) {
+      onDataChange(project);
+    }
+  }, [project, onDataChange]);
+
+  if (!project?.data?.projects) {
+    return null;
+  }
+
+  return (
+    <Grid container gap={2}>
+      {project.data.projects.length === 0 ? (
+        <Stack
+          alignItems="center"
+          spacing={2}
+          mt={4}
+          sx={{ width: "100%", pt: "1rem", pb: "4rem" }}
+        >
+          <Typography color="text.secondary" sx={{ fontSize: "16px" }}>
+            No projects found
+          </Typography>
+        </Stack>
+      ) : (
+        project.data.projects.map((prj: ProjectType, index: Key) => {
+          return <ProjectCard project={prj} key={index} />;
+        })
+      )}
+    </Grid>
+  );
 }
 
 export default function ProjectsContainer() {
   const theme = useTheme();
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
-  const defaultPageSize = 2;
+
   const location = useLocation();
   const navigate = useNavigate();
+  const [, setFilters] = useState({});
+  const defaultPageSize = 2;
   const queryParams = new URLSearchParams(location.search);
-  const [filters, setFilters] = useState({});
   const currentPage = parseInt(queryParams.get("page") || "1", 10);
   const [pageSize, setPageSize] = useState(
     parseInt(queryParams.get("limit") || defaultPageSize.toString(), 10)
   );
+  const [projectData, setProjectData] = useState<ProjectData | null>(null);
   const [queryString, setQueryString] = useState(
     `?page=${currentPage}&limit=${pageSize}`
   );
@@ -50,37 +109,27 @@ export default function ProjectsContainer() {
     }
   }, []);
 
-  const handleApplyFilters = (newFilters: any) => {
-    setFilters(newFilters);
-    const filterParams = new URLSearchParams(newFilters);
-    filterParams.set("page", "1"); // Reset to the first page when applying new filters
-    filterParams.set("limit", pageSize.toString());
-    setQueryString((prev) => `?${prev}&${filterParams.toString()}`);
-    navigate({ search: filterParams.toString() });
-  };
-
-  const handlePageSizeChange = (event: SelectChangeEvent<number>) => {
-    const newSize = event.target.value as number;
-    setPageSize(newSize);
-    queryParams.set("limit", newSize.toString());
-    queryParams.set("page", "1"); // Reset to the first page when changing page size
-    navigate({ search: queryParams.toString() });
-  };
-
-  useEffect(() => {
-    const mergedParams = new URLSearchParams({
-      ...Object.fromEntries(queryParams.entries()),
-      page: currentPage.toString(),
-      limit: pageSize.toString(),
-    });
-
-    setQueryString(`?${mergedParams.toString()}`);
-  }, [location.search, filters]);
-
-  const { isLoading, data } = useFetch<ProjectsResponse>(
-    getAllProjects,
-    queryString
+  const handleApplyFilters = useCallback(
+    (newFilters: any) => {
+      setFilters(newFilters);
+      const filterParams = new URLSearchParams(newFilters);
+      filterParams.set("page", "1"); // Reset to the first page when applying new filters
+      filterParams.set("limit", pageSize.toString());
+      startTransition(() => {
+        navigate({ search: filterParams.toString() });
+        setQueryString(`?${filterParams.toString()}`);
+      });
+    },
+    [pageSize]
   );
+
+  const handlePageChange = (page: number) => {
+    queryParams.set("page", page.toString());
+    startTransition(() => {
+      navigate({ search: queryParams.toString() });
+      setQueryString(`?${queryParams.toString()}`);
+    });
+  };
 
   return (
     <Stack
@@ -118,7 +167,17 @@ export default function ProjectsContainer() {
             <Typography color="text.secondary">Items per page:</Typography>
             <Select
               value={pageSize}
-              onChange={handlePageSizeChange}
+              onChange={(event: SelectChangeEvent<number>) => {
+                const newSize = event.target.value as number;
+                setPageSize(newSize);
+                queryParams.set("limit", newSize.toString());
+                queryParams.set("page", "1"); // Reset to the first page when changing page size
+                startTransition(() => {
+                  navigate({ search: queryParams.toString() });
+                  setQueryString(`?${queryParams.toString()}`);
+                });
+              }}
+              disabled={projectData?.data?.projects.length === 0}
               displayEmpty
               inputProps={{ "aria-label": "Items per page" }}
               size="small"
@@ -144,7 +203,10 @@ export default function ProjectsContainer() {
             gap={1}
           >
             <SortModal />
-            <FilterModal setQueryString={handleApplyFilters} />
+            <FilterModal
+              setQueryString={handleApplyFilters}
+              disabled={projectData?.data?.projects.length === 0}
+            />
           </Stack>
         </Stack>
       </Grid>
@@ -167,29 +229,33 @@ export default function ProjectsContainer() {
             minHeight: "100vh",
           }}
         >
-          {isLoading ? (
-            <Box
-              sx={{
-                flexGrow: 1,
-                mt: "5rem",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
+          <ErrorBoundary
+            FallbackComponent={ErrorFallback}
+            onReset={() => {
+              // Reset the error state
+              const defaultParams = new URLSearchParams();
+              defaultParams.set("page", "1");
+              defaultParams.set("limit", defaultPageSize.toString());
+              navigate({ search: defaultParams.toString() });
+              setQueryString(`?${defaultParams.toString()}`);
+            }}
+          >
+            <Suspense
+              fallback={
+                <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+                  Loading...
+                </Box>
+              }
             >
-              Loading...
-            </Box>
-          ) : (
-            <Grid container gap={2}>
-              {!isLoading &&
-                data?.projects &&
-                data?.projects?.map((project: ProjectType, index: Key) => {
-                  return (
-                    <ProjectCard project={project} key={index} index={index} />
-                  );
-                })}
-            </Grid>
-          )}
+              <ProjectsList
+                queryString={queryString}
+                pageSize={pageSize}
+                currentPage={currentPage}
+                onPageChange={handlePageChange}
+                onDataChange={setProjectData}
+              />
+            </Suspense>
+          </ErrorBoundary>
           <Stack
             display="flex"
             direction="row"
@@ -199,21 +265,27 @@ export default function ProjectsContainer() {
           >
             <Button
               onClick={() => {
-                const prevPage = currentPage - 1;
-                queryParams.set("page", prevPage.toString());
-                navigate({ search: queryParams.toString() });
+                const nextPage = currentPage - 1;
+                queryParams.set("page", nextPage.toString());
+                startTransition(() => {
+                  navigate({ search: queryParams.toString() });
+                  setQueryString(`?${queryParams.toString()}`);
+                });
               }}
               disabled={currentPage === 1}
             >
               Previous
             </Button>
-            {data?.total && (
+            {projectData?.data?.total && (
               <Button
-                disabled={currentPage * pageSize >= data?.total}
+                disabled={currentPage * pageSize >= projectData?.data?.total}
                 onClick={() => {
                   const nextPage = currentPage + 1;
                   queryParams.set("page", nextPage.toString());
-                  navigate({ search: queryParams.toString() });
+                  startTransition(() => {
+                    navigate({ search: queryParams.toString() });
+                    setQueryString(`?${queryParams.toString()}`);
+                  });
                 }}
               >
                 Next

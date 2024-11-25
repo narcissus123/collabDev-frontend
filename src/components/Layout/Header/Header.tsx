@@ -21,8 +21,6 @@ import Toolbar from "@mui/material/Toolbar";
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
-import LogoDark from "../../../assets/logo/logo-dark.png";
-import LogoLight from "../../../assets/logo/logo-light.png";
 import { userProfileMenuItems } from "../../../configs/data/HeaderData";
 import { useAuth } from "../../../context/AuthContext/AuthContext";
 import { useMode } from "../../../context/MUIThemeContext/MUIThemeContext";
@@ -83,6 +81,7 @@ export default function Header() {
       sx={{
         position: "fixed",
         background: theme.palette.mode === "dark" ? "" : "white",
+        opacity: "50%",
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
@@ -91,7 +90,11 @@ export default function Header() {
       }}
     >
       <Avatar
-        src={theme.palette.mode === "dark" ? LogoDark : LogoLight}
+        src={
+          theme.palette.mode === "dark"
+            ? `${process.env.PUBLIC_URL}/assets/logo/logo-dark.webp`
+            : `${process.env.PUBLIC_URL}/assets/logo/logo-light.webp`
+        }
         sx={{
           width: isMediumScreen ? "2.3rem" : "2.7rem",
           height: isMediumScreen ? "2.3rem" : "2.7rem",
@@ -175,6 +178,11 @@ export default function Header() {
           flex: isMediumScreen ? 1 : 0,
         }}
         onClick={toggleColorMode}
+        aria-label={
+          theme.palette.mode === "dark"
+            ? "Switch to light mode"
+            : "Switch to dark mode"
+        }
         color="inherit"
       >
         {theme.palette.mode === "dark" ? (

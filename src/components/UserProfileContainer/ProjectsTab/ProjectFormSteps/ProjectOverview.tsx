@@ -61,8 +61,8 @@ export default function ProjectOverview({ handleActiveStep }: StepperProps) {
               multiline={project.multiline}
               variant={project.variant as "standard" | "outlined" | "filled"}
               errors={errors}
-              {...register(project.register.name as "title" | "description", {
-                ...project.register.schema,
+              {...register(project?.register?.name as "title" | "description", {
+                ...project?.register?.schema,
               })}
             />
           </Box>

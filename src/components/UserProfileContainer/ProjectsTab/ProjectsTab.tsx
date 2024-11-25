@@ -1,18 +1,24 @@
-import AddIcon from "@mui/icons-material/Add";
-import { useTheme, Grid, Typography, IconButton, Card } from "@mui/material";
-import Stack from "@mui/material/Stack";
-import { Key, Suspense, startTransition, useEffect, useState } from "react";
+import { Key, Suspense, useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router";
-import { toast } from "react-toastify";
+import { useSuspenseQuery } from "@tanstack/react-query";
+
+import AddIcon from "@mui/icons-material/Add";
+import { useTheme } from "@mui/material";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
+import Card from "@mui/material/Card";
+import Stack from "@mui/material/Stack";
 
 import { ProjectType } from "../../../configs/types/projectTypes";
 import { FormProvider } from "../../../context/FormContext/FormContext";
 import { getAllProjects } from "../../../core/services/api/manage-projects.api";
+import categorizeProjects from "../../../core/utils/CategorizeProjects/CategorizeProjects";
+
 import CustomModal from "../../common/CustomModal/CustomModal";
 import CustomStepper from "../../common/CustomStepper/CustomStepper";
 import { Loading } from "../../common/Loading/Loading";
 import ProjectCard from "../../common/ProjectCard/ProjectCard";
-
 import ProjectDetails from "./ProjectFormSteps/ProjectDetails";
 import ProjectImages from "./ProjectFormSteps/projectImages";
 import ProjectOverview from "./ProjectFormSteps/ProjectOverview";
@@ -27,66 +33,43 @@ const steps = [
 
 export default function ProjectsTab() {
   const theme = useTheme();
+  const queryString = "/";
   const [myprojects, setMyProjects] = useState<ProjectType[]>([]);
-  const [currentPage] = useState<number>(1);
   const [contProjects, setContProjects] = useState<ProjectType[]>([]);
   const { userId } = useParams();
   const [apiCallsCompleted, setApiCallsCompleted] = useState(false);
   const [activeStep, setActiveStep] = useState<string>("Project Overview");
-
-  const handleActiveStep = (step: string) => {
-    setActiveStep(step);
-  };
-
-  useEffect(() => {
-    setTimeout(() => {
-      setApiCallsCompleted(true);
-    }, 400);
-  }, []);
-
-  const getProject = async () => {
-    try {
-      const response: any = await getAllProjects(`/`);
-
-      if (response) {
-        startTransition(() => {
-          startTransition(() => {
-            const filteredMyProjects = response.projects.filter(
-              (proj: any) => proj.owner._id === userId
-            );
-            setMyProjects(filteredMyProjects);
-
-            const contributedProjects = response.projects.filter(
-              (proj: any) => {
-                const isOwnerContributor = proj.contributors.some(
-                  (contributor: { name: string; avatar: string }) =>
-                    contributor.name === proj.owner.name
-                );
-                return isOwnerContributor && proj.owner._id !== userId;
-              }
-            );
-            setContProjects(contributedProjects);
-          });
-        });
-      }
-    } catch (error) {
-      toast.error("Sorry. Something went wrong.");
-      console.error(error);
-    }
-  };
-
-  const handleProjectInfo = (updatedInfo: ProjectType) => {
-    setMyProjects((prev) => [...prev, updatedInfo]);
-  };
-
-  useEffect(() => {
-    getProject();
-  }, [currentPage]);
   const [addProject, setAddProject] = useState<boolean>(false);
+
+  const handleActiveStep = useCallback((step: string) => {
+    setActiveStep(step);
+  }, []);
 
   const handleAddProjClick = () => {
     setAddProject((prev) => !prev);
     setActiveStep("Project Overview");
+  };
+
+  const { data, error, isFetching } = useSuspenseQuery({
+    queryKey: ["getAllProjects", queryString],
+    queryFn: () => getAllProjects(queryString),
+    select: (response) => response?.data ?? [],
+  });
+
+  useEffect(() => {
+    if (!isFetching && !error) {
+      const { filteredMyProjects, contributedProjects } = categorizeProjects(
+        data.projects,
+        userId!
+      );
+      setMyProjects(filteredMyProjects);
+      setContProjects(contributedProjects);
+      setApiCallsCompleted(true);
+    }
+  }, [isFetching]);
+
+  const handleProjectInfo = (updatedInfo: ProjectType) => {
+    setMyProjects((prev) => [...prev, updatedInfo]);
   };
 
   return (
@@ -119,14 +102,14 @@ export default function ProjectsTab() {
               sx={{ flexWrap: "wrap", ml: 2 }}
             >
               {myprojects?.map((project: ProjectType, index: Key) => (
-                <ProjectCard project={project} key={index} index={index} />
+                <ProjectCard project={project} key={index} />
               ))}
 
               {apiCallsCompleted && (
                 <Grid item xs={12} md={5.8} lg={3.8} sx={{ width: "100%" }}>
                   <Card
                     sx={{
-                      height: 274.29,
+                      height: "100%",
                       display: "flex",
                       flexDirection: "column",
                       gap: 1,
@@ -198,7 +181,7 @@ export default function ProjectsTab() {
                 <Typography sx={{ ml: 3 }}>No projects found</Typography>
               ) : (
                 contProjects?.map((project: ProjectType, index: Key) => (
-                  <ProjectCard project={project} key={index} index={index} />
+                  <ProjectCard project={project} key={index} />
                 ))
               )}
             </Stack>
