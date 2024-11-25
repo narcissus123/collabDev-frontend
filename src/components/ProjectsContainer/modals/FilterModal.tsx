@@ -58,8 +58,9 @@ type Filters = {
 
 interface FiltertModalProps {
   setQueryString: React.Dispatch<React.SetStateAction<string>>;
+  disabled: boolean;
 }
-function FiltertModal({ setQueryString }: FiltertModalProps) {
+function FiltertModal({ setQueryString, disabled }: FiltertModalProps) {
   const theme = useTheme();
   const { handleSubmit, control } = useForm();
   console.log("hi from filter");
@@ -105,6 +106,7 @@ function FiltertModal({ setQueryString }: FiltertModalProps) {
       <Button
         variant="contained"
         onClick={handleClick}
+        disabled={disabled}
         startIcon={<TuneIcon />}
       >
         Filter
