@@ -1,5 +1,6 @@
 import { Suspense, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
+import { isBefore, addDays, startOfDay } from "date-fns";
 import { useParams } from "react-router-dom";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import IconButton from "@mui/material/IconButton";
@@ -10,10 +11,18 @@ import Stack from "@mui/material/Stack";
 import Tooltip from "@mui/material/Tooltip";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { useTheme } from "@mui/material";
+import { Link, useTheme } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import EditIcon from "@mui/icons-material/Edit";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import EventIcon from "@mui/icons-material/Event";
+import GavelIcon from "@mui/icons-material/Gavel";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import CategoryIcon from "@mui/icons-material/Category";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import GitHubIcon from "@mui/icons-material/GitHub";
+import LockIcon from "@mui/icons-material/Lock";
 
 import { useAuth } from "../../context/AuthContext/AuthContext";
 import { getProjectById } from "../../core/services/api/manage-projects.api";
@@ -87,7 +96,14 @@ export default function ProjectsDetailsContainer() {
             mt: "4rem",
           }}
         >
-          <Box sx={{ position: "relative" }}>
+          <Box
+            sx={{
+              position: "relative",
+              width: "100%",
+              maxHeight: "25rem",
+              overflow: "hidden",
+            }}
+          >
             <Box
               component="img"
               src={`http://localhost:8080/public/userProfileImages/${project.data.coverImage[0]}?w=600&h=400&fit=crop&auto=format`}
@@ -95,11 +111,12 @@ export default function ProjectsDetailsContainer() {
               alt="project cover"
               loading="lazy"
               sx={{
+                display: "block",
                 width: "100%",
                 height: "auto",
                 maxHeight: "25rem",
-                objectFit: "inherit",
-                borderBottom: "1px solid ",
+                objectFit: "cover",
+                borderBottom: "1px solid",
                 borderColor: "text.secondary",
               }}
               onError={(e) => {
@@ -108,6 +125,150 @@ export default function ProjectsDetailsContainer() {
                 e.currentTarget.srcset = `${`${process.env.PUBLIC_URL}/assets/images/ProjectCoverImagePlaceholder.webp`} 2x`;
               }}
             />
+
+            {/* Project Details Overlay */}
+            <Box
+              sx={{
+                position: "absolute",
+                top: 40,
+                right: 30,
+                backgroundColor: "rgba(255, 255, 255, 0.95)",
+                padding: "16px",
+                px: "26px",
+                borderRadius: "8px",
+                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+                maxWidth: "300px",
+                zIndex: 20,
+              }}
+            >
+              <Stack spacing={3}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    fontSize: 14,
+                  }}
+                >
+                  <CalendarTodayIcon sx={{ fontSize: 16 }} />
+                  Start Date:{" "}
+                  {new Date(project.data.startDate).toLocaleDateString()}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    fontSize: 14,
+                  }}
+                >
+                  <EventIcon sx={{ fontSize: 16 }} />
+                  Due Date:{" "}
+                  {project.data.status === "In Progress" &&
+                  isBefore(
+                    new Date(project.data.startDate),
+                    startOfDay(addDays(new Date(), 1))
+                  )
+                    ? "Present"
+                    : new Date(project.data.dueDate).toLocaleDateString()
+                      ? "Present"
+                      : new Date(project.data.dueDate).toLocaleDateString()}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    fontSize: 14,
+                  }}
+                >
+                  <GavelIcon sx={{ fontSize: 16 }} />
+                  License: {project.data.license}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    fontSize: 14,
+                  }}
+                >
+                  <LocationOnIcon sx={{ fontSize: 16 }} />
+                  Location: {project.data.location}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    fontSize: 14,
+                  }}
+                >
+                  <CategoryIcon sx={{ fontSize: 16 }} />
+                  Category: {project.data.category}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    fontSize: 14,
+                  }}
+                >
+                  <AccessTimeIcon sx={{ fontSize: 16 }} />
+                  Status: {project.data.status}
+                </Typography>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <GitHubIcon sx={{ fontSize: 16 }} />
+                  {project.data.links[0] !== "" ? (
+                    <Link
+                      href={project.data.links[0]}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      sx={{
+                        color: "text.primary",
+                        textDecoration: "none",
+                        "&:hover": {
+                          textDecoration: "underline",
+                        },
+                        fontSize: 14,
+                      }}
+                    >
+                      GitHub
+                    </Link>
+                  ) : (
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <Typography
+                        variant="body2"
+                        color="text.primary"
+                        sx={{ fontSize: 14 }}
+                      >
+                        GitHub
+                      </Typography>
+                      <Tooltip
+                        title="Private Repository"
+                        arrow
+                        sx={{ fontSize: 16 }}
+                      >
+                        <LockIcon
+                          sx={{
+                            fontSize: 16,
+                            color: "error.main",
+                          }}
+                        />
+                      </Tooltip>
+                    </Box>
+                  )}
+                </Box>
+              </Stack>
+            </Box>
+
             <IconButton
               sx={{
                 position: "absolute",
@@ -115,6 +276,9 @@ export default function ProjectsDetailsContainer() {
                 bottom: 10,
                 backgroundColor: "#fff",
                 zIndex: 30,
+                "&:hover": {
+                  backgroundColor: "rgba(255, 255, 255, 0.9)",
+                },
               }}
               onClick={() => {
                 setOpenEditImageModal((prev: boolean) => !prev);
@@ -122,6 +286,7 @@ export default function ProjectsDetailsContainer() {
             >
               <AddPhotoAlternateIcon />
             </IconButton>
+
             {openEditImageModal && (
               <EditProjectImageModal
                 openEditImageModal={openEditImageModal}
@@ -133,7 +298,6 @@ export default function ProjectsDetailsContainer() {
               />
             )}
           </Box>
-
           <Box
             sx={{
               m: isLargeScreen ? "2.5rem 1.75rem" : "5rem 6.25rem",
@@ -146,7 +310,11 @@ export default function ProjectsDetailsContainer() {
             {user.isUser && (
               <IconButton
                 aria-label="edit"
-                sx={{ position: "absolute", top: "0", right: "0" }}
+                sx={{
+                  position: "absolute",
+                  top: isLargeScreen ? "0rem" : "-2rem",
+                  right: isLargeScreen ? "0rem" : "-2rem",
+                }}
                 onClick={() => {
                   setOpenEditProjectModal((prev: boolean) => !prev);
                 }}
@@ -182,7 +350,7 @@ export default function ProjectsDetailsContainer() {
                   lineHeight: "normal",
                   letterSpacing: "0.028125rem",
                   flex: 1,
-                  width: isLargeScreen ? "100%" : "50%",
+                  width: isLargeScreen ? "100%" : "30%",
                 }}
               >
                 {project.data?.title}
@@ -195,7 +363,7 @@ export default function ProjectsDetailsContainer() {
                   fontSize: isLargeScreen ? "0.875" : "1rem",
                   fontStretch: "normal",
                   color: "#424d54",
-                  width: isLargeScreen ? "100%" : "50%",
+                  width: isLargeScreen ? "100%" : "70%",
                 }}
               >
                 {project.data?.description}
@@ -204,7 +372,6 @@ export default function ProjectsDetailsContainer() {
             <Stack
               direction="row"
               justifyContent={isSmallScreen ? "flex-start" : "space-between"}
-              spacing={2}
               flexWrap="wrap"
             >
               <List>
@@ -347,11 +514,11 @@ export default function ProjectsDetailsContainer() {
                   fontWeight: 500,
                   fontStretch: "normal",
                   color: "#15191b",
-                  fontSize: isLargeScreen ? "2.188rem" : "2.5rem",
+                  fontSize: isLargeScreen ? "1.8rem" : "2.188rem",
                   lineHeight: "normal",
                   letterSpacing: "0.028125rem",
                   flex: 1,
-                  width: isLargeScreen ? "100%" : "50%",
+                  width: isLargeScreen ? "100%" : "30%",
                 }}
               >
                 The Solution
@@ -364,13 +531,13 @@ export default function ProjectsDetailsContainer() {
                   fontSize: isLargeScreen ? "0.875" : "1rem",
                   fontStretch: "normal",
                   color: "#424d54",
-                  width: isLargeScreen ? "100%" : "50%",
+                  width: isLargeScreen ? "100%" : "70%",
                 }}
               >
                 {project.data?.solution}
               </Typography>
             </Stack>
-            <Stack spacing={2}>
+            <Stack spacing={4}>
               <Typography
                 sx={{
                   fontFamily:
@@ -378,7 +545,7 @@ export default function ProjectsDetailsContainer() {
                   fontWeight: 500,
                   fontStretch: "normal",
                   color: "#15191b",
-                  fontSize: isLargeScreen ? "2.188rem" : "2.5rem",
+                  fontSize: isLargeScreen ? "1.8rem" : "2.188rem",
                   lineHeight: "normal",
                   letterSpacing: "0.028125rem",
                   flex: 1,
@@ -412,7 +579,7 @@ export default function ProjectsDetailsContainer() {
                 )}
               </List>
             </Stack>
-            <Stack>
+            <Stack spacing={4}>
               <Typography
                 sx={{
                   fontFamily:
@@ -420,12 +587,11 @@ export default function ProjectsDetailsContainer() {
                   fontWeight: 500,
                   fontStretch: "normal",
                   color: "#15191b",
-                  fontSize: isLargeScreen ? "2.188rem" : "2.5rem",
+                  fontSize: isLargeScreen ? "1.8rem" : "2.188rem",
                   lineHeight: "normal",
                   letterSpacing: "0.028125rem",
                   flex: 1,
                   width: isLargeScreen ? "100%" : "50%",
-                  mb: "2rem",
                 }}
               >
                 Sitemap
@@ -448,6 +614,7 @@ export default function ProjectsDetailsContainer() {
                       maxWidth: "33%",
                       marginBottom: "8px",
                       justifyContent: "center",
+                      fontSize: isLargeScreen ? "0.05" : "1.1rem",
                     }}
                   >
                     {item}
