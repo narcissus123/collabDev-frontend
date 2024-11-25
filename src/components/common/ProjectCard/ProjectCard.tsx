@@ -21,6 +21,8 @@ import { red } from "@mui/material/colors";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
+import LockIcon from "@mui/icons-material/Lock";
+import { Tooltip } from "@mui/material";
 import { ProjectType } from "../../../configs/types/projectTypes";
 import { useAuth } from "../../../context/AuthContext/AuthContext";
 import { getItem } from "../../../core/services/storage/Storage";
@@ -59,7 +61,7 @@ function ProjectCard({ project }: ProjectCardProps) {
 
   const user = useAuth();
   const developer = user.isUser ? JSON.parse(getItem("user")) : undefined;
-  // console.log("hi from card");
+
   return (
     <Grid item xs={12} md={5.8} lg={3.8} sx={{ Width: "100.33px" }}>
       <Card>
@@ -108,14 +110,41 @@ function ProjectCard({ project }: ProjectCardProps) {
                   horizontal: "right",
                 }}
               >
-                <Link style={{ textDecoration: "none" }} to={project.links[0]}>
-                  <MenuItem
-                    onClick={handleClose}
-                    sx={{ color: "text.secondary" }}
-                  >
-                    View on GitHub
-                  </MenuItem>
-                </Link>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  {project.links[0] !== "" ? (
+                    <Link
+                      style={{ textDecoration: "none" }}
+                      to={project.links[0]}
+                    >
+                      <MenuItem
+                        onClick={handleClose}
+                        sx={{ color: "text.secondary" }}
+                      >
+                        View on GitHub
+                      </MenuItem>
+                    </Link>
+                  ) : (
+                    <MenuItem
+                      onClick={handleClose}
+                      sx={{ color: "text.secondary", cursor: "default" }}
+                    >
+                      <Typography>View on GitHub</Typography>
+                      <Tooltip
+                        title="View on GitHub"
+                        arrow
+                        sx={{ fontSize: 16 }}
+                      >
+                        <LockIcon
+                          sx={{
+                            fontSize: 16,
+                            color: "error.main",
+                            ml: "0.5rem",
+                          }}
+                        />
+                      </Tooltip>
+                    </MenuItem>
+                  )}
+                </Box>
                 <Link
                   style={{ textDecoration: "none" }}
                   to={`/projects/${project._id}`}
