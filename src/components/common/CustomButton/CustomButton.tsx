@@ -53,7 +53,8 @@ const CustomButton = ({
             mx: 1,
             py: { md: 1 },
             px: { md: 2 },
-            fontSize: { md: "1rem" },
+            border: "1px solid #000000",
+            fontSize: { md: "0.8rem" },
             color: "text.secondary",
             ...leftButtonsx,
           }}
@@ -74,7 +75,8 @@ const CustomButton = ({
             mx: 1,
             py: { md: 1 },
             px: { md: 2 },
-            fontSize: { md: "1rem" },
+            border: "1px solid #000000",
+            fontSize: { md: "0.8rem" },
             ...buttonRightsx,
           }}
         >
