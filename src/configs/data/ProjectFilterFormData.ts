@@ -55,6 +55,42 @@ export const techStacks = [
   { id: uuidv4(), label: "Cassandra", value: "Cassandra" },
   { id: uuidv4(), label: "Redis", value: "Redis" },
 
+  // Cloud & Infrastructure
+  { id: uuidv4(), label: "AWS S3", value: "AWS S3" },
+  { id: uuidv4(), label: "AWS EC2", value: "AWS EC2" },
+  { id: uuidv4(), label: "AWS Lambda", value: "AWS Lambda" },
+  { id: uuidv4(), label: "AWS RDS", value: "AWS RDS" },
+  { id: uuidv4(), label: "Azure", value: "Azure" },
+  {
+    id: uuidv4(),
+    label: "Google Cloud Platform",
+    value: "Google Cloud Platform",
+  },
+  { id: uuidv4(), label: "Heroku", value: "Heroku" },
+  { id: uuidv4(), label: "Vercel", value: "Vercel" },
+  { id: uuidv4(), label: "Netlify", value: "Netlify" },
+  { id: uuidv4(), label: "DigitalOcean", value: "DigitalOcean" },
+  { id: uuidv4(), label: "Kubernetes", value: "Kubernetes" },
+  { id: uuidv4(), label: "Docker", value: "Docker" },
+  { id: uuidv4(), label: "Jenkins", value: "Jenkins" },
+  { id: uuidv4(), label: "GitLab CI/CD", value: "GitLab CI/CD" },
+  { id: uuidv4(), label: "GitHub Actions", value: "GitHub Actions" },
+
+  // DevOps & Tools (new category)
+  { id: uuidv4(), label: "Git", value: "Git" },
+  { id: uuidv4(), label: "Terraform", value: "Terraform" },
+  { id: uuidv4(), label: "Ansible", value: "Ansible" },
+  { id: uuidv4(), label: "Prometheus", value: "Prometheus" },
+  { id: uuidv4(), label: "Grafana", value: "Grafana" },
+  { id: uuidv4(), label: "ELK Stack", value: "ELK Stack" },
+
+  // Testing (new category)
+  { id: uuidv4(), label: "Jest", value: "Jest" },
+  { id: uuidv4(), label: "Cypress", value: "Cypress" },
+  { id: uuidv4(), label: "Selenium", value: "Selenium" },
+  { id: uuidv4(), label: "JUnit", value: "JUnit" },
+  { id: uuidv4(), label: "PyTest", value: "PyTest" },
+
   // Mobile App Development
   { id: uuidv4(), label: "React Native", value: "React Native" },
   { id: uuidv4(), label: "Flutter", value: "Flutter" },
@@ -68,6 +104,8 @@ export const techStacks = [
   { id: uuidv4(), label: "JavaFX", value: "JavaFX" },
   { id: uuidv4(), label: "Qt", value: "Qt" },
   { id: uuidv4(), label: "WPF (C#)", value: "WPF (C#)" },
+  { id: uuidv4(), label: "Prisma ORM", value: "Prisma ORM" },
+  { id: uuidv4(), label: "Prisma ORM", value: "Prisma ORM" },
 ];
 
 export const categoryOptions = [
