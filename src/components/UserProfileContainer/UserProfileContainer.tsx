@@ -1,13 +1,12 @@
 import { Suspense, useCallback, useState } from "react";
 import { useParams } from "react-router";
-// import { ErrorBoundary } from "react-error-boundary";
 
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import Skeleton from "@mui/material/Skeleton";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { useTheme } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import EditIcon from "@mui/icons-material/Edit";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
@@ -27,7 +26,6 @@ import {
   ProfileTabsListData,
 } from "../../configs/data/UserProfileInputData";
 
-// import ErrorFallback from "../common/ErrorFallback/ErrorFallback";
 import { QueryErrorBoundary } from "../common/QueryErrorBoundary/QueryErrorBoundary";
 import AccountDetailsForm from "./ProfileTab/AccountDetailsForm/AccountDetailsForm";
 import ProfileTab from "./ProfileTab/ProfileTab";
@@ -78,7 +76,6 @@ export default function UserProfileContainer() {
   }, []);
 
   return (
-    // <ErrorBoundary FallbackComponent={ErrorFallback}>
     <QueryErrorBoundary>
       <Grid
         component="section"
@@ -202,7 +199,7 @@ export default function UserProfileContainer() {
                 <Typography
                   key={index}
                   variant={item.variant}
-                  sx={item.sx}
+                  sx={item.sx as any}
                   onClick={item.onClick}
                 >
                   {item.child}
@@ -380,6 +377,5 @@ export default function UserProfileContainer() {
         </Grid>
       </Grid>
     </QueryErrorBoundary>
-    // {/* </ErrorBoundary> */}
   );
 }
