@@ -173,8 +173,8 @@ export default function EditProjectModal({
               multiline={proj.multiline}
               variant={proj.variant as "standard" | "outlined" | "filled"}
               errors={errors}
-              {...register(proj.register.name as "title" | "description", {
-                ...proj.register.schema,
+              {...register(proj?.register?.name as "title" | "description", {
+                ...proj?.register?.schema,
               })}
             />
           ))}
