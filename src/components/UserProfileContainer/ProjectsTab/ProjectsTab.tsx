@@ -12,7 +12,7 @@ import Stack from "@mui/material/Stack";
 
 import { ProjectType } from "../../../configs/types/projectTypes";
 import { FormProvider } from "../../../context/FormContext/FormContext";
-import { getAllProjects } from "../../../core/services/api/manage-projects.api";
+import { getAllProjectss } from "../../../core/services/api/manage-projects.api";
 import categorizeProjects from "../../../core/utils/CategorizeProjects/CategorizeProjects";
 
 import CustomModal from "../../common/CustomModal/CustomModal";
@@ -50,15 +50,10 @@ export default function ProjectsTab() {
     setActiveStep("Project Overview");
   };
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     setApiCallsCompleted(true);
-  //   }, 400);
-  // }, []);
-
   const { data, error, isFetching } = useSuspenseQuery({
     queryKey: ["getAllProjects", queryString],
-    queryFn: () => getAllProjects(queryString),
+    queryFn: () => getAllProjectss(queryString),
+    select: (response) => response?.data ?? [],
   });
 
   useEffect(() => {
@@ -114,7 +109,7 @@ export default function ProjectsTab() {
                 <Grid item xs={12} md={5.8} lg={3.8} sx={{ width: "100%" }}>
                   <Card
                     sx={{
-                      height: 274.29,
+                      height: "100%",
                       display: "flex",
                       flexDirection: "column",
                       gap: 1,
