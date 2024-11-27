@@ -67,10 +67,10 @@ const InboxTab = () => {
   const deleteMutation = useMutation({
     mutationFn: (requestId: string) => deleteRequestById(requestId),
     onSuccess: () => {
-      toast.success("Request removed request.");
+      toast.success("Request removed successfully.");
     },
     onError: (err) => {
-      console.error("Somwthing went wronggggggggg.", err.message);
+      console.error("Something went wrong.", err.message);
       throw err;
     },
   });

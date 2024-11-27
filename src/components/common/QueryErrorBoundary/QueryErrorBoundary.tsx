@@ -13,7 +13,6 @@ export const QueryErrorBoundary = ({
   sx,
   message = "There was an error!",
 }: props) => {
-  console.log("hiiiiiiiiiii");
   return (
     <QueryErrorResetBoundary>
       {({ reset }) => (

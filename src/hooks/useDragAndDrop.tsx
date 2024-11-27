@@ -41,7 +41,7 @@ export const useDragAndDrop = (
         ? setValue(fieldName, images)
         : setValue(fieldName, images);
     },
-    [images]
+    [multipleImages, setValue, fieldName, images]
   );
 
   return [onDrop, images];
