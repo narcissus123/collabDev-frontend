@@ -18,6 +18,7 @@ import Stack from "@mui/material/Stack";
 import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
 
+import { toast } from "react-toastify";
 import { getUserById } from "../../core/services/api/manage-user.api";
 import { useAuth } from "../../context/AuthContext/AuthContext";
 
@@ -27,6 +28,7 @@ import {
 } from "../../configs/data/UserProfileInputData";
 
 import { QueryErrorBoundary } from "../common/QueryErrorBoundary/QueryErrorBoundary";
+import { getUploadedFile } from "../../core/services/api/manage-fileupload.api";
 import AccountDetailsForm from "./ProfileTab/AccountDetailsForm/AccountDetailsForm";
 import ProfileTab from "./ProfileTab/ProfileTab";
 import ChatTab from "./ChatTab/ChatTab";
@@ -74,6 +76,14 @@ export default function UserProfileContainer() {
   const handleBadgesModal = useCallback(() => {
     setOpenBadgesModalModal((prev) => !prev);
   }, []);
+
+  const handleResumeUpload = async () => {
+    const res = await getUploadedFile(developer._id);
+    if (!res) {
+      toast.success("No resume available!");
+    }
+    window.open(res.resumeUrl);
+  };
 
   return (
     <QueryErrorBoundary>
@@ -221,6 +231,8 @@ export default function UserProfileContainer() {
                 size={isMediumScreen ? "small" : "medium"}
                 variant="outlined"
                 color="secondary"
+                disabled={!developer?.resume?.fileKey}
+                onClick={handleResumeUpload}
               >
                 Resume
               </Button>
