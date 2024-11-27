@@ -2,6 +2,10 @@ import { instance } from "../interceptor/Interceptor";
 
 const updateUserInfo = async (userId: string, obj: any) => {
   try {
+    console.log("FormData entries:");
+    for (const pair of obj.entries()) {
+      console.log(pair[0], pair[1]);
+    }
     const response = await instance.put(`api/v1/user/${userId}`, obj);
     if (response.status === 200) {
       return response.data;
@@ -14,20 +18,6 @@ const updateUserInfo = async (userId: string, obj: any) => {
     );
   }
 };
-
-// const getUserById = async (studentId: string) => {
-//   try {
-//     const response = await instance.get(`api/v1/user/${studentId}`);
-
-//     if (response.status === 200) {
-//       return response.data;
-//     }
-//   } catch (error) {
-//     return error;
-//   }
-// };
-
-//const delay = (ms: any) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const getUserById = async (studentId: string) => {
   //await delay(2000);
