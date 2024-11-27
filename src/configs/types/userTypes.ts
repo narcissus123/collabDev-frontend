@@ -3,6 +3,11 @@ interface SocialMedia {
   url: string;
 }
 
+interface Resume {
+  fileKey: string;
+  lastUpdated: Date;
+}
+
 export interface User {
   about: string;
   availability: {
@@ -22,6 +27,7 @@ export interface User {
   role: "user" | "admin";
   skills: string[];
   socialMedia: SocialMedia[];
+  resume: Resume;
   updatedAt: string;
   __v: number;
   _id: string;
