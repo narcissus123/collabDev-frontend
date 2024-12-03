@@ -1,23 +1,27 @@
 import { createContext, useState, useContext, ReactNode } from "react";
-
-import { getItem } from "../../core/services/storage/Storage";
+import {
+  getItem,
+  setItem,
+  removeItem,
+} from "../../core/services/storage/Storage";
+import { User } from "../../configs/types/userTypes";
 
 interface AuthContextProps {
-  isUser: boolean;
-  loginAsUser: (isuser: boolean) => void;
+  user: User | null;
+  isAuthenticated: boolean;
+  setCurrentUser: (userData: User) => void;
   logout: () => void;
-  isAdmin: boolean;
-  loginAsAdmin: (isadmin: boolean) => void;
-  logoutAdmin: () => void;
+  isProfileOwner: (profileId: string) => boolean;
+  isProjectOwner: (ownerId: string) => boolean;
 }
 
 const AuthContext = createContext<AuthContextProps>({
-  isUser: false,
-  loginAsUser: () => {},
+  user: null,
+  isAuthenticated: false,
+  setCurrentUser: () => {},
   logout: () => {},
-  isAdmin: false,
-  loginAsAdmin: () => {},
-  logoutAdmin: () => {},
+  isProfileOwner: () => false,
+  isProjectOwner: () => false,
 });
 
 interface AuthProviderProps {
@@ -25,38 +29,50 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [isUser, setIsUser] = useState(Boolean(getItem("user")) === true);
-  const [isAdmin, setIsAdmin] = useState(Boolean(getItem("admin")) === true);
+  // Initialize user state from localStorage
+  const [user, setUser] = useState<User | null>(() => {
+    const storedUser = getItem("user");
+    if (storedUser) {
+      try {
+        return JSON.parse(storedUser);
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  });
 
-  const loginAsUser = (isuser: boolean) => {
-    setIsUser(isuser);
-  };
-  const loginAsAdmin = (isadmin: boolean) => {
-    setIsAdmin(isadmin);
+  const setCurrentUser = (userData: User) => {
+    setUser(userData);
+    setItem("user", JSON.stringify(userData));
   };
 
   const logout = () => {
-    setIsUser(false);
+    setUser(null);
+    removeItem("user");
+    removeItem("token");
   };
 
-  const logoutAdmin = () => {
-    setIsAdmin(false);
+  // Check if current user owns the profile
+  const isProfileOwner = (profileId: string): boolean => {
+    return user?._id === profileId;
   };
 
-  return (
-    <AuthContext.Provider
-      value={{
-        isUser,
-        loginAsUser,
-        logout,
-        isAdmin,
-        loginAsAdmin,
-        logoutAdmin,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+  // Check if current user is project owner
+  const isProjectOwner = (ownerId: string): boolean => {
+    return user?._id === ownerId;
+  };
+
+  const value = {
+    user,
+    isAuthenticated: !!user,
+    setCurrentUser,
+    logout,
+    isProfileOwner,
+    isProjectOwner,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {
