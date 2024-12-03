@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router";
 import { instance } from "../interceptor/Interceptor";
-import { setItem, clearStorage } from "../storage/Storage";
+import { clearStorage, setItem } from "../storage/Storage";
 
 const SignInDeveloper = async (obj: any) => {
   try {
@@ -8,9 +8,7 @@ const SignInDeveloper = async (obj: any) => {
 
     if (response.status === 200) {
       const token = response.data.token;
-      const user = JSON.stringify(response.data.data.userWithoutPassword);
       setItem("token", token);
-      setItem("user", user);
     }
     return response.data;
   } catch (error) {
@@ -21,12 +19,9 @@ const SignInDeveloper = async (obj: any) => {
 const SignUpDeveloper = async (obj: any) => {
   try {
     const response = await instance.post("/api/v1/auth/signup", obj);
-
     if (response.status === 201) {
       const token = response.data.token;
-      const user = JSON.stringify(response.data.data.user);
       setItem("token", token);
-      setItem("user", user);
     }
     return response.data;
   } catch (error) {
