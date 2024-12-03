@@ -1,23 +1,29 @@
-import ClearIcon from "@mui/icons-material/Clear";
 import {
   IconButton,
   Stack,
   TextField,
   Typography,
   useTheme,
+  Select,
+  MenuItem,
+  FormControl,
 } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { MuiChipsInput } from "mui-chips-input";
-import { useFieldArray, useForm } from "react-hook-form";
-import { Controller } from "react-hook-form";
+import { useFieldArray, useForm, Controller } from "react-hook-form";
 import { ToastContainer, toast } from "react-toastify";
+import { v4 as uuidv4 } from "uuid";
 
-import { ProfileDetailsInputData } from "../../../../configs/data/UserProfileInputData";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  ProfileDetailsInputData,
+  socialMediaPlatforms,
+} from "../../../../configs/data/UserProfileInputData";
 import { User } from "../../../../configs/types/userTypes";
 import { updateUserInfo } from "../../../../core/services/api/manage-user.api";
-import { createFormData } from "../../../../core/utils/CreateFormData/createFormData";
 import CustomButton from "../../../common/CustomButton/CustomButton";
 import CustomModal from "../../../common/CustomModal/CustomModal";
 import Input from "../../../common/Input/Input";
@@ -44,17 +50,24 @@ export default function ProfileDetailsForm({
   handleProfileInfo,
 }: ProfileDetailsFormProps) {
   const theme = useTheme();
-
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const queryClient = useQueryClient();
+
   const {
+    control,
     register,
     handleSubmit,
     formState: { errors },
-    control,
   } = useForm<FormValues>({
     defaultValues: {
       about: profileTabInfo.about,
-      socialMedia: profileTabInfo.socialMedia,
+      socialMedia: profileTabInfo.socialMedia.map((item) => ({
+        platform:
+          socialMediaPlatforms.find(
+            (platform) => platform.toLowerCase() === item.platform.toLowerCase()
+          ) || "Other",
+        url: item.url,
+      })),
       skills: profileTabInfo.skills,
       languages: profileTabInfo.languages,
     },
@@ -69,6 +82,24 @@ export default function ProfileDetailsForm({
     control,
   });
 
+  const mutation = useMutation({
+    mutationFn: (updatedUser: { id: string; data: any }) =>
+      updateUserInfo(updatedUser.id, updatedUser.data),
+
+    onSuccess: (response: any) => {
+      if (response) {
+        toast.success("Your account information updated successfully!");
+        queryClient.invalidateQueries({
+          queryKey: ["getUserById", profileTabInfo?._id],
+        });
+        queryClient.refetchQueries({
+          queryKey: ["getUserById", profileTabInfo?._id],
+        });
+        handleProfileInfo(response);
+      }
+    },
+  });
+
   const onSubmit = async (data: any) => {
     try {
       const updatedProfileTabInfo = {
@@ -78,38 +109,20 @@ export default function ProfileDetailsForm({
         languages: data.languages,
         about: data.about,
       };
+      const userId = profileTabInfo._id;
 
-      const formData = createFormData(updatedProfileTabInfo, undefined, {
-        file: [updatedProfileTabInfo?.avatar],
-        name: "avatar",
-      });
-
-      const response = (await updateUserInfo(
-        updatedProfileTabInfo._id,
-        formData
-      )) as any;
-
-      if (response) {
-        toast.success("Your profile info updated successfully!");
-        handleProfileInfo(response);
-      } else {
-        if (response.status === 400 || response.status === 403) {
-          toast.error("You are not signed in! Please sign in.");
-        }
-      }
+      mutation.mutate({ id: userId, data: updatedProfileTabInfo });
     } catch (error) {
       toast.error("Something went wrong. Please try later!");
       console.error(error);
     }
   };
-
   return (
     <CustomModal
       open={openProfileDetailsModal}
-      handleClose={() => handleClose()}
+      handleClose={handleClose}
       framesx={{
         width: 600,
-        border: "2px solid #000",
         maxHeight: "90vh",
         overflowY: "auto",
       }}
@@ -127,119 +140,158 @@ export default function ProfileDetailsForm({
         sx={{
           display: "flex",
           flexDirection: "column",
-          gap: 3,
+          gap: 7,
+          mt: "-3rem",
           alignItems: "space-between",
         }}
       >
         <ToastContainer />
 
         {ProfileDetailsInputData.map((data, index) => (
-          <Input
-            key={index}
-            id={data.id}
-            ty={data.type}
-            placeholder={data.placeholder}
-            labelText={data.labelText}
-            sx={data.sx}
-            margin={data.margin as "normal" | "dense"}
-            inputSize={isMediumScreen ? "small" : "medium"}
-            required={data.required}
-            fullWidth={data.fullWidth}
-            multiline={data.multiline}
-            variant={data.variant as "standard" | "outlined" | "filled"}
-            errors={errors}
-            {...(register &&
-              register(data.register.name as "about", {
-                ...data.register.schema,
-              }))}
-          />
+          <Box key={uuidv4()}>
+            <Typography
+              sx={{
+                width: "100%",
+                color:
+                  theme.palette.mode === "dark"
+                    ? "text.secondary"
+                    : "border.secondary",
+                fontSize: "0.9rem",
+                position: "relative",
+                "&::after": {
+                  content: '"*"',
+                  marginLeft: "4px",
+                  position: "absolute",
+                  top: 0,
+                },
+              }}
+            >
+              {data.labelText}
+            </Typography>
+            <Input
+              key={index}
+              id={data.id}
+              ty={data.type}
+              placeholder={data.placeholder}
+              sx={data.sx}
+              margin={data.margin as "normal" | "dense"}
+              inputSize={isMediumScreen ? "small" : "medium"}
+              required={data.required}
+              fullWidth={data.fullWidth}
+              multiline={data.multiline}
+              variant={data.variant as "standard" | "outlined" | "filled"}
+              errors={errors}
+              {...(register &&
+                register(data.register.name as "about", {
+                  ...data.register.schema,
+                }))}
+            />
+          </Box>
         ))}
 
         <Box>
           <Typography
             sx={{
               width: "100%",
-              py: 0.5,
-              color: "#8C8C95",
-              fontWeight: "400",
-              fontSize: "0.8571428571428571rem",
-              lineHeight: "1.4375em",
+              my: 1,
+              color:
+                theme.palette.mode === "dark"
+                  ? "text.secondary"
+                  : "border.secondary",
+              fontSize: "0.9rem",
+              position: "relative",
+              "&::after": {
+                content: '"*"',
+                marginLeft: "4px",
+                position: "absolute",
+                top: 0,
+              },
             }}
-            variant="h5"
           >
             Social Media Links
           </Typography>
-          <Stack
-            display="flex"
-            flexDirection="row"
-            alignItems="flex-start"
-            justifyContent="flex-start"
-            flexWrap="wrap"
-            gap="1rem"
-            sx={{ mt: 2, py: 1 }}
-          >
+          <Stack spacing={2}>
             {socialMediaFields.map((item, index) => {
               return (
-                <Box
+                <Stack
                   key={item.id}
-                  sx={{
-                    position: "relative",
-                    minHeight: "5rem",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "flex-start",
-                  }}
+                  direction="row"
+                  spacing={2}
+                  alignItems="center"
                 >
-                  <Stack direction="row" alignItems="center" spacing={2}>
-                    <TextField
-                      id={`socialMedia-platform-${index}`}
-                      error={!!(errors as any)[`socialMedia.${index}.platform`]}
-                      {...register(`socialMedia.${index}.platform`, {
-                        required: "This is required.",
-                      })}
-                      defaultValue={item.platform}
-                      placeholder="Platform"
-                      size="small"
-                      sx={{
-                        width: "10rem",
-                        ...InputStyles(theme),
-                      }}
-                    />
-                    <TextField
-                      id={`socialMedia-url-${index}`}
-                      error={!!(errors as any)[`socialMedia.${index}.url`]}
-                      {...register(`socialMedia.${index}.url`, {
-                        required: "This is required.",
-                      })}
-                      defaultValue={item.url}
-                      placeholder="URL"
-                      size="small"
-                      sx={{ width: "20rem", ...InputStyles(theme) }}
-                    />
-                    <IconButton
-                      aria-label="delete"
-                      onClick={() => socialMediaRemove(index)}
-                      size="small"
-                    >
-                      <ClearIcon sx={{ fontSize: 16 }} />
-                    </IconButton>
-                  </Stack>
-                </Box>
+                  <Controller
+                    name={`socialMedia.${index}.platform`}
+                    control={control}
+                    rules={{ required: "Platform is required" }}
+                    render={({ field }) => {
+                      return (
+                        <FormControl sx={{ minWidth: 120 }} size="small">
+                          <Select
+                            {...field}
+                            labelId={`platform-label-${index}`}
+                            error={!!errors.socialMedia?.[index]?.platform}
+                            sx={{ color: "text.secondary" }}
+                          >
+                            {socialMediaPlatforms.map((platform) => (
+                              <MenuItem
+                                key={platform}
+                                value={platform}
+                                sx={{ color: "text.secondary" }}
+                              >
+                                {platform}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      );
+                    }}
+                  />
+                  <TextField
+                    {...register(`socialMedia.${index}.url`, {
+                      required: "URL is required",
+                    })}
+                    placeholder="URL"
+                    size="small"
+                    error={!!errors.socialMedia?.[index]?.url}
+                    sx={{ flexGrow: 1, ...InputStyles(theme) }}
+                  />
+                  <IconButton
+                    aria-label="delete"
+                    onClick={() => socialMediaRemove(index)}
+                    size="small"
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Stack>
               );
             })}
             <Button
               variant="outlined"
               onClick={() => socialMediaAppend({ platform: "", url: "" })}
-              sx={{ width: "9rem" }}
             >
-              Add New Link
+              Add New Social Media
             </Button>
           </Stack>
         </Box>
+
         <Box>
           <Typography
-            sx={{ width: "100%", my: 1, color: "text.secondary" }}
-            variant="h5"
+            sx={{
+              width: "100%",
+              my: 1,
+              color:
+                theme.palette.mode === "dark"
+                  ? "text.secondary"
+                  : "border.secondary",
+              fontSize: "0.9rem",
+              position: "relative",
+              "&::after": {
+                content: '"*"',
+                marginLeft: "4px",
+                position: "absolute",
+                top: 0,
+              },
+            }}
           >
             Skills
           </Typography>
@@ -260,10 +312,25 @@ export default function ProfileDetailsForm({
             )}
           />
         </Box>
-        <Box>
+
+        <Box sx={{ width: "100%" }}>
           <Typography
-            sx={{ width: "100%", my: 1, color: "text.secondary" }}
-            variant="h5"
+            sx={{
+              width: "100%",
+              my: 1,
+              color:
+                theme.palette.mode === "dark"
+                  ? "text.secondary"
+                  : "border.secondary",
+              fontSize: "0.9rem",
+              position: "relative",
+              "&::after": {
+                content: '"*"',
+                marginLeft: "4px",
+                position: "absolute",
+                top: 0,
+              },
+            }}
           >
             Languages
           </Typography>
@@ -278,12 +345,14 @@ export default function ProfileDetailsForm({
                 sx={{
                   maxHeight: "8rem",
                   overflowY: "auto",
+                  width: "100%",
                   ...InputStyles(theme),
                 }}
               />
             )}
           />
         </Box>
+
         <CustomButton
           leftButtonsx={{
             borderTop: "1px solid",
