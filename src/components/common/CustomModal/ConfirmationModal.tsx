@@ -7,6 +7,8 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
+import { Link } from "react-router-dom";
+import LaunchIcon from "@mui/icons-material/Launch";
 
 interface PtClassName {
   deleteColor?: React.CSSProperties;
@@ -21,6 +23,8 @@ export default function ResponsiveDialog({
   handleCancel,
   rightButtonColor,
   ptClassName,
+  link,
+  hideButton = false,
 }: {
   openDeleteModal: boolean;
   setOpenDeleteModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -36,19 +40,14 @@ export default function ResponsiveDialog({
     | "info"
     | "success"
     | "warning";
+  link?: string;
+  hideButton?: boolean;
 }) {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
 
-  const handleClickOpen = () => {
-    setOpenDeleteModal(true);
-  };
-
   return (
     <React.Fragment>
-      <Button variant="outlined" onClick={handleClickOpen}>
-        Open responsive dialog
-      </Button>
       <Dialog
         fullScreen={fullScreen}
         open={openDeleteModal}
@@ -59,24 +58,42 @@ export default function ResponsiveDialog({
         <DialogContent>
           <DialogContentText>{message}</DialogContentText>
         </DialogContent>
+
         <DialogActions>
-          <Button
-            onClick={() =>
-              handleCancel ? handleCancel() : setOpenDeleteModal(false)
-            }
-            variant="outlined"
-            color="primary"
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleDelete}
-            variant="contained"
-            color={rightButtonColor}
-            sx={{ ...ptClassName?.deleteColor }}
-          >
-            Delete
-          </Button>
+          {!hideButton && (
+            <>
+              <Button
+                onClick={() =>
+                  handleCancel ? handleCancel() : setOpenDeleteModal(false)
+                }
+                variant="outlined"
+                color="primary"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleDelete}
+                variant="contained"
+                color={rightButtonColor}
+                sx={{ ...ptClassName?.deleteColor }}
+              >
+                Delete
+              </Button>
+            </>
+          )}
+          {link && (
+            <Link
+              to={link}
+              style={{
+                textDecoration: "none",
+                marginLeft: "-0.5rem",
+              }}
+            >
+              <Button endIcon={<LaunchIcon />} disabled>
+                Go to Settings
+              </Button>
+            </Link>
+          )}
         </DialogActions>
       </Dialog>
     </React.Fragment>
