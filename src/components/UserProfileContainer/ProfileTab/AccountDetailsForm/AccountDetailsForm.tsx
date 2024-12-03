@@ -138,7 +138,6 @@ export default function AccountDetailsForm({
     }
   }, [developer?.resume]);
 
-  // here
   const deleteMutation = useMutation({
     mutationFn: (userId: string) => {
       if (!developer?.resume) {
