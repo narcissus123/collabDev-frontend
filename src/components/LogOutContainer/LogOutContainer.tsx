@@ -9,12 +9,12 @@ import { getItem } from "../../core/services/storage/Storage";
 // The local storage will be cleared and the public routes will be rendered instead of private routes.
 export default function LogoutContainer() {
   const history = useNavigate();
-  const user = useAuth();
+  const { logout } = useAuth();
 
   useEffect(() => {
     if (Boolean(getItem("user")) === true) {
+      logout();
       SignOutDeveloper();
-      user.logout();
       history("/");
     }
   });

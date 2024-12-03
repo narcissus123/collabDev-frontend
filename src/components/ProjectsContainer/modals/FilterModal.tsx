@@ -63,7 +63,7 @@ interface FiltertModalProps {
 function FiltertModal({ setQueryString, disabled }: FiltertModalProps) {
   const theme = useTheme();
   const { handleSubmit, control } = useForm();
-  
+
   const formatFilters = (filters: Filters) => {
     const queryString = Object.entries(filters)
       .filter(([, value]) => value !== undefined && value !== null) // Remove undefined and null values
