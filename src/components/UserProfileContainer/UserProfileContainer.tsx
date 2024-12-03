@@ -19,6 +19,7 @@ import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
 
 import { toast } from "react-toastify";
+import { Tooltip, Zoom } from "@mui/material";
 import { getUserById } from "../../core/services/api/manage-user.api";
 import { useAuth } from "../../context/AuthContext/AuthContext";
 
@@ -37,7 +38,7 @@ import InvitationForm from "./InvitationForm/InvitationForm";
 import ProjectsTab from "./ProjectsTab/ProjectsTab";
 
 export default function UserProfileContainer() {
-  const user = useAuth();
+  const { isProfileOwner } = useAuth();
   const theme = useTheme();
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
   const [value, setValue] = useState("1");
@@ -70,15 +71,17 @@ export default function UserProfileContainer() {
   const handleAcountModal = useCallback(() => {
     setOpenAccountDetailstModal((prev) => !prev);
   }, []);
+
   const handleProfileModal = useCallback(() => {
     setOpenProfileDetailsModal((prev) => !prev);
   }, []);
+
   const handleBadgesModal = useCallback(() => {
     setOpenBadgesModalModal((prev) => !prev);
   }, []);
 
   const handleResumeUpload = async () => {
-    const res = await getUploadedFile(developer._id);
+    const res = await getUploadedFile(developer._id, "resume");
     if (!res) {
       toast.success("No resume available!");
     }
@@ -132,14 +135,26 @@ export default function UserProfileContainer() {
             flexGrow: 1,
           }}
         >
-          {user.isUser && (
-            <IconButton
-              aria-label="edit"
-              sx={{ position: "absolute", top: "0", right: "0" }}
-              onClick={handleAcountModal}
-            >
-              <EditIcon />
-            </IconButton>
+          {userId && isProfileOwner(userId) && (
+            <Zoom in>
+              <Tooltip title="Edit Account" placement="left">
+                <IconButton
+                  aria-label="edit"
+                  sx={{
+                    position: "absolute",
+                    top: 4,
+                    right: 4,
+                    transition: "transform 0.2s ease-in-out",
+                    "&:hover": {
+                      transform: "scale(1.1)",
+                    },
+                  }}
+                  onClick={handleAcountModal}
+                >
+                  <EditIcon />
+                </IconButton>
+              </Tooltip>
+            </Zoom>
           )}
           {openAccountDetailstModal && (
             <AccountDetailsForm
@@ -151,13 +166,13 @@ export default function UserProfileContainer() {
           )}
           <div
             style={{
-              width: "5.5rem",
-              height: "5.5rem",
+              width: "7rem",
+              height: "7rem",
               borderRadius: "50%",
               display: "inline-block",
               overflow: "hidden",
               position: "relative",
-              top: "-2.6rem",
+              top: "-4.6rem",
               left: "50%",
               transform: "translatex(-50%)",
               outline: "none",
@@ -169,11 +184,7 @@ export default function UserProfileContainer() {
             ) : (
               <Avatar
                 alt="User profile image"
-                src={
-                  developer?.avatar !== ""
-                    ? `http://localhost:8080/public/userProfileImages/${developer?.avatar}`
-                    : developer?.avatar
-                }
+                src={`https://collabdev-resume-storage-2024.s3.us-east-2.amazonaws.com/${developer?.avatar}`}
                 sx={{
                   cursor: "pointer",
                   width: "100%",
@@ -191,7 +202,7 @@ export default function UserProfileContainer() {
             spacing={2}
             sx={{
               alignItems: "center",
-              mt: "-2rem",
+              mt: "-4rem",
               textAlign: "center",
             }}
           >
@@ -216,22 +227,25 @@ export default function UserProfileContainer() {
                 </Typography>
               ))
             )}
+
             <Stack direction="row" spacing={1}>
-              <Button
-                size={isMediumScreen ? "small" : "medium"}
-                variant="contained"
-                sx={{ bgcolor: "secondary.main" }}
-                onClick={() => {
-                  setOpenInviteModal((prev) => !prev);
-                }}
-              >
-                Invite
-              </Button>
+              {userId && !isProfileOwner(userId) && (
+                <Button
+                  size={isMediumScreen ? "small" : "medium"}
+                  variant="contained"
+                  sx={{ bgcolor: "secondary.main" }}
+                  onClick={() => {
+                    setOpenInviteModal((prev) => !prev);
+                  }}
+                >
+                  Invite
+                </Button>
+              )}
               <Button
                 size={isMediumScreen ? "small" : "medium"}
                 variant="outlined"
                 color="secondary"
-                disabled={!developer?.resume?.fileKey}
+                disabled={!developer?.resume}
                 onClick={handleResumeUpload}
               >
                 Resume
@@ -276,19 +290,22 @@ export default function UserProfileContainer() {
                 centered
                 aria-label="User profile tabs"
               >
-                {ProfileTabsListData.map((tab, index) => (
-                  <Tab
-                    key={index}
-                    label={tab.label}
-                    value={tab.value}
-                    sx={{
-                      fontSize: { xs: "0.7rem", md: "0.85rem" },
-                      fontWeight: "700",
-                      minWidth: 0,
-                      width: "auto",
-                    }}
-                  />
-                ))}
+                {userId &&
+                  ProfileTabsListData(isProfileOwner(userId)).map(
+                    (tab, index) => (
+                      <Tab
+                        key={index}
+                        label={tab.label}
+                        value={tab.value}
+                        sx={{
+                          fontSize: { xs: "0.7rem", md: "0.85rem" },
+                          fontWeight: "700",
+                          minWidth: 0,
+                          width: "auto",
+                        }}
+                      />
+                    )
+                  )}
               </TabList>
             </Box>
             <Box
@@ -363,7 +380,8 @@ export default function UserProfileContainer() {
                       height="100%"
                     />
                   ) : (
-                    user.isUser && <InboxTab />
+                    userId &&
+                    isProfileOwner(userId) && <InboxTab setValue={setValue} />
                   )}
                 </QueryErrorBoundary>
               </TabPanel>
@@ -379,7 +397,7 @@ export default function UserProfileContainer() {
                         height="100%"
                       />
                     ) : (
-                      user.isUser && <ChatTab />
+                      userId && isProfileOwner(userId) && <ChatTab />
                     )}
                   </Suspense>
                 </QueryErrorBoundary>
