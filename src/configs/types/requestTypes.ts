@@ -29,4 +29,5 @@ export interface Request {
   status: "pending" | "accepted" | "rejected";
   createdAt: string;
   updatedAt: string;
+  deletedFor: string[];
 }
