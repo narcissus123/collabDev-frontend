@@ -15,16 +15,19 @@ import { Controller, useForm } from "react-hook-form";
 import { useParams } from "react-router";
 import { ToastContainer, toast } from "react-toastify";
 
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { RequestInputData } from "../../../configs/data/RequestFormData";
 import { ProjectType } from "../../../configs/types/projectTypes";
 import { RequestFormType } from "../../../configs/types/requestTypes";
 import { getProjectByownerId } from "../../../core/services/api/manage-projects.api";
 import { createRequest } from "../../../core/services/api/manage-requests.api";
-import { getItem } from "../../../core/services/storage/Storage";
 import useFetch from "../../../hooks/useFetch";
 import CustomButton from "../../common/CustomButton/CustomButton";
 import CustomModal from "../../common/CustomModal/CustomModal";
 import Input from "../../common/Input/Input";
+import { getUserById } from "../../../core/services/api/manage-user.api";
+import { User } from "../../../configs/types/userTypes";
+import { useAuth } from "../../../context/AuthContext/AuthContext";
 
 interface RequestFormProps {
   openInviteModal: boolean;
@@ -34,7 +37,7 @@ interface RequestFormProps {
 const InvitationForm = ({ openInviteModal, handleClose }: RequestFormProps) => {
   const theme = useTheme();
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
-  const user = JSON.parse(getItem("user"));
+  const { user } = useAuth();
   const { userId } = useParams();
 
   const {
@@ -49,8 +52,16 @@ const InvitationForm = ({ openInviteModal, handleClose }: RequestFormProps) => {
 
   const { isLoading, data: projects } = useFetch<ProjectType[]>(
     getProjectByownerId,
-    userId
+    user?._id
   );
+
+  const { data: userData } = useSuspenseQuery<User>({
+    queryKey: ["getUserById", userId],
+    queryFn: async () => {
+      const response = await getUserById(userId!);
+      return response.data;
+    },
+  });
 
   const onSubmit = async (data: any) => {
     try {
@@ -65,18 +76,18 @@ const InvitationForm = ({ openInviteModal, handleClose }: RequestFormProps) => {
             avatar: projects[0].owner.avatar,
           },
           contributor: {
-            _id: user._id,
-            name: user.name,
-            avatar: user.avatar,
+            _id: userData?._id,
+            name: userData?.name,
+            avatar: userData?.avatar,
           },
         };
 
         const response = (await createRequest(request)) as any;
-
-        if (response.status === 201) {
+        if (response?.status === 201) {
           toast.success("Request sent successfully!");
+          reset();
         } else {
-          if (response.status === 400 || response.status === 403) {
+          if (response?.status === 400 || response?.status === 403) {
             toast.error("You are not signed in! Please sign in.");
           }
         }
@@ -126,7 +137,7 @@ const InvitationForm = ({ openInviteModal, handleClose }: RequestFormProps) => {
           <Avatar
             sx={{ bgcolor: red[500], width: 39, height: 39 }}
             aria-label="project owner"
-            src={`http://localhost:8080/public/userProfileImages/${user.avatar}`}
+            src={`http://localhost:8080/public/userProfileImages/${userData?.avatar}`}
           />
           <Typography
             sx={{
@@ -135,7 +146,7 @@ const InvitationForm = ({ openInviteModal, handleClose }: RequestFormProps) => {
               ml: 1,
             }}
           >
-            {user.name}
+            {userData?.name}
           </Typography>
         </Stack>
       }
