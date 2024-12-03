@@ -24,7 +24,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { userProfileMenuItems } from "../../../configs/data/HeaderData";
 import { useAuth } from "../../../context/AuthContext/AuthContext";
 import { useMode } from "../../../context/MUIThemeContext/MUIThemeContext";
-import { getItem } from "../../../core/services/storage/Storage";
 
 const navLinkItems = [
   { title: "Projects", url: "/projects" },
@@ -32,16 +31,7 @@ const navLinkItems = [
 ];
 
 export default function Header() {
-  const user = useAuth();
-  let userInfo: any;
-
-  try {
-    const storedUser = getItem("user");
-    userInfo = storedUser ? JSON.parse(storedUser) : null;
-  } catch (error) {
-    console.error("Error parsing user info from local storage", error);
-    userInfo = null;
-  }
+  const { isAuthenticated, user: userInfo } = useAuth();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -81,7 +71,7 @@ export default function Header() {
       sx={{
         position: "fixed",
         background: theme.palette.mode === "dark" ? "" : "white",
-        opacity: "50%",
+        opacity: "95%",
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
@@ -191,7 +181,7 @@ export default function Header() {
           <Brightness4Icon color="primary" sx={{ fontSize: 30 }} />
         )}
       </IconButton>
-      {user.isUser ? (
+      {isAuthenticated ? (
         <>
           <IconButton
             onClick={handleClick}
@@ -207,9 +197,9 @@ export default function Header() {
                 height: isMediumScreen ? "2.1rem" : "2.3rem",
                 color: "white",
               }}
-              src={!!userInfo.avatar && userInfo.avatar}
+              src={`https://collabdev-resume-storage-2024.s3.us-east-2.amazonaws.com/${userInfo?.avatar}`}
             >
-              {userInfo.name[0]}
+              {userInfo?.name[0]}
             </Avatar>
           </IconButton>
           <Menu
@@ -254,21 +244,24 @@ export default function Header() {
                   style={{
                     color: "#3B3B3F",
                     textDecoration: "none",
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center",
+                    width: "100%",
                   }}
                   onClick={handleClose}
                 >
                   <MenuItem
                     onClick={handleClose}
-                    sx={{ py: isMediumScreen ? "0.2rem" : "0.25rem" }}
+                    sx={{
+                      py: isMediumScreen ? "0.2rem" : "0.25rem",
+                      width: "100%",
+                    }}
                   >
                     {item.icon && <ListItemIcon>{item.icon}</ListItemIcon>}
                     <Typography
                       sx={{
                         mt: 0.5,
-                        fontSize: isMediumScreen ? "0.75rem" : "1rem",
+                        ml: -1,
+                        fontSize: isMediumScreen ? "0.75rem" : "0.9rem",
+                        width: "100%",
                       }}
                     >
                       {item.text}
