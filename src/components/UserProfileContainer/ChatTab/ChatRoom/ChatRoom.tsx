@@ -151,7 +151,7 @@ function ChatRoom({ socket }: ChatRoomProp) {
       });
 
       socket.on("disconnect", () => {
-        console.log("Disconnected from the websocket server");
+        // console.log("Disconnected from the websocket server");
       });
       return () => {
         socket.off("message");
@@ -273,7 +273,7 @@ function ChatRoom({ socket }: ChatRoomProp) {
                         >
                           <Avatar
                             alt={msg?.sender?.name}
-                            src={`http://localhost:8080/public/userProfileImages/${msg?.sender?.avatar}`}
+                            src={`https://collabdev-resume-storage-2024.s3.us-east-2.amazonaws.com/${msg?.sender?.avatar}`}
                           />
                         </ListItemIcon>
                         <Grid
