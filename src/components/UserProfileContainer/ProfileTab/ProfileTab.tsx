@@ -1,23 +1,27 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { v4 as uuidv4 } from "uuid";
-import EditIcon from "@mui/icons-material/Edit";
-import Button from "@mui/material/Button";
-import Chip from "@mui/material/Chip";
-import IconButton from "@mui/material/IconButton";
-import Paper from "@mui/material/Paper";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import { useTheme } from "@mui/material";
-import Box from "@mui/material/Box";
-import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
+import {
+  Box,
+  Paper,
+  Stack,
+  Typography,
+  Chip,
+  IconButton,
+  Button,
+  useTheme,
+  useMediaQuery,
+  Tooltip,
+  Fade,
+  Zoom,
+} from "@mui/material";
+import { Edit as EditIcon, Add as AddIcon } from "@mui/icons-material";
 import { SocialIcon } from "react-social-icons";
-
+import { useParams } from "react-router";
 import { User } from "../../../configs/types/userTypes";
 import { useAuth } from "../../../context/AuthContext/AuthContext";
-
-import BadgesForm from "./BadgesForm/BadgesForm";
-import ProfileDetailsForm from "./ProfileDetailsForm/ProfileDetailsForm";
 import SkillsModal from "./SkillsModal/SkillsModal";
+import BadgesBoard from "./BadgesBoard";
+import ProfileDetailsForm from "./ProfileDetailsForm/ProfileDetailsForm";
 
 interface ProfileTabProps {
   handleBadgesModal: () => void;
@@ -26,7 +30,6 @@ interface ProfileTabProps {
   openProfileDetailsModal: boolean;
   developer: User | undefined;
 }
-
 export default function ProfileTab({
   handleBadgesModal,
   openBadgesModal,
@@ -36,7 +39,8 @@ export default function ProfileTab({
 }: ProfileTabProps) {
   const theme = useTheme();
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
-  const user = useAuth();
+  const { isProfileOwner } = useAuth();
+  const { userId } = useParams();
   const [openSkillsModal, setOpenSkillsModal] = useState(false);
   const [profileTabInfo, setProfileTabInfo] = useState<User | undefined>(
     developer
@@ -49,329 +53,98 @@ export default function ProfileTab({
   const handleProfileInfo = (updatedInfo: User) => {
     setProfileTabInfo(updatedInfo);
   };
+
+  const sectionStyles = useMemo(
+    () => ({
+      paper: {
+        width: { xs: "100%", md: "70%" },
+        p: 3,
+        display: "flex",
+        flexDirection: "column",
+        gap: 3,
+        bgcolor:
+          theme.palette.mode === "dark"
+            ? "background.secondary"
+            : "background.default",
+        position: "relative",
+        borderRadius: 2,
+        boxShadow: theme.shadows[2],
+        transition: "all 0.3s ease-in-out",
+      },
+      chip: {
+        borderColor:
+          theme.palette.mode === "dark" ? "secondary.main" : "border.secondary",
+        backgroundColor:
+          theme.palette.mode === "dark"
+            ? "background.secondary"
+            : "background.default",
+        color:
+          theme.palette.mode === "dark" ? "text.secondary" : "secondary.main",
+        fontSize: isMediumScreen ? "0.7rem" : "0.8rem",
+        transition: "all 0.2s ease-in-out",
+        "&:hover": {
+          transform: "translateY(-2px)",
+          boxShadow: theme.shadows[2],
+        },
+      },
+    }),
+    [theme.palette.mode, isMediumScreen]
+  );
+
+  const Section = ({ title, children }: { title: string; children: any }) => (
+    <Box>
+      <Typography
+        variant="h5"
+        sx={{
+          fontWeight: "600",
+          mb: 2,
+          color:
+            theme.palette.mode === "dark" ? "text.secondary" : "text.primary",
+        }}
+      >
+        {title}
+      </Typography>
+      {children}
+    </Box>
+  );
+
   return (
     <Stack
       direction={isMediumScreen ? "column" : "row"}
       justifyContent="space-between"
       useFlexGap
       flexWrap="wrap"
-      gap={isMediumScreen ? 2 : 2}
+      gap={2}
     >
-      <Paper
-        sx={{
-          width: { sx: "100%", md: "70%" },
-          p: 2,
-          display: "flex",
-          flexDirection: "column",
-          gap: 1.5,
-          bgcolor:
-            theme.palette.mode === "dark"
-              ? "background.secondary"
-              : "background.default",
-          position: "relative",
-        }}
-      >
-        {user.isUser && (
-          <IconButton
-            aria-label="edit"
-            sx={{ position: "absolute", top: "0", right: "0" }}
-            onClick={() => handleProfileModal()}
-          >
-            <EditIcon />
-          </IconButton>
-        )}
-        {openProfileDetailsModal ? (
-          profileTabInfo && (
-            <ProfileDetailsForm
-              openProfileDetailsModal={openProfileDetailsModal}
-              handleClose={handleProfileModal}
-              profileTabInfo={profileTabInfo}
-              handleProfileInfo={handleProfileInfo}
-            />
-          )
-        ) : (
-          <></>
-        )}
-
-        <Box>
-          <Typography
-            variant="h5"
-            sx={{
-              fontWeight: "600",
-              mb: 2,
-              color:
-                theme.palette.mode === "dark"
-                  ? "text.secondary"
-                  : "text.primary",
-            }}
-          >
-            About
-          </Typography>
-          <Typography
-            variant="body1"
-            sx={{
-              color:
-                theme.palette.mode === "dark"
-                  ? "text.secondary"
-                  : "text.primary",
-            }}
-          >
-            {profileTabInfo?.about}
-          </Typography>
-        </Box>
-        <Box>
-          <Typography
-            variant="h5"
-            sx={{
-              fontWeight: "600",
-              mb: 2,
-              color:
-                theme.palette.mode === "dark"
-                  ? "text.secondary"
-                  : "text.primary",
-            }}
-          >
-            Follow me on
-          </Typography>
-          <Stack direction="row" gap={1} flexWrap="wrap">
-            {profileTabInfo &&
-              profileTabInfo.socialMedia.slice(0, 10).map((socialMedia) => (
-                <Chip
-                  key={uuidv4()}
-                  variant="outlined"
-                  size={isMediumScreen ? "small" : "medium"}
+      <Fade in timeout={800}>
+        <Paper sx={sectionStyles.paper}>
+          {userId && isProfileOwner(userId) && (
+            <Zoom in>
+              <Tooltip title="Edit Profile" placement="left">
+                <IconButton
+                  aria-label="edit"
                   sx={{
-                    borderColor:
-                      theme.palette.mode === "dark"
-                        ? "secondary.main"
-                        : "border.secondary",
-                    backgroundColor:
-                      theme.palette.mode === "dark"
-                        ? "background.secondary"
-                        : "background.default",
-                    color: "text.secondary",
-                    fontSize: isMediumScreen ? "0.7rem" : "0.8rem",
+                    position: "absolute",
+                    top: 16,
+                    right: 16,
+                    transition: "transform 0.2s ease-in-out",
+                    "&:hover": {
+                      transform: "scale(1.1)",
+                    },
                   }}
-                  avatar={
-                    <SocialIcon
-                      network={socialMedia.platform}
-                      url={socialMedia.url}
-                      label={socialMedia.platform}
-                      style={{
-                        color: "green",
-                        width: isMediumScreen ? "1.3rem" : "1.6rem",
-                        height: isMediumScreen ? "1.3rem" : "1.6rem",
-                        marginRight: "0px",
-                      }}
-                    />
-                  }
-                  label={socialMedia.platform}
-                />
-              ))}
-          </Stack>
-        </Box>
-        <Box>
-          <Typography
-            variant="h5"
-            sx={{
-              fontWeight: "600",
-              mb: 2,
-              color:
-                theme.palette.mode === "dark"
-                  ? "text.secondary"
-                  : "text.primary",
-            }}
-          >
-            Tech Skills
-          </Typography>
-          <Stack direction="row" gap={1} flexWrap="wrap">
-            {profileTabInfo && (
-              <>
-                {profileTabInfo.skills
-                  .slice(
-                    0,
-                    profileTabInfo.skills.length < 10
-                      ? profileTabInfo.skills.length
-                      : 10
-                  )
-                  .map((skill) => (
-                    <Chip
-                      key={uuidv4()}
-                      label={skill}
-                      variant="outlined"
-                      size={isMediumScreen ? "small" : "medium"}
-                      sx={{
-                        borderColor:
-                          theme.palette.mode === "dark"
-                            ? "secondary.main"
-                            : "border.secondary",
-                        backgroundColor:
-                          theme.palette.mode === "dark"
-                            ? "background.secondary"
-                            : "background.default",
-                        color:
-                          theme.palette.mode === "dark"
-                            ? "text.secondary"
-                            : "secondary.main",
-                        fontSize: isMediumScreen ? "0.7rem" : "0.8rem",
-                      }}
-                    />
-                  ))}
-                {profileTabInfo.skills.length > 10 && (
-                  <Button
-                    onClick={() => setOpenSkillsModal(true)}
-                    sx={{
-                      border: "1px solid",
-                      borderRadius: "25rem",
-                      borderColor:
-                        theme.palette.mode === "dark"
-                          ? "secondary.main"
-                          : "border.secondary",
-                      backgroundColor:
-                        theme.palette.mode === "dark"
-                          ? "background.secondary"
-                          : "background.default",
-                      color:
-                        theme.palette.mode === "dark"
-                          ? "text.secondary"
-                          : "secondary.main",
-                      fontSize: isMediumScreen ? "0.7rem" : "0.8rem",
-                      height: "2rem",
-                    }}
-                  >
-                    + {profileTabInfo.skills.length - 10}
-                  </Button>
-                )}
-              </>
-            )}
-          </Stack>
-          {openSkillsModal && profileTabInfo && (
-            <SkillsModal
-              openSkillsModal
-              handleClose={() => setOpenSkillsModal((prev) => !prev)}
-              skills={profileTabInfo.skills}
-            />
+                  onClick={handleProfileModal}
+                >
+                  <EditIcon />
+                </IconButton>
+              </Tooltip>
+            </Zoom>
           )}
-        </Box>
 
-        <Box>
-          <Typography
-            variant="h5"
-            sx={{
-              fontWeight: "600",
-              mb: 2,
-              color:
-                theme.palette.mode === "dark"
-                  ? "text.secondary"
-                  : "text.primary",
-            }}
-          >
-            Languages
-          </Typography>
-          <Stack direction="row" gap={1} flexWrap="wrap">
-            {profileTabInfo &&
-              profileTabInfo.languages
-                .slice(
-                  0,
-                  profileTabInfo.languages.length < 10
-                    ? profileTabInfo.languages.length
-                    : 10
-                )
-                .map((language) => (
-                  <Chip
-                    key={uuidv4()}
-                    label={language}
-                    variant="outlined"
-                    size={isMediumScreen ? "small" : "medium"}
-                    sx={{
-                      borderColor:
-                        theme.palette.mode === "dark"
-                          ? "secondary.main"
-                          : "border.secondary",
-                      backgroundColor:
-                        theme.palette.mode === "dark"
-                          ? "background.secondary"
-                          : "background.default",
-                      color:
-                        theme.palette.mode === "dark"
-                          ? "text.secondary"
-                          : "secondary.main",
-                      fontSize: isMediumScreen ? "0.7rem" : "0.8rem",
-                    }}
-                  />
-                ))}
-          </Stack>
-        </Box>
-      </Paper>
-      <Paper
-        sx={{
-          width: { sx: "100%", md: "27%" },
-          bgcolor:
-            theme.palette.mode === "dark" ? "background.secondary" : "#eeeeee",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
-        }}
-      >
-        <Stack
-          sx={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "flex-start",
-            width: "100%",
-          }}
-        >
-          <Typography sx={{ p: 1, fontWeight: 600 }} color="text.secondary">
-            Badges Board
-          </Typography>
-          {user.isUser && (
-            <IconButton aria-label="edit" onClick={() => handleBadgesModal()}>
-              <EditIcon />
-            </IconButton>
-          )}
-        </Stack>
-        <Stack
-          sx={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "flex-start",
-            width: "100%",
-            height: "100%",
-            p: 1,
-          }}
-        >
-          <Stack
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "flex-start",
-              flexWrap: "wrap",
-              gap: 1,
-            }}
-          >
-            {profileTabInfo?.badges.map((path, index) => {
-              return (
-                path.length > 3 && (
-                  <img
-                    key={index}
-                    src={`http://localhost:8080/public/userProfileImages/${path}`}
-                    alt={`${index}`}
-                    width="42px"
-                    height="42px"
-                  />
-                )
-              );
-            })}
-          </Stack>
-          {openBadgesModal ? (
+          {openProfileDetailsModal ? (
             profileTabInfo && (
-              <BadgesForm
-                openBadgesModal={openBadgesModal}
-                handleClose={handleBadgesModal}
+              <ProfileDetailsForm
+                openProfileDetailsModal={openProfileDetailsModal}
+                handleClose={handleProfileModal}
                 profileTabInfo={profileTabInfo}
                 handleProfileInfo={handleProfileInfo}
               />
@@ -379,8 +152,115 @@ export default function ProfileTab({
           ) : (
             <></>
           )}
-        </Stack>
-      </Paper>
+
+          {/* About Section */}
+          <Section title="About">
+            <Typography
+              variant="body1"
+              color="text.secondary"
+              sx={{ lineHeight: 1.7 }}
+            >
+              {profileTabInfo?.about}
+            </Typography>
+          </Section>
+
+          {/* Social Media Section */}
+          <Section title="Follow me on">
+            <Stack direction="row" gap={1} flexWrap="wrap">
+              {profileTabInfo?.socialMedia.slice(0, 10).map((socialMedia) => (
+                <Tooltip title={`Visit ${socialMedia.platform}`} key={uuidv4()}>
+                  <Chip
+                    variant="outlined"
+                    size={isMediumScreen ? "small" : "medium"}
+                    sx={sectionStyles.chip}
+                    avatar={
+                      <SocialIcon
+                        network={socialMedia.platform.toLowerCase()}
+                        url={socialMedia.url}
+                        label={socialMedia.platform}
+                        style={{
+                          width: isMediumScreen ? "1.3rem" : "1.6rem",
+                          height: isMediumScreen ? "1.3rem" : "1.6rem",
+                          marginRight: 0,
+                        }}
+                      />
+                    }
+                    label={socialMedia.platform}
+                    onClick={() => window.open(socialMedia.url, "_blank")}
+                  />
+                </Tooltip>
+              ))}
+            </Stack>
+          </Section>
+
+          {/* Tech Skills Section */}
+          <Section title="Tech Skills">
+            <Stack direction="row" gap={1} flexWrap="wrap">
+              {profileTabInfo?.skills
+                .slice(0, 10)
+                .map((skill) => (
+                  <Chip
+                    label={skill}
+                    key={uuidv4()}
+                    variant="outlined"
+                    size={isMediumScreen ? "small" : "medium"}
+                    sx={sectionStyles.chip}
+                  />
+                ))}
+              {profileTabInfo && profileTabInfo?.skills.length > 10 && (
+                <Button
+                  startIcon={<AddIcon />}
+                  onClick={() => setOpenSkillsModal(true)}
+                  variant="outlined"
+                  size="small"
+                  sx={{
+                    ...sectionStyles.chip,
+                    height: "2rem",
+                  }}
+                >
+                  {profileTabInfo.skills.length - 10} more
+                </Button>
+              )}
+            </Stack>
+          </Section>
+
+          {/* Languages Section */}
+          <Section title="Languages">
+            <Stack direction="row" gap={1} flexWrap="wrap">
+              {profileTabInfo?.languages
+                .slice(0, 10)
+                .map((language) => (
+                  <Chip
+                    label={language}
+                    key={uuidv4()}
+                    variant="outlined"
+                    size={isMediumScreen ? "small" : "medium"}
+                    sx={sectionStyles.chip}
+                  />
+                ))}
+            </Stack>
+          </Section>
+
+          {/* Modals */}
+          {openSkillsModal && profileTabInfo ? (
+            <SkillsModal
+              openSkillsModal
+              handleClose={() => setOpenSkillsModal(false)}
+              skills={profileTabInfo.skills}
+            />
+          ) : (
+            <Box />
+          )}
+        </Paper>
+      </Fade>
+
+      <BadgesBoard
+        openBadgesModal={openBadgesModal}
+        handleClose={handleBadgesModal}
+        profileTabInfo={profileTabInfo}
+        handleProfileInfo={handleProfileInfo}
+        developer={developer}
+      />
     </Stack>
   );
 }
