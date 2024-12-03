@@ -1,11 +1,4 @@
-import {
-  Box,
-  Chip,
-  Stack,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import { Box, Chip, Stack, useMediaQuery, useTheme } from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
 
 import CustomModal from "../../../common/CustomModal/CustomModal";
@@ -29,8 +22,8 @@ export default function SkillsModal({
       handleClose={() => handleClose()}
       framesx={{
         width: 600,
-        border: "2px solid #000",
       }}
+      title="Tech Skills"
       headersx={{
         borderBottom: "1px solid",
         borderColor:
@@ -38,18 +31,6 @@ export default function SkillsModal({
       }}
     >
       <Box>
-        <Typography
-          variant="h5"
-          sx={{
-            fontWeight: "600",
-            mb: 3,
-            pt: 2,
-            color:
-              theme.palette.mode === "dark" ? "text.secondary" : "text.primary",
-          }}
-        >
-          Tech Skills
-        </Typography>
         <Stack direction="row" gap={1} flexWrap="wrap">
           {skills && (
             <>

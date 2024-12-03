@@ -10,12 +10,13 @@ const ProfileDetailsInputData: any[] = [
     labelText: "About",
     id: "about",
     name: "about",
-    autoComplete: "email",
+    autoComplete: "about",
     placeholder:
       "Share a brief description about yourself, your interests, and what you do.",
     type: "text",
     required: true,
     fullWidth: true,
+    formLabel: true,
     multiline: true,
     variant: "standard",
     register: {
@@ -84,23 +85,43 @@ const AccountDetailsData: ProfileAccountDetailsDataType = (
   },
 ];
 
-const ProfileTabsListData = [
-  {
-    label: "Profile",
-    value: "1",
-  },
-  {
-    label: "Projects",
-    value: "2",
-  },
-  {
-    label: "Inbox",
-    value: "3",
-  },
-  {
-    label: "Chat",
-    value: "4",
-  },
+const ProfileTabsListData = (isProfileOwner: boolean) => {
+  return [
+    {
+      label: "Profile",
+      value: "1",
+    },
+    {
+      label: "Projects",
+      value: "2",
+    },
+    ...(isProfileOwner
+      ? [
+          {
+            label: "Inbox",
+            value: "3",
+          },
+          {
+            label: "Chat",
+            value: "4",
+          },
+        ]
+      : []),
+  ];
+};
+
+export const socialMediaPlatforms = [
+  "Facebook",
+  "Twitter",
+  "LinkedIn",
+  "Instagram",
+  "GitHub",
+  "GitLab",
+  "Slack",
+  "Leetcode",
+  "Codepen",
+  "Stackoverflow",
+  "YouTube",
 ];
 
 export { ProfileDetailsInputData, AccountDetailsData, ProfileTabsListData };

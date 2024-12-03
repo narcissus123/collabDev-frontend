@@ -195,7 +195,7 @@ const ChatList = ({ socket }: ChatListProps) => {
                 <ListItemIcon>
                   <Avatar
                     alt="Remy Sharp"
-                    src={`http://localhost:8080/public/userProfileImages/${conversation.participant.avatar}`}
+                    src={`https://collabdev-resume-storage-2024.s3.us-east-2.amazonaws.com/${conversation.participant.avatar}`}
                   />
                 </ListItemIcon>
                 <ListItemText

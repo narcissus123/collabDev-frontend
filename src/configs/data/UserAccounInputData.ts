@@ -12,6 +12,19 @@ const UserAccounInputData = [
     fullWidth: true,
     multiline: false,
     variant: "outlined",
+    ptClassName: {
+      labelStyle: {
+        width: "100%",
+        color: "text.secondary",
+        position: "relative",
+        "&::after": {
+          content: '"*"',
+          marginLeft: "4px",
+          position: "absolute",
+          top: 0,
+        },
+      },
+    },
     register: {
       name: "name",
       schema: {

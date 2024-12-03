@@ -19,6 +19,9 @@ const DropBox = ({ onDrop, maxFiles = 30 }: DropBoxProps) => {
           [".docx"],
       },
       onDrop,
+      noClick: false,
+      autoFocus: false,
+      multiple: true,
       maxFiles,
     });
 
@@ -57,12 +60,13 @@ const DropBox = ({ onDrop, maxFiles = 30 }: DropBoxProps) => {
               color: theme.palette.mode === "dark" ? "#8C8C95" : "#B9B9BF",
             }}
           >
-            Drag n drop some files here, or click to select files
+            Drag n drop your files here, or click to select files
           </p>
         )}
 
         <Box
           component="button"
+          type="button"
           sx={{
             mt: 2,
             px: 3,

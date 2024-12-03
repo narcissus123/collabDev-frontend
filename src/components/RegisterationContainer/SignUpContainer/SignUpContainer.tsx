@@ -16,10 +16,9 @@ import { toast } from "react-toastify";
 import { ToastContainer } from "react-toastify";
 
 import { SignUpInputData } from "../../../configs/data/RegistrationInputData";
-import { useAuth } from "../../../context/AuthContext/AuthContext";
 import { SignUpDeveloper } from "../../../core/services/api/developer-authentication.api";
-import { getItem } from "../../../core/services/storage/Storage";
 import Input from "../../common/Input/Input";
+import { useAuth } from "../../../context/AuthContext/AuthContext";
 
 interface SignUpContainerProps {
   handleSignIn: (signIn: boolean) => void;
@@ -34,9 +33,9 @@ interface FormValues {
 export default function SignUpContainer({
   handleSignIn,
 }: SignUpContainerProps) {
-  const user = useAuth();
   const theme = useTheme();
   const history = useNavigate();
+  const { setCurrentUser } = useAuth();
 
   const {
     register,
@@ -56,7 +55,8 @@ export default function SignUpContainer({
       const response = await SignUpDeveloper(data);
       if (response.status === "success") {
         toast.success("You are successfully signed up!");
-        user.loginAsUser(Boolean(getItem("user")) === true);
+        const user = response.data.userWithoutPassword;
+        setCurrentUser(user);
         history("/");
       } else {
         if (response.status === 400 || response.status === 403) {

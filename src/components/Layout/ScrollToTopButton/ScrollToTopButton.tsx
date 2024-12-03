@@ -3,30 +3,18 @@ import Box from "@mui/material/Box";
 import Fab from "@mui/material/Fab";
 import Fade from "@mui/material/Fade";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
-import * as React from "react";
 
-interface Props {
-  window?: () => Window;
-}
-
-export default function ScrollToTopButton(props: Props) {
-  const { window } = props;
+export default function ScrollToTopButton() {
   const trigger = useScrollTrigger({
-    target: window ? window() : undefined,
     disableHysteresis: true,
     threshold: 100,
   });
 
-  const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    const anchor = (
-      (event.target as HTMLDivElement).ownerDocument || document
-    ).querySelector("#back-to-top-anchor");
-
-    if (anchor) {
-      anchor.scrollIntoView({
-        block: "center",
-      });
-    }
+  const handleClick = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   };
 
   return (
@@ -34,7 +22,7 @@ export default function ScrollToTopButton(props: Props) {
       <Box
         onClick={handleClick}
         role="presentation"
-        sx={{ position: "fixed", bottom: 16, right: 16 }}
+        sx={{ position: "fixed", bottom: 16, right: 16, zIndex: 1000 }}
       >
         <Fab size="small" aria-label="scroll back to top">
           <KeyboardArrowUpIcon />

@@ -4,6 +4,19 @@ import React, { ForwardedRef } from "react";
 
 import ErrorMessages from "../Messages/ErrorMessages/ErrorMessages";
 
+interface LabelStyle extends React.CSSProperties {
+  "&::after"?: {
+    content?: string;
+    marginLeft?: string;
+    position?: "absolute" | "relative" | "fixed" | "sticky" | "static";
+    top?: number;
+  };
+}
+
+interface PtClassName {
+  labelStyle?: LabelStyle;
+}
+
 interface InputProps {
   id: string;
   sx?: SxProps<Theme>;
@@ -17,11 +30,12 @@ interface InputProps {
   required: boolean;
   fullWidth?: boolean;
   inputSize?: "medium" | "small";
-  labelText: string;
+  labelText?: string;
   multiline: boolean;
   variant: "standard" | "outlined" | "filled";
   formLabel?: boolean;
   minRows?: number;
+  ptClassName?: PtClassName;
 }
 
 // This component renders the label and input tags in forms.
@@ -45,13 +59,32 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       variant,
       formLabel = false,
       minRows = 3,
+      ptClassName,
     },
     ref: ForwardedRef<HTMLInputElement>
   ) => {
     const theme = useTheme();
+
+    const labelSx: SxProps<Theme> = {
+      width: "100%",
+      color:
+        theme.palette.mode === "dark" ? "text.secondary" : "border.secondary",
+      fontSize: "0.9rem",
+      position: required ? "relative" : undefined,
+      "&::after": required
+        ? {
+            content: '"*"',
+            marginLeft: "4px",
+            position: "absolute",
+            top: 0,
+          }
+        : undefined,
+      ...(ptClassName?.labelStyle as any),
+    };
+
     return (
       <>
-        {formLabel && <FormLabel>{labelText}</FormLabel>}
+        {formLabel && <FormLabel sx={labelSx}>{labelText}</FormLabel>}
         <TextField
           id={id}
           error={
@@ -77,7 +110,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           minRows={minRows}
           inputProps={{
             sx: {
-              maxHeight: "5rem",
+              maxHeight: "15rem",
               overflowY: "auto",
               "&::placeholder": {
                 color: "text.secondary",
