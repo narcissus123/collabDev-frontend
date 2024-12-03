@@ -23,11 +23,14 @@ import { Link } from "react-router-dom";
 
 import LockIcon from "@mui/icons-material/Lock";
 import { Tooltip } from "@mui/material";
+import { toast } from "react-toastify";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ProjectType } from "../../../configs/types/projectTypes";
 import { useAuth } from "../../../context/AuthContext/AuthContext";
-import { getItem } from "../../../core/services/storage/Storage";
 import formatDate from "../../../core/utils/DateFormatter/formatDate";
 import RequestModal from "../RequestForm/RequestForm";
+import { deleteProjectById } from "../../../core/services/api/manage-projects.api";
+import ResponsiveDialog from "../CustomModal/ConfirmationModal";
 
 interface ProjectCardProps {
   project: ProjectType;
@@ -48,30 +51,69 @@ function getStatusColor(status: string) {
 
 function ProjectCard({ project }: ProjectCardProps) {
   const ITEM_HEIGHT = 48;
+  const queryClient = useQueryClient();
+  const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const [openRequestModal, setOpenRequestModal] = useState(false);
+  const { isAuthenticated, isProfileOwner, isProjectOwner } = useAuth();
+  const [openDeleteModal, setOpenDeleteModal] = useState<boolean>(false);
+
+  const deleteProjectMutation = useMutation({
+    mutationFn: (projectId: string) => deleteProjectById(projectId),
+    onSuccess: () => {
+      toast.success("Project deleted successfully!");
+
+      queryClient.invalidateQueries({
+        queryKey: ["getAllProjects"],
+      });
+
+      setOpenDeleteModal(false);
+    },
+    onError: (err) => {
+      toast.error("Failed to delete project.");
+      console.error("Error:", err);
+    },
+  });
+
+  const handleDelete = (projectId: string) => {
+    deleteProjectMutation.mutate(projectId);
+  };
+
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
+
   const handleClose = () => {
     setAnchorEl(null);
   };
-  const theme = useTheme();
-  const [openRequestModal, setOpenRequestModal] = useState(false);
-
-  const user = useAuth();
-  const developer = user.isUser ? JSON.parse(getItem("user")) : undefined;
 
   return (
-    <Grid item xs={12} md={5.8} lg={3.8} sx={{ Width: "100.33px" }}>
-      <Card>
+    <Grid item xs={12} md={5.8} lg={3.8}>
+      <Card
+        sx={{
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          gap: "0rem",
+        }}
+      >
+        {/* Avatar & Title */}
         <CardHeader
+          sx={{
+            px: 2,
+            pt: 2,
+            pb: 1.5,
+            "& .MuiCardHeader-content": {
+              overflow: "hidden",
+            },
+          }}
           avatar={
             <Link to={`/profile/${project.owner._id}`}>
               <Avatar
                 sx={{ bgcolor: red[500], width: 56, height: 56 }}
                 aria-label="recipe"
-                src={`http://localhost:8080/public/userProfileImages/${project.owner.avatar}`}
+                src={`https://collabdev-resume-storage-2024.s3.us-east-2.amazonaws.com/${project.owner.avatar}`}
               />
             </Link>
           }
@@ -113,7 +155,7 @@ function ProjectCard({ project }: ProjectCardProps) {
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                   {project.links[0] !== "" ? (
                     <Link
-                      style={{ textDecoration: "none" }}
+                      style={{ textDecoration: "none", width: "100%" }}
                       to={project.links[0]}
                     >
                       <MenuItem
@@ -126,7 +168,12 @@ function ProjectCard({ project }: ProjectCardProps) {
                   ) : (
                     <MenuItem
                       onClick={handleClose}
-                      sx={{ color: "text.secondary", cursor: "default" }}
+                      sx={{
+                        color: "text.secondary",
+                        cursor: "default",
+                        py: 0.5,
+                        width: "100%",
+                      }}
                     >
                       <Typography>View on GitHub</Typography>
                       <Tooltip
@@ -156,30 +203,101 @@ function ProjectCard({ project }: ProjectCardProps) {
                     Project details
                   </MenuItem>
                 </Link>
+                {isProjectOwner(project.owner._id) && (
+                  <IconButton
+                    onClick={() => {
+                      handleClose();
+                      setOpenDeleteModal(true);
+                    }}
+                    sx={{
+                      width: "100%",
+                      py: 0.75,
+                      borderRadius: 0,
+                      display: "flex",
+                      justifyContent: "start",
+                    }}
+                  >
+                    <MenuItem
+                      sx={{
+                        color: "text.secondary",
+                        py: 0,
+                        px: 1,
+                        "&:hover": { bgcolor: "transparent" },
+                      }}
+                    >
+                      Delete project
+                    </MenuItem>
+                  </IconButton>
+                )}
               </Menu>
+
+              {openDeleteModal && (
+                <ResponsiveDialog
+                  openDeleteModal={openDeleteModal}
+                  setOpenDeleteModal={setOpenDeleteModal}
+                  title="Confirm Project Deletion"
+                  message={
+                    project.contributors && project.contributors.length === 0
+                      ? "Are you sure you want to delete this project? This action is permanent and cannot be undone."
+                      : "This project has active contributors. Please assign a new owner in project settings before deleting."
+                  }
+                  handleDelete={() => handleDelete(project._id)}
+                  rightButtonColor="error"
+                  link={
+                    project.contributors && project.contributors.length > 0
+                      ? "#"
+                      : undefined
+                  }
+                  hideButton={
+                    project.contributors && project.contributors.length > 0
+                      ? true
+                      : false
+                  }
+                />
+              )}
             </Box>
           }
           title={
             <Typography
               variant="h5"
               color="text.secondary"
-              sx={{ fontWeight: "600" }}
+              sx={{
+                fontWeight: "600",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
             >
-              {" "}
               {project.title}
             </Typography>
           }
           subheader={
-            <Typography variant="subtitle1" color="text.secondary">
-              {" "}
+            <Typography
+              variant="subtitle1"
+              color="text.secondary"
+              sx={{
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
               {formatDate(project.startDate)}
             </Typography>
           }
-          sx={{ pb: 0, height: "82.66px" }}
         />
 
-        <CardContent sx={{ height: 171.29 }}>
-          <Stack display="flex" flexDirection="column" gap={0.5}>
+        <CardContent
+          sx={{
+            flexGrow: 1,
+            display: "flex",
+            flexDirection: "column",
+            gap: 1,
+            py: 0,
+            px: 2,
+          }}
+        >
+          {/* Description */}
+          <Box sx={{ height: "48px" }}>
             <Typography
               variant="body1"
               color="text.secondary"
@@ -189,49 +307,36 @@ function ProjectCard({ project }: ProjectCardProps) {
                 display: "-webkit-box",
                 WebkitLineClamp: 2,
                 WebkitBoxOrient: "vertical",
+                lineHeight: "24px",
               }}
             >
               {project.description}
             </Typography>
+          </Box>
 
-            <Stack
-              display="flex"
-              flexDirection="row"
-              sx={{ flexWrap: "wrap", mt: 1 }}
-            >
+          {/* Tech Stack */}
+          <Box sx={{ height: "48px", overflow: "hidden" }}>
+            <Stack direction="row" flexWrap="wrap" gap={0.5}>
               <Typography variant="body1" color="text.secondary">
                 Tech Stack:
               </Typography>
               {project.techStack.map((data, i) => (
                 <Typography
+                  key={i}
                   variant="body1"
                   color="text.secondary"
-                  sx={{
-                    pl: 0.5,
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "flex-start",
-                    alignItems: "center",
-                  }}
-                  key={i}
+                  component="span"
                 >
-                  {i > 0 && (
-                    <Typography variant="body1" component="span">
-                      ,
-                    </Typography>
-                  )}
-                  {data.value}
+                  {i > 0 ? `, ${data.value}` : data.value}
                 </Typography>
               ))}
             </Stack>
-            <Stack
-              direction="row"
-              alignItems="center"
-              justifyContent="flex-start"
-              gap={2}
-              sx={{ height: "2.5rem" }}
-            >
-              {project?.contributors?.length !== 0 && (
+          </Box>
+
+          {/* Contributors */}
+          <Box sx={{ height: "40px" }}>
+            <Stack direction="row" alignItems="center" gap={2}>
+              {project?.contributors?.length > 0 && (
                 <>
                   <Typography variant="body1" color="text.secondary">
                     Contributors:
@@ -239,47 +344,37 @@ function ProjectCard({ project }: ProjectCardProps) {
                   <AvatarGroup
                     max={5}
                     sx={{
-                      width: "auto",
+                      "& .MuiAvatar-root": { width: 36, height: 36 },
                     }}
                   >
                     {project?.contributors.map((contributor, i) => (
-                      <Box key={i}>
-                        {contributor.avatar === "" ? (
-                          <Avatar
-                            sx={{ bgcolor: red[500], width: 36, height: 36 }}
-                            aria-label="recipe"
-                          >
-                            {contributor.name[0]}
-                          </Avatar>
-                        ) : (
-                          <Avatar
-                            sx={{ bgcolor: red[500], width: 36, height: 36 }}
-                            aria-label="recipe"
-                            src={`http://localhost:8080/public/userProfileImages/${contributor?.avatar}`}
-                          ></Avatar>
-                        )}
-                      </Box>
+                      <Avatar
+                        key={i}
+                        sx={{ bgcolor: red[500] }}
+                        src={
+                          contributor.avatar
+                            ? `https://collabdev-resume-storage-2024.s3.us-east-2.amazonaws.com/${contributor.avatar}`
+                            : undefined
+                        }
+                      >
+                        {!contributor.avatar && contributor.name[0]}
+                      </Avatar>
                     ))}
                   </AvatarGroup>
                 </>
               )}
             </Stack>
-            <Stack
-              direction="row"
-              alignItems="center"
-              justifyContent="flex-start"
-              flexWrap="wrap"
-              gap={2}
-              sx={{ py: 1 }}
-            >
+          </Box>
+
+          {/* Tags */}
+          <Box sx={{ height: "32px", pt: 1 }}>
+            <Stack direction="row" alignItems="center" gap={2} flexWrap="wrap">
               <Chip
                 size="small"
                 label={project.status}
                 color={getStatusColor(project.status)}
                 sx={{
-                  width: "fit-content",
                   opacity: "0.8",
-                  my: { xs: "0.3rem" },
                   fontSize: "0.7rem",
                 }}
               />
@@ -287,9 +382,7 @@ function ProjectCard({ project }: ProjectCardProps) {
                 size="small"
                 label={project.category}
                 sx={{
-                  width: "fit-content",
                   opacity: "0.8",
-                  my: { xs: "0.3rem" },
                   border: "2px solid",
                   borderColor: "secondary.main",
                   color: "secondary.main",
@@ -297,15 +390,18 @@ function ProjectCard({ project }: ProjectCardProps) {
                 }}
               />
             </Stack>
-          </Stack>
+          </Box>
         </CardContent>
-        <CardActions disableSpacing>
-          {user.isUser && developer._id !== project.owner._id && (
+
+        {/* Actions */}
+        <CardActions sx={{ px: 2, pt: 0.5 }}>
+          {isAuthenticated && !isProfileOwner(project.owner._id) && (
             <IconButton
               aria-label="Collaboration Request"
-              onClick={() => {
-                setOpenRequestModal((prev) => !prev);
+              sx={{
+                "&:hover": { bgcolor: "transparent" },
               }}
+              onClick={() => setOpenRequestModal((prev) => !prev)}
             >
               <img
                 src={
@@ -314,34 +410,31 @@ function ProjectCard({ project }: ProjectCardProps) {
                     : `${process.env.PUBLIC_URL}/assets/icons/join.webp`
                 }
                 alt="join project icon"
-                style={{
-                  width: "32px",
-                  height: "32px",
-                  marginRight: "0.7rem",
-                  borderColor:
-                    theme.palette.mode === "dark" ? "white" : "black",
-                }}
+                style={{ width: "32px", height: "32px" }}
               />
             </IconButton>
           )}
-          <IconButton aria-label="add to favorites">
+          <IconButton
+            aria-label="add to favorites"
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              "&:hover": { bgcolor: "transparent" },
+            }}
+            disabled
+          >
             <ThumbUpOutlinedIcon />
-            <Typography
-              variant="h5"
-              color="text.secondary"
-              sx={{ ml: 1, mt: 1 }}
-            >
+            <Typography variant="h5" color="text.secondary" sx={{ ml: 1 }}>
               {project.likes}
             </Typography>
           </IconButton>
         </CardActions>
-        {openRequestModal && developer._id !== project.owner._id && (
+
+        {openRequestModal && !isProfileOwner(project.owner._id) && (
           <RequestModal
             project={project}
             openRequestModal={openRequestModal}
-            handleClose={() => {
-              setOpenRequestModal((prev) => !prev);
-            }}
+            handleClose={() => setOpenRequestModal((prev) => !prev)}
           />
         )}
       </Card>
