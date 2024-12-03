@@ -15,10 +15,9 @@ import { useNavigate } from "react-router";
 import { ToastContainer, toast } from "react-toastify";
 
 import { SignInInputData } from "../../../configs/data/RegistrationInputData";
-import { useAuth } from "../../../context/AuthContext/AuthContext";
 import { SignInDeveloper } from "../../../core/services/api/developer-authentication.api";
-import { getItem } from "../../../core/services/storage/Storage";
 import Input from "../../common/Input/Input";
+import { useAuth } from "../../../context/AuthContext/AuthContext";
 
 interface SignInContainerProps {
   handleSignIn: (signIn: boolean) => void;
@@ -35,7 +34,7 @@ export default function SignInContainer({
   const theme = useTheme();
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
   const history = useNavigate();
-  const user = useAuth();
+  const { setCurrentUser } = useAuth();
 
   const {
     register,
@@ -54,7 +53,8 @@ export default function SignInContainer({
       const response = await SignInDeveloper(data);
       if (response.status === "success") {
         toast.success("You are successfully signed up!");
-        user.loginAsUser(Boolean(getItem("user")) === true);
+        const user = response.data.userWithoutPassword;
+        setCurrentUser(user);
         history("/");
       } else {
         if (response.status === 400 || response.status === 403) {
