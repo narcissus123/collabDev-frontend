@@ -32,7 +32,7 @@ import { EditProjectImageModal } from "./EditProjectImageModal/EditProjectImageM
 import EditProjectModal from "./EditProjectModal/EditProjectModal";
 
 export default function ProjectsDetailsContainer() {
-  const user = useAuth();
+  const { isProfileOwner } = useAuth();
   const { projectId } = useParams();
 
   const theme = useTheme();
@@ -50,7 +50,6 @@ export default function ProjectsDetailsContainer() {
   });
 
   const handleProjectInfo = () => {
-    // queryClient.setQueryData(['project', projectId], updatedProjectInfo);
     queryClient.invalidateQueries({ queryKey: ["getProjectById", projectId] });
   };
 
@@ -307,7 +306,7 @@ export default function ProjectsDetailsContainer() {
               position: "relative",
             }}
           >
-            {user.isUser && (
+            {isProfileOwner(project?.data.owner?._id) && (
               <IconButton
                 aria-label="edit"
                 sx={{
