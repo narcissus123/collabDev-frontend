@@ -22,7 +22,7 @@
         "@types/react-dom": "^18.2.19",
         "@types/react-query": "^1.2.9",
         "axios": "^1.6.7",
-        "date-fns": "^4.1.0",
+        "date-fns": "^3.2.0",
         "dayjs": "^1.11.10",
         "eslint-plugin-simple-import-sort": "^12.1.0",
         "little-state-machine": "^4.8.0",
