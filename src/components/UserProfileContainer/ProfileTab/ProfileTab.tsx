@@ -87,25 +87,69 @@ export default function ProfileTab({
           boxShadow: theme.shadows[2],
         },
       },
+      emptyState: {
+        color:
+          theme.palette.mode === "dark" ? "text.disabled" : "text.secondary",
+        fontSize: "0.9rem",
+        fontStyle: "italic",
+        opacity: 0.8,
+      },
     }),
     [theme.palette.mode, isMediumScreen]
   );
 
-  const Section = ({ title, children }: { title: string; children: any }) => (
+  const Section = ({
+    title,
+    children,
+    isEmpty,
+  }: {
+    title: string;
+    children: React.ReactNode;
+    isEmpty?: boolean;
+  }) => (
     <Box>
-      <Typography
-        variant="h5"
-        sx={{
-          fontWeight: "600",
-          mb: 2,
-          color:
-            theme.palette.mode === "dark" ? "text.secondary" : "text.primary",
-        }}
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={2}
       >
-        {title}
-      </Typography>
+        <Typography
+          variant="h5"
+          sx={{
+            fontWeight: "600",
+            color:
+              theme.palette.mode === "dark" ? "text.secondary" : "text.primary",
+          }}
+        >
+          {title}
+        </Typography>
+        {isEmpty && userId && isProfileOwner(userId) && (
+          <Tooltip title={`Add ${title}`}>
+            <IconButton
+              size="small"
+              onClick={handleProfileModal}
+              sx={{
+                color:
+                  theme.palette.mode === "dark"
+                    ? "text.disabled"
+                    : "text.secondary",
+                "&:hover": {
+                  color: "primary.main",
+                },
+              }}
+            >
+              <AddIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        )}
+      </Stack>
       {children}
     </Box>
+  );
+
+  const EmptyState = ({ text }: { text: string }) => (
+    <Typography sx={sectionStyles.emptyState}>{text}</Typography>
   );
 
   return (
@@ -118,6 +162,7 @@ export default function ProfileTab({
     >
       <Fade in timeout={800}>
         <Paper sx={sectionStyles.paper}>
+          {/* Edit Profile Button */}
           {userId && isProfileOwner(userId) && (
             <Zoom in>
               <Tooltip title="Edit Profile" placement="left">
@@ -140,65 +185,78 @@ export default function ProfileTab({
             </Zoom>
           )}
 
-          {openProfileDetailsModal ? (
-            profileTabInfo && (
-              <ProfileDetailsForm
-                openProfileDetailsModal={openProfileDetailsModal}
-                handleClose={handleProfileModal}
-                profileTabInfo={profileTabInfo}
-                handleProfileInfo={handleProfileInfo}
-              />
-            )
-          ) : (
-            <></>
+          {/* Profile Details Form Modal */}
+          {openProfileDetailsModal && profileTabInfo && (
+            <ProfileDetailsForm
+              openProfileDetailsModal={openProfileDetailsModal}
+              handleClose={handleProfileModal}
+              profileTabInfo={profileTabInfo}
+              handleProfileInfo={handleProfileInfo}
+            />
           )}
 
           {/* About Section */}
-          <Section title="About">
-            <Typography
-              variant="body1"
-              color="text.secondary"
-              sx={{ lineHeight: 1.7 }}
-            >
-              {profileTabInfo?.about}
-            </Typography>
+          <Section title="About" isEmpty={!profileTabInfo?.about}>
+            {profileTabInfo?.about ? (
+              <Typography
+                variant="body1"
+                color="text.secondary"
+                sx={{ lineHeight: 1.7 }}
+              >
+                {profileTabInfo.about}
+              </Typography>
+            ) : (
+              <EmptyState text="No about information provided" />
+            )}
           </Section>
 
           {/* Social Media Section */}
-          <Section title="Follow me on">
-            <Stack direction="row" gap={1} flexWrap="wrap">
-              {profileTabInfo?.socialMedia.slice(0, 10).map((socialMedia) => (
-                <Tooltip title={`Visit ${socialMedia.platform}`} key={uuidv4()}>
-                  <Chip
-                    variant="outlined"
-                    size={isMediumScreen ? "small" : "medium"}
-                    sx={sectionStyles.chip}
-                    avatar={
-                      <SocialIcon
-                        network={socialMedia.platform.toLowerCase()}
-                        url={socialMedia.url}
-                        label={socialMedia.platform}
-                        style={{
-                          width: isMediumScreen ? "1.3rem" : "1.6rem",
-                          height: isMediumScreen ? "1.3rem" : "1.6rem",
-                          marginRight: 0,
-                        }}
-                      />
-                    }
-                    label={socialMedia.platform}
-                    onClick={() => window.open(socialMedia.url, "_blank")}
-                  />
-                </Tooltip>
-              ))}
-            </Stack>
+          <Section
+            title="Follow me on"
+            isEmpty={!profileTabInfo?.socialMedia?.length}
+          >
+            {profileTabInfo?.socialMedia?.length ? (
+              <Stack direction="row" gap={1} flexWrap="wrap">
+                {profileTabInfo.socialMedia.slice(0, 10).map((socialMedia) => (
+                  <Tooltip
+                    title={`Visit ${socialMedia.platform}`}
+                    key={uuidv4()}
+                  >
+                    <Chip
+                      variant="outlined"
+                      size={isMediumScreen ? "small" : "medium"}
+                      sx={sectionStyles.chip}
+                      avatar={
+                        <SocialIcon
+                          network={socialMedia.platform.toLowerCase()}
+                          url={socialMedia.url}
+                          label={socialMedia.platform}
+                          style={{
+                            width: isMediumScreen ? "1.3rem" : "1.6rem",
+                            height: isMediumScreen ? "1.3rem" : "1.6rem",
+                            marginRight: 0,
+                          }}
+                        />
+                      }
+                      label={socialMedia.platform}
+                      onClick={() => window.open(socialMedia.url, "_blank")}
+                    />
+                  </Tooltip>
+                ))}
+              </Stack>
+            ) : (
+              <EmptyState text="No social media profiles linked" />
+            )}
           </Section>
 
           {/* Tech Skills Section */}
-          <Section title="Tech Skills">
-            <Stack direction="row" gap={1} flexWrap="wrap">
-              {profileTabInfo?.skills
-                .slice(0, 10)
-                .map((skill) => (
+          <Section
+            title="Tech Skills"
+            isEmpty={!profileTabInfo?.skills?.length}
+          >
+            {profileTabInfo?.skills?.length ? (
+              <Stack direction="row" gap={1} flexWrap="wrap">
+                {profileTabInfo.skills.slice(0, 10).map((skill) => (
                   <Chip
                     label={skill}
                     key={uuidv4()}
@@ -207,29 +265,34 @@ export default function ProfileTab({
                     sx={sectionStyles.chip}
                   />
                 ))}
-              {profileTabInfo && profileTabInfo?.skills.length > 10 && (
-                <Button
-                  startIcon={<AddIcon />}
-                  onClick={() => setOpenSkillsModal(true)}
-                  variant="outlined"
-                  size="small"
-                  sx={{
-                    ...sectionStyles.chip,
-                    height: "2rem",
-                  }}
-                >
-                  {profileTabInfo.skills.length - 10} more
-                </Button>
-              )}
-            </Stack>
+                {profileTabInfo.skills.length > 10 && (
+                  <Button
+                    startIcon={<AddIcon />}
+                    onClick={() => setOpenSkillsModal(true)}
+                    variant="outlined"
+                    size="small"
+                    sx={{
+                      ...sectionStyles.chip,
+                      height: "2rem",
+                    }}
+                  >
+                    {profileTabInfo.skills.length - 10} more
+                  </Button>
+                )}
+              </Stack>
+            ) : (
+              <EmptyState text="No skills listed" />
+            )}
           </Section>
 
           {/* Languages Section */}
-          <Section title="Languages">
-            <Stack direction="row" gap={1} flexWrap="wrap">
-              {profileTabInfo?.languages
-                .slice(0, 10)
-                .map((language) => (
+          <Section
+            title="Languages"
+            isEmpty={!profileTabInfo?.languages?.length}
+          >
+            {profileTabInfo?.languages?.length ? (
+              <Stack direction="row" gap={1} flexWrap="wrap">
+                {profileTabInfo.languages.slice(0, 10).map((language) => (
                   <Chip
                     label={language}
                     key={uuidv4()}
@@ -238,18 +301,19 @@ export default function ProfileTab({
                     sx={sectionStyles.chip}
                   />
                 ))}
-            </Stack>
+              </Stack>
+            ) : (
+              <EmptyState text="No languages specified" />
+            )}
           </Section>
 
           {/* Modals */}
-          {openSkillsModal && profileTabInfo ? (
+          {openSkillsModal && profileTabInfo && (
             <SkillsModal
               openSkillsModal
               handleClose={() => setOpenSkillsModal(false)}
               skills={profileTabInfo.skills}
             />
-          ) : (
-            <Box />
           )}
         </Paper>
       </Fade>
