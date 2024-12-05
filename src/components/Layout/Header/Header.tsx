@@ -94,8 +94,8 @@ export default function Header() {
         <img
           src={
             theme.palette.mode === "dark"
-              ? `${process.env.PUBLIC_URL}/assets/logo/logo-dark.webp`
-              : `${process.env.PUBLIC_URL}/assets/logo/logo-light.webp`
+              ? `/assets/logo/logo-dark.webp`
+              : `/assets/logo/logo-light.webp`
           }
           alt="CollabDev"
           width={theme.palette.mode === "dark" ? "140" : "125"}

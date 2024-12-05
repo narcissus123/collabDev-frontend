@@ -261,7 +261,7 @@ const HomePage = () => {
               >
                 <Box
                   component="img"
-                  src="/assets/collaboration.svg"
+                  src={process.env.PUBLIC_URL + "/assets/collaboration.svg"}
                   alt="Where Ideas Meet"
                   sx={{
                     width: "100%",
