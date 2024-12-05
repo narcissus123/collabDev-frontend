@@ -45,8 +45,7 @@ export default function SignUpContainer({
     reset,
   } = useForm<FormValues>({
     defaultValues: {
-      firstName: "",
-      lastName: "",
+      name: "",
       email: "",
       password: "",
     },
