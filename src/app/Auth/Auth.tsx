@@ -4,13 +4,13 @@ import { Suspense } from "react";
 import { Box } from "@mui/material";
 
 import Layout from "../../components/Layout/Layout";
-import { privateRoutes } from "../../configs/Routes";
+import { protectedRoutes } from "../../configs/Routes";
 
 export default function Auth() {
   return (
     <Routes>
       <Route path="/" element={<Layout header={true} footer={true} />}>
-        {privateRoutes.map((route, index) => (
+        {protectedRoutes.map((route, index) => (
           <Route
             key={index}
             path={route.path}
