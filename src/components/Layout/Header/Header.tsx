@@ -269,7 +269,7 @@ export default function Header() {
             {menuItems.map((item, index) => (
               <Box key={index}>
                 <Link
-                  to={`http://localhost:3000${item.to}`}
+                  to={item.to}
                   style={{
                     color:
                       theme.palette.mode === "dark" ? "#FFFFFF" : "#000000",
