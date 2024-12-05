@@ -1,18 +1,15 @@
-import { GitHub } from "@mui/icons-material";
 import { Stack, useMediaQuery, useTheme } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
-import Divider from "@mui/material/Divider";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Grid from "@mui/material/Grid";
 import Link from "@mui/material/Link";
-import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 
 import { SignInInputData } from "../../../configs/data/RegistrationInputData";
 import { SignInDeveloper } from "../../../core/services/api/developer-authentication.api";
@@ -71,119 +68,118 @@ export default function SignInContainer({
   };
 
   return (
-    <>
-      <ToastContainer />
-      <Grid
-        component={Paper}
-        sx={{
-          borderTopLeftRadius: "6px",
-          background: "#ffffff",
-          width: isMediumScreen ? "90%" : "70%",
-          height: isMediumScreen ? "83vh" : "90vh",
-          position: "absolute",
-          bottom: "0",
-          right: "0",
-          [theme.breakpoints.up("lg")]: {
-            borderRadius: "8px",
-            width: "48%",
-            top: "50%",
-            right: { xs: "0.6%", lg: "11%" },
-            transform: {
-              xs: "translate(-0.6%, -50%)",
-              lg: "translate(-11%, -50%)",
-            },
-          },
-        }}
-      >
-        <Box
+    <Box
+      sx={{
+        width: "100%",
+        maxWidth: "450px",
+        mx: "auto",
+        p: { xs: 2, sm: 3, md: 4 },
+      }}
+    >
+      <Stack spacing={3} alignItems="center">
+        <Avatar
           sx={{
-            py: { sm: 4, md: 5 },
-            px: { sm: 4, md: 7 },
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            height: "100%",
+            m: { sm: 1, md: 1 },
+            bgcolor: "secondary.main",
+            width: { sm: "57px", md: "57px" },
+            height: { sm: "57px", md: "57px" },
           }}
+          variant="square"
+          alt="CollabDev"
         >
-          <Avatar
-            sx={{
-              m: { sm: 1, md: 1 },
-              bgcolor: "secondary.main",
-              width: { sm: "40px", md: "57px" },
-              height: { sm: "40px", md: "57px" },
-            }}
-            variant="square"
-            alt="Logo"
-          >
-            <img
-              src={`${process.env.PUBLIC_URL}/assets/logo/logo-light.webp`}
-              alt="Logo"
-              width={isMediumScreen ? "90" : "135"}
-              height={isMediumScreen ? "30" : "45"}
-            />
-          </Avatar>
-          <Typography component="h1" variant={isMediumScreen ? "h5" : "h3"}>
-            Sign in
-          </Typography>
-          <Box
-            component="form"
-            noValidate
-            onSubmit={handleSubmit(onSubmit)}
-            sx={{ mt: { sm: 1, md: 3 }, width: "100%" }}
-          >
-            {SignInInputData.map((data, index) => (
-              <Input
-                key={index}
-                id={data.id}
-                ty={data.type}
-                placeholder={data.placeholder}
-                labelText={data.labelText}
-                sx={data.sx}
-                margin={data.margin as "normal" | "dense"}
-                inputSize={"small"}
-                required={data.required}
-                fullWidth={data.fullWidth}
-                errors={errors}
-                multiline={data.multiline}
-                variant={data.variant as "standard" | "outlined" | "filled"}
-                {...(register &&
-                  register(data.register.name as "email" | "password", {
-                    ...data.register.schema,
-                  }))}
-              />
-            ))}
+          <img
+            src={`${process.env.PUBLIC_URL}/assets/logo/logo-light.webp`}
+            alt="CollabDev"
+            width={isMediumScreen ? "135" : "135"}
+            height={isMediumScreen ? "45" : "45"}
+          />
+        </Avatar>
 
+        <Typography
+          variant="h4"
+          fontWeight="700"
+          sx={{ textTransform: "none" }}
+        >
+          Sign in
+        </Typography>
+
+        <Box
+          component="form"
+          noValidate
+          onSubmit={handleSubmit(onSubmit)}
+          sx={{ width: "100%" }}
+        >
+          <Grid container spacing={2}>
+            {SignInInputData.map((data, index) => (
+              <Grid item xs={12} key={index}>
+                <Input
+                  key={index}
+                  id={data.id}
+                  ty={data.type}
+                  placeholder={data.placeholder}
+                  labelText={data.labelText}
+                  sx={data.sx}
+                  margin={data.margin as "normal" | "dense"}
+                  inputSize={"small"}
+                  required={data.required}
+                  fullWidth={data.fullWidth}
+                  errors={errors}
+                  multiline={data.multiline}
+                  variant={data.variant as "standard" | "outlined" | "filled"}
+                  {...(register &&
+                    register(data.register.name as "email" | "password", {
+                      ...data.register.schema,
+                    }))}
+                />
+              </Grid>
+            ))}
+          </Grid>
+
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            size="medium"
+            sx={{
+              mt: 3,
+              mb: 2,
+              py: 1,
+              fontSize: "0.8rem",
+              fontWeight: "600",
+              borderRadius: 2,
+            }}
+          >
+            Sign in
+          </Button>
+
+          <Stack
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexDirection: {
+                xs: "column",
+                sm: "row",
+                md: "column",
+                lg: "row",
+              },
+            }}
+          >
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
               label="Remember me"
+              sx={{ whiteSpace: "nowrap" }}
             />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              size={isMediumScreen ? "medium" : "small"}
-              sx={{ mt: 4, mb: 1.5, fontSize: { md: "0.9rem" } }}
+            <Link
+              href="#"
+              variant="body2"
+              onClick={() => handleSignIn(false)}
+              sx={{ whiteSpace: "nowrap" }}
             >
-              Sign In
-            </Button>
-            <Grid container>
-              <Grid item xs>
-                <Link href="#" variant="body2">
-                  Forgot password?
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link
-                  href="#"
-                  variant="body2"
-                  onClick={() => handleSignIn(false)}
-                >
-                  {"Don't have an account? Sign Up"}
-                </Link>
-              </Grid>
-            </Grid>
-          </Box>
-          <Divider sx={{ width: "100%", pt: 1.5, pb: 2 }}>or</Divider>
+              {"Don't have an account? Sign up"}
+            </Link>
+          </Stack>
+          {/* <Divider sx={{ width: "100%", pt: 1.5, pb: 2 }}>or</Divider>
           <Stack spacing={1}>
             <Button
               type="submit"
@@ -231,9 +227,9 @@ export default function SignInContainer({
             >
               Sign in with GitHub
             </Button>
-          </Stack>
+          </Stack> */}
         </Box>
-      </Grid>
-    </>
+      </Stack>
+    </Box>
   );
 }
