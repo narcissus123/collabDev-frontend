@@ -7,6 +7,7 @@ import {
   Checkbox,
   Zoom,
   Tooltip,
+  Box,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -215,7 +216,6 @@ const BadgesBoard = ({
           alignItems: "center",
           px: 2,
           height: "100%",
-          gap: 1,
         }}
       >
         <Stack
@@ -225,16 +225,15 @@ const BadgesBoard = ({
             justifyContent: "flex-start",
             alignItems: "flex-start",
             flexWrap: "wrap",
-            height: "100%",
             width: "100%",
-            gap: 1,
-            flex: 1,
+            gap: "8px",
+            rowGap: "8px",
           }}
         >
           {profileTabInfo?.badges.map(
             (path, index) =>
               path.length > 3 && (
-                <div
+                <Box
                   key={index}
                   style={{
                     position: "relative",
@@ -268,7 +267,7 @@ const BadgesBoard = ({
                       opacity: isDeleteMode ? 0.9 : 1,
                     }}
                   />
-                </div>
+                </Box>
               )
           )}
         </Stack>
