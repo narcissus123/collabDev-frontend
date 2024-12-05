@@ -80,20 +80,27 @@ export default function Header() {
       }}
     >
       <Avatar
-        src={
-          theme.palette.mode === "dark"
-            ? `${process.env.PUBLIC_URL}/assets/logo/logo-dark.webp`
-            : `${process.env.PUBLIC_URL}/assets/logo/logo-light.webp`
-        }
         sx={{
-          width: isMediumScreen ? "2.3rem" : "2.7rem",
-          height: isMediumScreen ? "2.3rem" : "2.7rem",
+          m: { sm: 1, md: 1 },
+          bgcolor: "secondary.main",
+          width: theme.palette.mode === "dark" ? "40px" : "47px",
+          height: theme.palette.mode === "dark" ? "47px" : "47px",
+          cursor: "pointer",
         }}
         variant="square"
-        alt="CollabDev logo"
+        alt="CollabDev"
         onClick={() => navigate("/")}
       >
-        CollabDev
+        <img
+          src={
+            theme.palette.mode === "dark"
+              ? `${process.env.PUBLIC_URL}/assets/logo/logo-dark.webp`
+              : `${process.env.PUBLIC_URL}/assets/logo/logo-light.webp`
+          }
+          alt="CollabDev"
+          width={theme.palette.mode === "dark" ? "140" : "125"}
+          height={theme.palette.mode === "dark" ? "38" : "35"}
+        />
       </Avatar>
       <Toolbar
         component="nav"
@@ -108,11 +115,10 @@ export default function Header() {
       >
         {navLinkItems.map((section) => (
           <Link
-            color="inherit"
             key={section.title}
             to={section.url}
             style={{
-              color: theme.palette.mode === "dark" ? "white" : "black",
+              color: theme.palette.mode === "dark" ? "white" : "#000000",
               fontWeight: "600",
               textDecoration: "none",
               cursor: "pointer",
@@ -209,11 +215,21 @@ export default function Header() {
             onClose={handleClose}
             onClick={handleClose}
             PaperProps={{
-              elevation: 0,
+              elevation: 3,
               sx: {
                 overflow: "visible",
-                filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+                filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.15))",
                 mt: 1.5,
+                backgroundColor:
+                  theme.palette.mode === "dark"
+                    ? alpha(theme.palette.background.paper, 0.9)
+                    : alpha(theme.palette.background.paper, 0.95),
+                backdropFilter: "blur(8px)",
+                border: `1px solid ${
+                  theme.palette.mode === "dark"
+                    ? alpha(theme.palette.common.white, 0.1)
+                    : alpha(theme.palette.common.black, 0.1)
+                }`,
                 "& .MuiAvatar-root": {
                   width: 32,
                   height: 32,
@@ -228,9 +244,22 @@ export default function Header() {
                   right: 14,
                   width: 10,
                   height: 10,
-                  bgcolor: "background.paper",
+                  bgcolor:
+                    theme.palette.mode === "dark"
+                      ? alpha(theme.palette.background.paper, 0.9)
+                      : alpha(theme.palette.background.paper, 0.95),
                   transform: "translateY(-50%) rotate(45deg)",
                   zIndex: 0,
+                  borderLeft: `1px solid ${
+                    theme.palette.mode === "dark"
+                      ? alpha(theme.palette.common.white, 0.1)
+                      : alpha(theme.palette.common.black, 0.1)
+                  }`,
+                  borderTop: `1px solid ${
+                    theme.palette.mode === "dark"
+                      ? alpha(theme.palette.common.white, 0.1)
+                      : alpha(theme.palette.common.black, 0.1)
+                  }`,
                 },
               },
             }}
@@ -242,7 +271,8 @@ export default function Header() {
                 <Link
                   to={`http://localhost:3000${item.to}`}
                   style={{
-                    color: "#3B3B3F",
+                    color:
+                      theme.palette.mode === "dark" ? "#FFFFFF" : "#000000",
                     textDecoration: "none",
                     width: "100%",
                   }}
@@ -269,7 +299,14 @@ export default function Header() {
                   </MenuItem>
                 </Link>
 
-                {item.divider && <Divider />}
+                {item.divider && (
+                  <Divider
+                    sx={{
+                      color:
+                        theme.palette.mode === "dark" ? "#FFFFFF" : "#000000",
+                    }}
+                  />
+                )}
               </Box>
             ))}
           </Menu>
