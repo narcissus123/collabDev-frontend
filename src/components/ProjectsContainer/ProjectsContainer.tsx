@@ -276,7 +276,7 @@ export default function ProjectsContainer() {
             >
               Previous
             </Button>
-            {projectData?.data?.total && (
+            {projectData?.data?.total ? (
               <Button
                 disabled={currentPage * pageSize >= projectData?.data?.total}
                 onClick={() => {
@@ -290,6 +290,8 @@ export default function ProjectsContainer() {
               >
                 Next
               </Button>
+            ) : (
+              <></>
             )}
           </Stack>
         </Box>
