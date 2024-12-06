@@ -256,27 +256,28 @@ export default function ProjectsContainer() {
               />
             </Suspense>
           </ErrorBoundary>
-          <Stack
-            display="flex"
-            direction="row"
-            spacing={2}
-            mt={2}
-            sx={{ justifyContent: "center" }}
-          >
-            <Button
-              onClick={() => {
-                const nextPage = currentPage - 1;
-                queryParams.set("page", nextPage.toString());
-                startTransition(() => {
-                  navigate({ search: queryParams.toString() });
-                  setQueryString(`?${queryParams.toString()}`);
-                });
-              }}
-              disabled={currentPage === 1}
+          {projectData?.data?.total ? (
+            <Stack
+              display="flex"
+              direction="row"
+              spacing={2}
+              mt={2}
+              sx={{ justifyContent: "center" }}
             >
-              Previous
-            </Button>
-            {projectData?.data?.total ? (
+              <Button
+                onClick={() => {
+                  const nextPage = currentPage - 1;
+                  queryParams.set("page", nextPage.toString());
+                  startTransition(() => {
+                    navigate({ search: queryParams.toString() });
+                    setQueryString(`?${queryParams.toString()}`);
+                  });
+                }}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </Button>
+
               <Button
                 disabled={currentPage * pageSize >= projectData?.data?.total}
                 onClick={() => {
@@ -290,10 +291,10 @@ export default function ProjectsContainer() {
               >
                 Next
               </Button>
-            ) : (
-              <></>
-            )}
-          </Stack>
+            </Stack>
+          ) : (
+            <></>
+          )}
         </Box>
       </Grid>
     </Stack>
