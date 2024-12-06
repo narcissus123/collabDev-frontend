@@ -3,7 +3,11 @@ import { toast } from "react-toastify";
 
 import { getItem } from "../storage/Storage";
 import { SignOutDeveloper } from "../api/developer-authentication.api";
-
+console.log("process.env:", process.env);
+console.log(
+  "process.env.NODE_ENV === production:",
+  process.env.NODE_ENV === "production"
+);
 const baseURL =
   process.env.NODE_ENV === "production"
     ? process.env.REACT_APP_SERVER_URL
