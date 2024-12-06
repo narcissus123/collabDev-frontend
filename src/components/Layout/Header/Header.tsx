@@ -24,6 +24,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { userProfileMenuItems } from "../../../configs/data/HeaderData";
 import { useAuth } from "../../../context/AuthContext/AuthContext";
 import { useMode } from "../../../context/MUIThemeContext/MUIThemeContext";
+import { getImageUrl } from "../../../core/utils/ImageUtils/imageUtils";
 
 const navLinkItems = [
   { title: "Projects", url: "/projects" },
@@ -94,8 +95,8 @@ export default function Header() {
         <img
           src={
             theme.palette.mode === "dark"
-              ? `/assets/logo/logo-dark.webp`
-              : `/assets/logo/logo-light.webp`
+              ? getImageUrl("common/logo-dark.webp")
+              : getImageUrl("common/logo-light.webp")
           }
           alt="CollabDev"
           width={theme.palette.mode === "dark" ? "140" : "125"}

@@ -73,11 +73,7 @@ const CustomMenu = ({
           return (
             <Box key={index}>
               <MenuItem onClick={onToggleClose}>
-                <Link
-                  component={ReactRouterLink}
-                  to={item.to}
-                  rel="noopener"
-                >
+                <Link component={ReactRouterLink} to={item.to} rel="noopener">
                   {item.icon && <ListItemIcon>{item.icon}</ListItemIcon>}
                   {item.text}
                 </Link>

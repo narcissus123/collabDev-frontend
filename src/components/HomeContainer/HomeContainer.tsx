@@ -14,6 +14,7 @@ import { Suspense } from "react";
 import { useNavigate } from "react-router";
 import { Code, Chat, Group, AccountBox } from "@mui/icons-material";
 import { useAuth } from "../../context/AuthContext/AuthContext";
+import { getImageUrl } from "../../core/utils/ImageUtils/imageUtils";
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -261,7 +262,7 @@ const HomePage = () => {
               >
                 <Box
                   component="img"
-                  src={process.env.PUBLIC_URL + "/assets/collaboration.svg"}
+                  src={getImageUrl("common/collaboration.svg")}
                   alt="Where Ideas Meet"
                   sx={{
                     width: "100%",
