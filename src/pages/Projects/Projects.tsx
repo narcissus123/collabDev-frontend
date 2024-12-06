@@ -16,7 +16,7 @@ export default function Projects() {
             bg: "red",
           }}
         >
-          Yessssssssssssssssssssss
+          Yes
         </Box>
       }
     >
