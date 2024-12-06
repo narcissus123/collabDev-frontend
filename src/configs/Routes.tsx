@@ -32,7 +32,7 @@ interface Routes {
   };
 }
 
-export const publicRoutes = [
+export const commonRoutes = [
   {
     path: Config.Routes.homePage,
     element: (
@@ -62,22 +62,6 @@ export const publicRoutes = [
     element: (
       <Suspense fallback={<Skeleton variant="rectangular" height={400} />}>
         <LazyAbout />
-      </Suspense>
-    ),
-  },
-  {
-    path: Config.Routes.registerationPage,
-    element: (
-      <Suspense fallback={<Skeleton variant="rectangular" height={400} />}>
-        <LazyRegisteration />
-      </Suspense>
-    ),
-  },
-  {
-    path: Config.Routes.logOutPage,
-    element: (
-      <Suspense fallback={<Skeleton variant="rectangular" height={400} />}>
-        <LazyLogOut />
       </Suspense>
     ),
   },
@@ -115,46 +99,32 @@ export const publicRoutes = [
   },
 ];
 
-// export const publicRoutes: Routes[] = [
-//   {
-//     path: Config.Routes.homePage,
-//     element: <LazyHome />,
-//   },
-//   {
-//     path: Config.Routes.projectsPage,
-//     element: <LazyProjects />,
-//   },
-//   {
-//     path: Config.Routes.projectDetailsPage,
-//     element: <LazyProjectsDetails />,
-//   },
-//   {
-//     path: Config.Routes.aboutPage,
-//     element: <LazyAbout />,
-//   },
-//   {
-//     path: Config.Routes.registerationPage,
-//     element: <LazyRegisteration />,
-//   },
-//   {
-//     path: Config.Routes.logOutPage,
-//     element: <LazyLogOut />,
-//   },
-//   {
-//     path: Config.Routes.userProfilePage,
-//     element: <LazyUserProfile />,
-//     children: {
-//       path: Config.Routes.chatPage,
-//       element: <LazyChatRoom socket={null} />,
-//     },
-//   },
-//   {
-//     path: Config.Routes.pageNotFound,
-//     element: <LazyNotFound />,
-//   },
-// ];
+export const publicRoutes = [
+  ...commonRoutes,
+  {
+    path: Config.Routes.registerationPage,
+    element: (
+      <Suspense fallback={<Skeleton variant="rectangular" height={400} />}>
+        <LazyRegisteration />
+      </Suspense>
+    ),
+  },
+];
+
+export const protectedRoutes = [
+  ...commonRoutes,
+  {
+    path: Config.Routes.logOutPage,
+    element: (
+      <Suspense fallback={<Skeleton variant="rectangular" height={400} />}>
+        <LazyLogOut />
+      </Suspense>
+    ),
+  },
+];
 
 export const privateRoutes: Routes[] = [
+  ...commonRoutes,
   {
     path: Config.Routes.adminDashboardPage,
     element: <LazyAdminDashboard />,
@@ -166,9 +136,5 @@ export const privateRoutes: Routes[] = [
   {
     path: Config.Routes.CallbackPage,
     element: <LazyCallback />,
-  },
-  {
-    path: Config.Routes.pageNotFound,
-    element: <LazyNotFound />,
   },
 ];

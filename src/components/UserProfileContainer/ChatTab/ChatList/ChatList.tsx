@@ -92,6 +92,28 @@ const ChatList = ({ socket }: ChatListProps) => {
   const [roomsWithNewMessages, setRoomsWithNewMessages] = useState<string[]>(
     []
   );
+  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
+  const [imageLoading, setImageLoading] = useState<Record<string, boolean>>({});
+  const [conversationsList, setConversationsList] = useState<Conversation[]>(
+    []
+  );
+
+  useEffect(() => {
+    // Initialize loading states for all conversations
+    const initialLoadingState: Record<string, boolean> = {};
+    const initialErrorState: Record<string, boolean> = {};
+
+    conversationsList.forEach((conversation) => {
+      // Only set loading true if there's an avatar to load
+      initialLoadingState[conversation.participant._id] = Boolean(
+        conversation.participant.avatar
+      );
+      initialErrorState[conversation.participant._id] = false;
+    });
+
+    setImageLoading(initialLoadingState);
+    setImageErrors(initialErrorState);
+  }, [conversationsList]);
 
   const handleTabClick = (
     event: React.MouseEvent<HTMLDivElement>,
@@ -106,23 +128,21 @@ const ChatList = ({ socket }: ChatListProps) => {
     if (socket) {
       const participantId = participant._id;
       const currentRoom = getRoom(participantId, userId as string);
-
-      const newRoomList = roomsWithNewMessages.filter(
-        (room) => room === currentRoom
-      );
-      setRoomsWithNewMessages(newRoomList);
-      socket.emit("messageSeen", {
-        receiverId: userId,
-        senderId: participantId,
-      });
+      if (roomsWithNewMessages.includes(currentRoom)) {
+        socket.emit("messageSeen", {
+          receiverId: userId,
+          senderId: participantId,
+        });
+        const newRoomList = roomsWithNewMessages.filter(
+          (room) => room === currentRoom
+        );
+        setRoomsWithNewMessages(newRoomList);
+      }
       socket.emit("joinRoom", { userId, participantId, prevRoom });
     }
   };
 
   const user = JSON.parse(getItem("user"));
-  const [conversationsList, setConversationsList] = useState<Conversation[]>(
-    []
-  );
 
   const fetchConversationsList = useCallback(async () => {
     try {
@@ -194,9 +214,46 @@ const ChatList = ({ socket }: ChatListProps) => {
               >
                 <ListItemIcon>
                   <Avatar
-                    alt="Remy Sharp"
-                    src={`https://collabdev-resume-storage-2024.s3.us-east-2.amazonaws.com/${conversation.participant.avatar}`}
-                  />
+                    alt={conversation.participant.name}
+                    sx={{
+                      opacity: imageLoading[conversation.participant._id]
+                        ? 0.5
+                        : 1,
+                      transition: "opacity 0.3s ease",
+                    }}
+                    src={
+                      conversation.participant.avatar &&
+                      !imageErrors[conversation.participant._id]
+                        ? `https://collabdev-resume-storage-2024.s3.us-east-2.amazonaws.com/${conversation.participant.avatar}`
+                        : undefined
+                    }
+                    onError={() => {
+                      if (!imageErrors[conversation.participant._id]) {
+                        // Only update if not already errored
+                        setImageErrors((prev) => ({
+                          ...prev,
+                          [conversation.participant._id]: true,
+                        }));
+                        setImageLoading((prev) => ({
+                          ...prev,
+                          [conversation.participant._id]: false,
+                        }));
+                      }
+                    }}
+                    onLoad={() => {
+                      if (imageLoading[conversation.participant._id]) {
+                        // Only update if still loading
+                        setImageLoading((prev) => ({
+                          ...prev,
+                          [conversation.participant._id]: false,
+                        }));
+                      }
+                    }}
+                  >
+                    {(!conversation.participant.avatar ||
+                      imageErrors[conversation.participant._id]) &&
+                      conversation.participant.name.charAt(0).toUpperCase()}
+                  </Avatar>
                 </ListItemIcon>
                 <ListItemText
                   primary={
@@ -213,7 +270,7 @@ const ChatList = ({ socket }: ChatListProps) => {
                         component="span"
                         sx={{ fontSize: "0.8rem", color: "primary.main" }}
                       >
-                        {formatChatDate(conversation.latestMessage.updatedAt)}
+                        {formatChatDate(conversation.latestMessage.createdAt)}
                       </Typography>
                       <Box
                         sx={{

@@ -75,7 +75,7 @@ const CustomMenu = ({
               <MenuItem onClick={onToggleClose}>
                 <Link
                   component={ReactRouterLink}
-                  to={`http://localhost:3000${item.to}`}
+                  to={item.to}
                   rel="noopener"
                 >
                   {item.icon && <ListItemIcon>{item.icon}</ListItemIcon>}

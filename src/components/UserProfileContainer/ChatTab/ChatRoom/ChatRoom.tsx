@@ -59,16 +59,30 @@ function ChatRoom({ socket }: ChatRoomProp) {
   const [page, setPage] = useState(2);
   const [hasMore, setHasMore] = useState(true);
   const [hover, setHover] = useState<string>("");
-
+  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
+  const [imageLoading, setImageLoading] = useState<Record<string, boolean>>({});
   const handleMouseEnter = (id: string) => setHover(id);
   const handleMouseLeave = (id: string) => setHover(id);
+  const [messages, setMessages] = useState<any[]>([]);
+
+  useEffect(() => {
+    const initialLoadingState: Record<string, boolean> = {};
+    const initialErrorState: Record<string, boolean> = {};
+
+    messages.forEach((msg) => {
+      // Only set loading true if there's an avatar to load
+      initialLoadingState[msg.sender._id] = Boolean(msg.sender.avatar);
+      initialErrorState[msg.sender._id] = false;
+    });
+
+    setImageLoading(initialLoadingState);
+    setImageErrors(initialErrorState);
+  }, [messages]);
 
   const sender = JSON.parse(getItem("user"));
   const { handleSubmit, reset, register } = useForm<ChatMessage>({
     defaultValues: {},
   });
-
-  const [messages, setMessages] = useState<any[]>([]);
 
   const fetchMessages = useCallback(async () => {
     try {
@@ -238,7 +252,7 @@ function ChatRoom({ socket }: ChatRoomProp) {
               >
                 {messages?.map((msg, index) => {
                   const { formattedTime, formattedDay } = formatDate(
-                    msg.updatedAt
+                    msg.createdAt
                   );
                   return (
                     <Box key={uuidv4()}>
@@ -273,8 +287,40 @@ function ChatRoom({ socket }: ChatRoomProp) {
                         >
                           <Avatar
                             alt={msg?.sender?.name}
-                            src={`https://collabdev-resume-storage-2024.s3.us-east-2.amazonaws.com/${msg?.sender?.avatar}`}
-                          />
+                            sx={{
+                              opacity: imageLoading[msg.sender._id] ? 0.5 : 1,
+                              transition: "opacity 0.3s ease",
+                            }}
+                            src={
+                              msg.sender.avatar && !imageErrors[msg.sender._id]
+                                ? `https://collabdev-resume-storage-2024.s3.us-east-2.amazonaws.com/${msg.sender.avatar}`
+                                : undefined
+                            }
+                            onError={() => {
+                              if (!imageErrors[msg.sender._id]) {
+                                setImageErrors((prev) => ({
+                                  ...prev,
+                                  [msg.sender._id]: true,
+                                }));
+                                setImageLoading((prev) => ({
+                                  ...prev,
+                                  [msg.sender._id]: false,
+                                }));
+                              }
+                            }}
+                            onLoad={() => {
+                              if (imageLoading[msg.sender._id]) {
+                                setImageLoading((prev) => ({
+                                  ...prev,
+                                  [msg.sender._id]: false,
+                                }));
+                              }
+                            }}
+                          >
+                            {(!msg.sender.avatar ||
+                              imageErrors[msg.sender._id]) &&
+                              msg.sender.name.charAt(0).toUpperCase()}
+                          </Avatar>
                         </ListItemIcon>
                         <Grid
                           container

@@ -90,7 +90,7 @@ export default function ProjectsContainer() {
   const location = useLocation();
   const navigate = useNavigate();
   const [, setFilters] = useState({});
-  const defaultPageSize = 2;
+  const defaultPageSize = 6;
   const queryParams = new URLSearchParams(location.search);
   const currentPage = parseInt(queryParams.get("page") || "1", 10);
   const [pageSize, setPageSize] = useState(
@@ -183,7 +183,7 @@ export default function ProjectsContainer() {
               size="small"
               sx={{ color: "text.secondary" }}
             >
-              {[2, 5, 10, 20].map((size) => (
+              {[6, 12, 18, 24].map((size) => (
                 <MenuItem
                   key={size}
                   value={size}

@@ -1,46 +1,143 @@
-# Getting Started with Create React App
+# CollabDev 🤝
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+[![TypeScript](https://img.shields.io/badge/TypeScript-4.9.5-blue.svg)](https://www.typescriptlang.org/)
+[![Express](https://img.shields.io/badge/Express-4.18.2-green.svg)](https://expressjs.com/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-5.0.0-green.svg)](https://www.mongodb.com/)
+[![Socket.IO](https://img.shields.io/badge/Socket.IO-4.6.1-black.svg)](https://socket.io/)
+[![Vercel](https://img.shields.io/badge/Vercel-Deployment-black.svg)](https://vercel.com/)
+[![Heroku](https://img.shields.io/badge/Heroku-Deployment-purple.svg)](https://heroku.com/)
 
-## Available Scripts
+CollabDev is an innovative platform that transforms how developers connect and collaborate on projects. Whether you're passionate about coding and want to join exciting projects, or you're looking for talented developers to bring your ideas to life, CollabDev provides the perfect environment for meaningful collaboration. Our platform emphasizes real-world project experience and genuine connections in the development community.
 
-In the project directory, you can run:
+## 🌟 Why CollabDev?
 
-### `npm start`
+Finding the right project or collaborator can be challenging in the vast developer landscape. CollabDev solves this by providing:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- **Meaningful Connections**: Connect with developers who share your interests and complement your skills
+- **Real Projects**: Work on actual projects rather than just coding exercises
+- **Streamlined Collaboration**: Built-in tools for project discovery and team communication
+- **Growth Opportunities**: Perfect for both experienced developers and newcomers looking to gain hands-on experience and enjoy collaborative development
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## 🚀 Key Features
 
-### `npm test`
+### Project Discovery & Management
+- Advanced filtering capabilities
+- Detailed project profiles with tech stack, goals, requirements, ...
+- Project browsing with sorting and pagination
+- Like projects to show interest and support
+- Interactive Home Page (Coming Soon)
+- Project settings page for managing collaborators, project ownership, and project lifecycle  (coming soon)
+- Progress tracking dashboard (Coming)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Collaboration Tools
+- Real-time chat functionality
+- Structured collaboration requests system
+- Personalized invitation messages
+- Enhanced chat features - search, reply, presence status (Coming)
+- Team coordination tools (Coming)
 
-### `npm run build`
+### Professional Profiles
+- Skill showcase
+- Project portfolio
+- Customizable user profiles
+- Profile image storage using AWS S3
+- User search functionality (Coming Soon)
+- AI-powered skill matching (Coming)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Security & Authentication
+- JWT-based authentication
+- Role-based access control
+- Secure data handling
+- Passwordless authentication using Okta (Coming Soon)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+_This is just the beginning - many more features are in our development pipeline!_
 
-### `npm run eject`
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 🛠 Technology Stack
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### Backend
+- **Framework**: Express.js with TypeScript
+- **Database**: MongoDB with Mongoose
+- **Real-time Communication**: Socket.IO
+- **Authentication**: JWT
+- **Cloud Storage**: AWS S3
+- **API Documentation**: Swagger/OpenAPI
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### Development Tools
+- **Language**: TypeScript
+- **Code Quality**: ESLint
+- **Development Server**: Nodemon
 
-## Learn More
+### Deployment
+- **Backend**: Heroku
+- **Frontend**: Vercel
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## 🚦 Getting Started
+
+### Prerequisites
+- Node.js (v14 or higher)
+- MongoDB
+- npm/yarn
+- AWS Account (for S3 storage)
+
+### Backend Installation
+
+1. Clone the repository
+```bash
+git clone https://github.com/narcissus123/collabDev-backend.git
+cd collabDev-backend
+```
+
+2. Install dependencies
+```bash
+npm install
+```
+
+3. Configure environment variables
+```bash
+cp .env.example .env
+# Edit .env with your configurations
+```
+
+4. Start development server
+```bash
+npm run dev
+```
+
+### Frontend Installation
+
+1. Clone the repository
+```bash
+git clone https://github.com/narcissus123/collabDev-frontend.git
+cd collabDev-frontend
+```
+
+2. Install dependencies
+```bash
+npm install
+```
+
+3. Configure environment variables
+```bash
+cp .env.example .env
+# Edit .env with your configurations
+```
+
+4. Start React
+```bash
+npm start
+```
+
+## 🔗 Links
+
+- [Frontend Repository](https://github.com/narcissus123/collabDev-frontend)
+- [Backend Repository](https://github.com/narcissus123/collabDev-backend)
+
+---
+
+<p align="center">
+  <sub>Built with ❤️ by developers, for developers</sub>
+</p>

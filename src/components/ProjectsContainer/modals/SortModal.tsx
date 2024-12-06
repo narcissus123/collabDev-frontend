@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 
 function SortModal() {
   const { handleSubmit } = useForm();
-  // console.log("hi from sort");
+
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = (event: any) => {

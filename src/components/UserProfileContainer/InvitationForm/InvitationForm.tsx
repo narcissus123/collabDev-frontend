@@ -12,10 +12,8 @@ import {
 } from "@mui/material";
 import { red } from "@mui/material/colors";
 import { Controller, useForm } from "react-hook-form";
-import { useParams } from "react-router";
 import { ToastContainer, toast } from "react-toastify";
 
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { RequestInputData } from "../../../configs/data/RequestFormData";
 import { ProjectType } from "../../../configs/types/projectTypes";
 import { RequestFormType } from "../../../configs/types/requestTypes";
@@ -25,20 +23,23 @@ import useFetch from "../../../hooks/useFetch";
 import CustomButton from "../../common/CustomButton/CustomButton";
 import CustomModal from "../../common/CustomModal/CustomModal";
 import Input from "../../common/Input/Input";
-import { getUserById } from "../../../core/services/api/manage-user.api";
 import { User } from "../../../configs/types/userTypes";
 import { useAuth } from "../../../context/AuthContext/AuthContext";
 
 interface RequestFormProps {
   openInviteModal: boolean;
   handleClose: () => void;
+  userData: User;
 }
 
-const InvitationForm = ({ openInviteModal, handleClose }: RequestFormProps) => {
+const InvitationForm = ({
+  openInviteModal,
+  handleClose,
+  userData,
+}: RequestFormProps) => {
   const theme = useTheme();
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
   const { user } = useAuth();
-  const { userId } = useParams();
 
   const {
     register,
@@ -54,14 +55,6 @@ const InvitationForm = ({ openInviteModal, handleClose }: RequestFormProps) => {
     getProjectByownerId,
     user?._id
   );
-
-  const { data: userData } = useSuspenseQuery<User>({
-    queryKey: ["getUserById", userId],
-    queryFn: async () => {
-      const response = await getUserById(userId!);
-      return response.data;
-    },
-  });
 
   const onSubmit = async (data: any) => {
     try {
@@ -86,6 +79,7 @@ const InvitationForm = ({ openInviteModal, handleClose }: RequestFormProps) => {
         if (response?.status === 201) {
           toast.success("Request sent successfully!");
           reset();
+          handleClose();
         } else {
           if (response?.status === 400 || response?.status === 403) {
             toast.error("You are not signed in! Please sign in.");
@@ -137,7 +131,7 @@ const InvitationForm = ({ openInviteModal, handleClose }: RequestFormProps) => {
           <Avatar
             sx={{ bgcolor: red[500], width: 39, height: 39 }}
             aria-label="project owner"
-            src={`http://localhost:8080/public/userProfileImages/${userData?.avatar}`}
+            src={`https://collabdev-resume-storage-2024.s3.us-east-2.amazonaws.com/${userData?.avatar}`}
           />
           <Typography
             sx={{

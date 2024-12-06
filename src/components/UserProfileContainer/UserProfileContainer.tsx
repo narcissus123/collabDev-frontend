@@ -7,6 +7,7 @@ import IconButton from "@mui/material/IconButton";
 import Skeleton from "@mui/material/Skeleton";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
+import { alpha } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
@@ -44,6 +45,13 @@ export default function UserProfileContainer() {
   const [value, setValue] = useState("1");
   const { userId } = useParams();
 
+  const [modalState, setModalState] = useState({
+    openInviteModal: false,
+    openProfileDetailsModal: false,
+    openBadgesModal: false,
+    openAccountDetailstModal: false,
+  });
+
   const { data, isFetching } = useSuspenseQuery({
     queryKey: ["getUserById", userId],
     queryFn: () => getUserById(userId!),
@@ -52,6 +60,7 @@ export default function UserProfileContainer() {
   const { data: developer } = data;
 
   const queryClient = useQueryClient();
+
   const handleProfileInfo = () => {
     queryClient.invalidateQueries({ queryKey: ["getUserById", userId] });
   };
@@ -60,25 +69,53 @@ export default function UserProfileContainer() {
     setValue(newValue);
   };
 
-  // Handle edit modals:
-  const [openProfileDetailsModal, setOpenProfileDetailsModal] =
-    useState<boolean>(false);
-  const [openBadgesModal, setOpenBadgesModalModal] = useState<boolean>(false);
-  const [openInviteModal, setOpenInviteModal] = useState(false);
-  const [openAccountDetailstModal, setOpenAccountDetailstModal] =
-    useState<boolean>(false);
-
-  const handleAcountModal = useCallback(() => {
-    setOpenAccountDetailstModal((prev) => !prev);
+  // Consolidate modal handlers into one function
+  const toggleModal = useCallback((modalName: keyof typeof modalState) => {
+    setModalState((prev) => ({
+      ...prev,
+      [modalName]: !prev[modalName],
+    }));
   }, []);
 
-  const handleProfileModal = useCallback(() => {
-    setOpenProfileDetailsModal((prev) => !prev);
-  }, []);
+  const renderProfileContent = () => {
+    if (isFetching) {
+      return (
+        <Stack
+          direction={isMediumScreen ? "column" : "row"}
+          justifyContent="space-between"
+          useFlexGap
+          flexWrap="wrap"
+          gap={isMediumScreen ? 2 : 2}
+        >
+          <Skeleton
+            variant="rectangular"
+            sx={{ width: { sx: "100%", md: "70%" }, height: "25rem" }}
+          />
+          <Skeleton
+            variant="rectangular"
+            sx={{
+              width: { sx: "100%", md: "27%" },
+              height: { sx: "12.5rem", md: "25rem" },
+            }}
+          />
+        </Stack>
+      );
+    }
 
-  const handleBadgesModal = useCallback(() => {
-    setOpenBadgesModalModal((prev) => !prev);
-  }, []);
+    return (
+      <QueryErrorBoundary>
+        {developer && (
+          <ProfileTab
+            handleBadgesModal={() => toggleModal("openBadgesModal")}
+            handleProfileModal={() => toggleModal("openProfileDetailsModal")}
+            openBadgesModal={modalState.openBadgesModal}
+            openProfileDetailsModal={modalState.openProfileDetailsModal}
+            developer={developer}
+          />
+        )}
+      </QueryErrorBoundary>
+    );
+  };
 
   const handleResumeUpload = async () => {
     const res = await getUploadedFile(developer._id, "resume");
@@ -90,11 +127,8 @@ export default function UserProfileContainer() {
 
   return (
     <QueryErrorBoundary>
-      <Grid
-        component="section"
-        container
-        sx={{ flexGrow: 1, minHeight: "100vh" }}
-      >
+      <Grid container sx={{ flexGrow: 1, minHeight: "100vh" }}>
+        {/* Background Image Grid */}
         <Grid
           item
           component="article"
@@ -121,6 +155,8 @@ export default function UserProfileContainer() {
             }}
           />
         </Grid>
+
+        {/* Profile Info Grid */}
         <Grid
           item
           component="article"
@@ -135,35 +171,37 @@ export default function UserProfileContainer() {
             flexGrow: 1,
           }}
         >
+          {/* Profile Edit Button */}
           {userId && isProfileOwner(userId) && (
             <Zoom in>
               <Tooltip title="Edit Account" placement="left">
                 <IconButton
-                  aria-label="edit"
+                  onClick={() => toggleModal("openAccountDetailstModal")}
                   sx={{
                     position: "absolute",
                     top: 4,
                     right: 4,
                     transition: "transform 0.2s ease-in-out",
-                    "&:hover": {
-                      transform: "scale(1.1)",
-                    },
+                    "&:hover": { transform: "scale(1.1)" },
                   }}
-                  onClick={handleAcountModal}
                 >
                   <EditIcon />
                 </IconButton>
               </Tooltip>
             </Zoom>
           )}
-          {openAccountDetailstModal && (
+
+          {/* Render Modals */}
+          {modalState.openAccountDetailstModal && (
             <AccountDetailsForm
-              open={openAccountDetailstModal}
-              handleClose={handleAcountModal}
+              open={modalState.openAccountDetailstModal}
+              handleClose={() => toggleModal("openAccountDetailstModal")}
               handleProfileInfo={handleProfileInfo}
               developer={developer}
             />
           )}
+
+          {/* Profile Avatar */}
           <div
             style={{
               width: "7rem",
@@ -198,13 +236,11 @@ export default function UserProfileContainer() {
               </Avatar>
             )}
           </div>
+
+          {/* Profile Info Stack */}
           <Stack
             spacing={2}
-            sx={{
-              alignItems: "center",
-              mt: "-4rem",
-              textAlign: "center",
-            }}
+            sx={{ alignItems: "center", mt: "-4rem", textAlign: "center" }}
           >
             {isFetching ? (
               <Stack
@@ -228,15 +264,19 @@ export default function UserProfileContainer() {
               ))
             )}
 
+            {/* Action Buttons */}
             <Stack direction="row" spacing={1}>
               {userId && !isProfileOwner(userId) && (
                 <Button
                   size={isMediumScreen ? "small" : "medium"}
                   variant="contained"
-                  sx={{ bgcolor: "secondary.main" }}
-                  onClick={() => {
-                    setOpenInviteModal((prev) => !prev);
+                  sx={{
+                    backgroundColor: "secondary.main",
+                    "&:hover": {
+                      backgroundColor: alpha(theme.palette.secondary.main, 0.8),
+                    },
                   }}
+                  onClick={() => toggleModal("openInviteModal")}
                 >
                   Invite
                 </Button>
@@ -253,22 +293,18 @@ export default function UserProfileContainer() {
             </Stack>
           </Stack>
         </Grid>
-        {openInviteModal && (
+
+        {/* Invitation Modal */}
+        {modalState.openInviteModal && (
           <InvitationForm
-            openInviteModal={openInviteModal}
-            handleClose={() => {
-              setOpenInviteModal((prev) => !prev);
-            }}
+            openInviteModal={modalState.openInviteModal}
+            handleClose={() => toggleModal("openInviteModal")}
+            userData={developer}
           />
         )}
-        <Grid
-          item
-          component="article"
-          sx={{
-            width: "100%",
-            flexGrow: 1,
-          }}
-        >
+
+        {/* Tabs Content */}
+        <Grid item component="article" sx={{ width: "100%", flexGrow: 1 }}>
           <TabContext value={value}>
             <Box
               sx={{
@@ -308,6 +344,7 @@ export default function UserProfileContainer() {
                   )}
               </TabList>
             </Box>
+
             <Box
               sx={{
                 bgcolor:
@@ -320,44 +357,7 @@ export default function UserProfileContainer() {
                 overflowY: "auto",
               }}
             >
-              <TabPanel value="1">
-                {isFetching ? (
-                  <Stack
-                    direction={isMediumScreen ? "column" : "row"}
-                    justifyContent="space-between"
-                    useFlexGap
-                    flexWrap="wrap"
-                    gap={isMediumScreen ? 2 : 2}
-                  >
-                    <Skeleton
-                      variant="rectangular"
-                      sx={{
-                        width: { sx: "100%", md: "70%" },
-                        height: "25rem",
-                      }}
-                    />
-                    <Skeleton
-                      variant="rectangular"
-                      sx={{
-                        width: { sx: "100%", md: "27%" },
-                        height: { sx: "12.5rem", md: "25rem" },
-                      }}
-                    />
-                  </Stack>
-                ) : (
-                  <QueryErrorBoundary>
-                    {developer && (
-                      <ProfileTab
-                        handleBadgesModal={handleBadgesModal}
-                        handleProfileModal={handleProfileModal}
-                        openBadgesModal={openBadgesModal}
-                        openProfileDetailsModal={openProfileDetailsModal}
-                        developer={developer || {}}
-                      />
-                    )}
-                  </QueryErrorBoundary>
-                )}
-              </TabPanel>
+              <TabPanel value="1">{renderProfileContent()}</TabPanel>
               <TabPanel value="2">
                 <QueryErrorBoundary>
                   {isFetching ? (
@@ -372,7 +372,7 @@ export default function UserProfileContainer() {
                 </QueryErrorBoundary>
               </TabPanel>
               <TabPanel value="3">
-                <QueryErrorBoundary sx={{ border: "1px solid red" }}>
+                <QueryErrorBoundary>
                   {isFetching ? (
                     <Skeleton
                       variant="rectangular"
@@ -386,7 +386,7 @@ export default function UserProfileContainer() {
                 </QueryErrorBoundary>
               </TabPanel>
               <TabPanel value="4">
-                <QueryErrorBoundary sx={{ border: "1px solid red" }}>
+                <QueryErrorBoundary>
                   <Suspense
                     fallback={<Skeleton variant="rectangular" height={400} />}
                   >
