@@ -7,9 +7,10 @@ interface SocketContextType {
 
 const SocketContext = createContext<SocketContextType | undefined>(undefined);
 
-const socketURL = process.env.NODE_ENV === "production"
-  ? process.env.REACT_APP_SERVER_URL
-  : "http://localhost:8080";
+const socketURL =
+  process.env.NODE_ENV === "production"
+    ? process.env.REACT_APP_SERVER_URL
+    : "http://localhost:8080";
 
 export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -18,7 +19,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     const newSocket = io(socketURL, {
-      transports: ['websocket', 'polling'],
+      transports: ["websocket", "polling"],
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
@@ -26,12 +27,12 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
 
     setSocket(newSocket);
 
-    newSocket.on('connect', () => {
-      console.log('Socket connected successfully');
+    newSocket.on("connect", () => {
+      console.log("Socket connected successfully");
     });
 
-    newSocket.on('connect_error', (error) => {
-      console.error('Socket connection error:', error);
+    newSocket.on("connect_error", (error) => {
+      console.error("Socket connection error:", error);
     });
 
     return () => {
