@@ -77,6 +77,8 @@ export default function CustomModal({
                   : "border.secondary",
               fontWeight: 600,
               fontSize: "1rem",
+              zIndex: 1,
+              backgroundColor: "background.paper",
               ...headersx,
             }}
             avatar={headerAvatar}
