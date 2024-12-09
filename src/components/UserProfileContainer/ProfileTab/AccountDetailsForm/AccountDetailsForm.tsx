@@ -358,8 +358,7 @@ export default function AccountDetailsForm({
                     id="avatar"
                     type="file"
                     style={{ display: "none", outline: "none" }}
-                    required={false}
-                    {...register("avatar", { required: true })}
+                    {...register("avatar", { required: false })}
                     onChange={(e) => handleFileChange(e)}
                     ref={fileInputRef}
                   />
