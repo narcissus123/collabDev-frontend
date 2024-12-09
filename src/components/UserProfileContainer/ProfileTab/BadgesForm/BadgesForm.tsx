@@ -210,6 +210,7 @@ export default function BadgesForm({
               alignItems: "center",
             }}
             righButtonText="Upload"
+            type="button"
           />
         </Box>
       </CustomModal>

@@ -345,6 +345,7 @@ export default function AccountDetailsForm({
               alignItems: "center",
             }}
             righButtonText="Edit"
+            type="button"
           />
         </Box>
       </CustomModal>
