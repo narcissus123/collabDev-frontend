@@ -20,7 +20,7 @@ export default function CustomDropdown({
 }: CustomDropdownProps) {
   const theme = useTheme();
   return (
-    <FormControl sx={{ m: 1, minWidth: 229 }} size="medium">
+    <FormControl sx={{ m: 1, minWidth: 229 }} size="small">
       <InputLabel id="demo-select-small-label" sx={{ color: "text.secondary" }}>
         {name}
       </InputLabel>
