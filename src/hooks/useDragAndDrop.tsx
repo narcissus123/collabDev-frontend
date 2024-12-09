@@ -20,13 +20,13 @@ export const useDragAndDrop = (
 
         reader.onabort = () =>
           //console.log("File reading was aborted for:", file.name);
-        reader.onerror = () =>
-          //console.log("File reading has failed for:", file.name);
-        reader.onload = function () {
-          multipleImages === true
-            ? setImages((prevImages) => [...prevImages, file])
-            : setImages([file]);
-        };
+          (reader.onerror = () =>
+            //console.log("File reading has failed for:", file.name);
+            (reader.onload = function () {
+              multipleImages === true
+                ? setImages((prevImages) => [...prevImages, file])
+                : setImages([file]);
+            }));
 
         reader.readAsDataURL(file);
 
