@@ -88,11 +88,13 @@ export default function BadgesForm({
 
       const userId = developer._id;
       let badgeKey;
+      console.log("badges", badges);
       if (badges) {
         const BadgesUpload = await badgesUploadMutation.mutateAsync({
           userId,
           file: badges,
         });
+        console.log("BadgesUpload", BadgesUpload);
         badgeKey = BadgesUpload.data;
       }
 
