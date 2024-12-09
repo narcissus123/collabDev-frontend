@@ -55,7 +55,18 @@ export default function ProjectImages({ handleActiveStep }: StepperProps) {
   const theme = useTheme();
   return (
     <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)}>
-      <Typography variant="h4" sx={{ my: 2, color: "text.secondary" }}>
+      <Typography
+        sx={{
+          width: "100%",
+          my: 0.5,
+          color:
+            theme.palette.mode === "dark" ? "primary.main" : "text.primary",
+          fontSize: "0.875rem",
+          fontWeight: "400",
+          lineHeight: "1.4375em",
+        }}
+        variant="h5"
+      >
         Project Wireframes
       </Typography>
       <Box
@@ -111,7 +122,19 @@ export default function ProjectImages({ handleActiveStep }: StepperProps) {
           );
         })}
       </Stack>
-      <Typography variant="h4" sx={{ mb: 2, mt: 4, color: "text.secondary" }}>
+      <Typography
+        sx={{
+          width: "100%",
+          my: 0.5,
+          color:
+            theme.palette.mode === "dark" ? "primary.main" : "text.primary",
+          fontSize: "0.875rem",
+          fontWeight: "400",
+          lineHeight: "1.4375em",
+          mt: 4,
+        }}
+        variant="h5"
+      >
         Project Cover Image
       </Typography>
       <Box
