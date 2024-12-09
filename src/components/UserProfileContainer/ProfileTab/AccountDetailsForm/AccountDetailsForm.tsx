@@ -249,7 +249,6 @@ export default function AccountDetailsForm({
               setImageError={setImageError}
               register={register}
               userName={developer?.name}
-              isVisible={developer?.avatar !== ""}
             />
           </Box>
           {UserAccounInputData.map((data) => (

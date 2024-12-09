@@ -10,7 +10,6 @@ interface AvatarUploadProps {
   fileInputRef: Ref<HTMLInputElement>;
   register: UseFormRegister<any>;
   userName?: string;
-  isVisible?: boolean;
   setImageError: (value: boolean) => void;
 }
 
@@ -31,10 +30,8 @@ const AvatarUpload = ({
   fileInputRef,
   register,
   userName = "",
-  isVisible = true,
 }: AvatarUploadProps) => {
-  if (!isVisible) return null;
-
+  
   return (
     <Box>
       <label htmlFor="avatar" style={{ cursor: "pointer" }}>
