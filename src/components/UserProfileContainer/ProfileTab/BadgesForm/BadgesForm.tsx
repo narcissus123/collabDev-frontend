@@ -17,7 +17,7 @@ interface ProfileDetailsFormProps {
   openBadgesModal: boolean;
   handleClose: () => void;
   profileTabInfo: User;
-  handleProfileInfo: (updatedInfo: User) => void;
+  onSuccess: () => void;
   developer: User | undefined;
 }
 
@@ -29,7 +29,7 @@ export default function BadgesForm({
   openBadgesModal,
   handleClose,
   profileTabInfo,
-  handleProfileInfo,
+  onSuccess,
   developer,
 }: ProfileDetailsFormProps) {
   const theme = useTheme();
@@ -44,13 +44,7 @@ export default function BadgesForm({
       if (response) {
         toast.success("Your account information updated successfully!");
         setBadges([]);
-        queryClient.invalidateQueries({
-          queryKey: ["getUserById", developer?._id],
-        });
-        queryClient.refetchQueries({
-          queryKey: ["getUserById", developer?._id],
-        });
-        handleProfileInfo(response);
+        onSuccess();
       }
     },
   });
@@ -113,65 +107,55 @@ export default function BadgesForm({
   };
 
   return (
-    <CustomModal
-      open={openBadgesModal}
-      handleClose={() => handleClose()}
-      framesx={{
-        width: 600,
-      }}
-      headersx={{
-        borderBottom: "1px solid",
-        borderColor:
-          theme.palette.mode === "dark" ? "secondary.main" : "border.secondary",
-      }}
-      title="Badges"
-    >
-      <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)}>
-        <ToastContainer />
-        <Box sx={{ mb: 3 }}>
-          <DropBox onDrop={handleBadgesDrop} />
-          {(badges || developer?.badges) && (
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                flexDirection: "column",
-                justifyContent: "space-between",
-                mt: 2,
-                borderColor: "divider",
-                width: "100%",
-              }}
-            >
-              {badges.map((badge, index) => {
-                return (
-                  <Box
-                    key={index}
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      mt: 2,
-                      p: 2,
-                      border: "1px solid red",
-                      borderColor: "divider",
-                      width: "100%",
-                    }}
-                  >
-                    <Box>
-                      <Box
-                        component="span"
-                        sx={{
-                          color:
-                            theme.palette.mode === "dark"
-                              ? "text.secondary"
-                              : "border.secondary",
-                        }}
-                      >
-                        {badges
-                          ? badge.name
-                          : developer?.badges[index].split("-").slice(-1)[0]}
-                      </Box>
-                      {badges && (
+    <>
+      <ToastContainer />
+
+      <CustomModal
+        open={openBadgesModal}
+        handleClose={() => handleClose()}
+        framesx={{
+          width: 600,
+        }}
+        headersx={{
+          borderBottom: "1px solid",
+          borderColor:
+            theme.palette.mode === "dark"
+              ? "secondary.main"
+              : "border.secondary",
+        }}
+        title="Badges"
+      >
+        <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)}>
+          <Box sx={{ mb: 3 }}>
+            <DropBox onDrop={handleBadgesDrop} />
+            {(badges || developer?.badges) && (
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  mt: 2,
+                  borderColor: "divider",
+                  width: "100%",
+                }}
+              >
+                {badges.map((badge, index) => {
+                  return (
+                    <Box
+                      key={index}
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        mt: 2,
+                        p: 2,
+                        border: "1px solid red",
+                        borderColor: "divider",
+                        width: "100%",
+                      }}
+                    >
+                      <Box>
                         <Box
                           component="span"
                           sx={{
@@ -179,39 +163,54 @@ export default function BadgesForm({
                               theme.palette.mode === "dark"
                                 ? "text.secondary"
                                 : "border.secondary",
-                            ml: "8px",
                           }}
                         >
-                          ({Math.round(badge.size / 1024)} KB)
+                          {badges
+                            ? badge.name
+                            : developer?.badges[index].split("-").slice(-1)[0]}
                         </Box>
-                      )}
+                        {badges && (
+                          <Box
+                            component="span"
+                            sx={{
+                              color:
+                                theme.palette.mode === "dark"
+                                  ? "text.secondary"
+                                  : "border.secondary",
+                              ml: "8px",
+                            }}
+                          >
+                            ({Math.round(badge.size / 1024)} KB)
+                          </Box>
+                        )}
+                      </Box>
+                      <IconButton
+                        onClick={() => handleBadgesDelete(index)}
+                        color="error"
+                        size="small"
+                      >
+                        <DeleteIcon />
+                      </IconButton>
                     </Box>
-                    <IconButton
-                      onClick={() => handleBadgesDelete(index)}
-                      color="error"
-                      size="small"
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </Box>
-                );
-              })}
-            </Box>
-          )}
+                  );
+                })}
+              </Box>
+            )}
+          </Box>
+          <CustomButton
+            leftButtonsx={{
+              borderTop: "1px solid",
+              borderColor:
+                theme.palette.mode === "dark"
+                  ? "secondary.main"
+                  : "border.secondary",
+              justifyContent: "flex-end",
+              alignItems: "center",
+            }}
+            righButtonText="Upload"
+          />
         </Box>
-        <CustomButton
-          leftButtonsx={{
-            borderTop: "1px solid",
-            borderColor:
-              theme.palette.mode === "dark"
-                ? "secondary.main"
-                : "border.secondary",
-            justifyContent: "flex-end",
-            alignItems: "center",
-          }}
-          righButtonText="Upload"
-        />
-      </Box>
-    </CustomModal>
+      </CustomModal>
+    </>
   );
 }
