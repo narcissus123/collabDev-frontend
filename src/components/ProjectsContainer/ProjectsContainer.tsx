@@ -62,7 +62,13 @@ function ProjectsList({
   }
 
   return (
-    <Grid container gap={2}>
+    <Grid
+      container
+      sx={{
+        display: "flex",
+        justifyContent: "space-around",
+      }}
+    >
       {project.data.projects.length === 0 ? (
         <Stack
           alignItems="center"
@@ -158,7 +164,7 @@ export default function ProjectsContainer() {
             justifyContent: "flex-start",
             alignItems: "flex-end",
             flexWrap: "wrap",
-            mr: isMediumScreen ? "0rem" : "1.5rem",
+            mx: isMediumScreen ? "-0.5rem" : "0.3rem",
             p: 1,
           }}
           gap={isMediumScreen ? 2 : 1}
@@ -242,7 +248,15 @@ export default function ProjectsContainer() {
           >
             <Suspense
               fallback={
-                <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    mt: 6,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    width: "100%",
+                  }}
+                >
                   Loading...
                 </Box>
               }
