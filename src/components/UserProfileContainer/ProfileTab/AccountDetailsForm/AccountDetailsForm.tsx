@@ -216,7 +216,10 @@ export default function AccountDetailsForm({
   };
 
   return (
-    <ErrorBoundary FallbackComponent={ErrorFallback}>
+    <ErrorBoundary
+      FallbackComponent={ErrorFallback}
+      onError={(error) => console.error("Error boundary caught:", error)}
+    >
       <ToastContainer />
       <CustomModal
         open={open}
@@ -240,10 +243,15 @@ export default function AccountDetailsForm({
           onSubmit={(e) => {
             e.preventDefault();
             console.log("Form submission started");
-            return handleSubmit((formData) => {
-              console.log("Form data:", formData);
-              onSubmit(formData);
-            })(e);
+            try {
+              console.log("Before handleSubmit");
+              return handleSubmit((formData) => {
+                console.log("Inside handleSubmit");
+                onSubmit(formData);
+              })(e);
+            } catch (error) {
+              console.error("Form submission error:", error);
+            }
           }}
           sx={{
             display: "flex",
