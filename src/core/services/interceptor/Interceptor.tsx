@@ -63,7 +63,6 @@ instance.interceptors.response.use(
       toast.error("Network error: Please check your internet connection.");
     }
     return Promise.reject(error);
-    // return Promise.resolve({ handled: true, error: error.response });
   }
 );
 
