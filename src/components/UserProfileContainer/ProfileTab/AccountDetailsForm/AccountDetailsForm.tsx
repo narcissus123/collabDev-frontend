@@ -176,11 +176,15 @@ export default function AccountDetailsForm({
 
   const onSubmit = async (data: any) => {
     try {
+      console.log("Form submitted", data);
       if (!developer?._id) {
+        console.log("No developer ID");
         return;
       }
 
       const userId = developer._id;
+      console.log("Processing with userId:", userId);
+
       let avatarKey, resumeKey;
       const updateData: any = { ...developer, ...data };
 
