@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
-import { ChangeEvent, Ref, useEffect } from "react";
+import { ChangeEvent, Ref } from "react";
 import { UseFormRegister } from "react-hook-form";
 
 interface AvatarUploadProps {

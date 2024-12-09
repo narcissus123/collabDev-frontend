@@ -185,7 +185,6 @@ export default function AccountDetailsForm({
 
   const onSubmit = async (data: any) => {
     try {
-
       if (!developer?._id) {
         return;
       }
