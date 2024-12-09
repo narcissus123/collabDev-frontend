@@ -354,9 +354,7 @@ const HomePage = () => {
                   fontWeight: 700,
                   fontSize: { xs: "1.75rem", md: "2.25rem" },
                   color:
-                    theme.palette.mode === "dark"
-                      ? "text.secondary"
-                      : "#000000",
+                    theme.palette.mode === "dark" ? "primary.main" : "#000000",
                 }}
               >
                 Build Your Developer Network
