@@ -5,8 +5,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 
 interface CustomButtonProps {
   leftHandleClick?: () => void;
-  // rightHandleClick?: () => void;
-  rightHandleClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  rightHandleClick?: () => void;
   leftButtonDisabled?: boolean;
   righButtonDisabled?: boolean;
   framesx?: any;
@@ -69,13 +68,7 @@ const CustomButton = ({
       {righButtonText && (
         <Button
           size={isLargeScreen ? "small" : "large"}
-          onClick={(e) => {
-            // e.preventDefault();
-            console.log("Form submit triggered before");
-            rightHandleClick?.(e);
-            console.log("Form submit triggered after");
-            // rightHandleClick(e);
-          }}
+          onClick={rightHandleClick}
           type="submit"
           variant={variantRight}
           disabled={righButtonDisabled}

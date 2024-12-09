@@ -31,11 +31,6 @@ const AvatarUpload = ({
   register,
   userName = "",
 }: AvatarUploadProps) => {
-  console.log("previewURL", previewURL);
-  console.log("Avatar rendering", { previewURL, imageError });
-  useEffect(() => {
-    console.log("Avatar effect triggered");
-  });
   return (
     <Box>
       <label htmlFor="avatar" style={{ cursor: "pointer" }}>
@@ -107,11 +102,9 @@ const AvatarUpload = ({
             id="avatar"
             type="file"
             style={{ display: "none", outline: "none" }}
-            // required={false}
             {...register("avatar", {
-              required: true,
+              required: false,
               onChange: (e) => {
-                console.log("Input change", e);
                 handleFileChange(e);
               },
             })}

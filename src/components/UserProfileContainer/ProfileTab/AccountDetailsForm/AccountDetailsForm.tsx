@@ -56,44 +56,35 @@ export default function AccountDetailsForm({
   const { setCurrentUser } = useAuth();
 
   useEffect(() => {
-    console.log("developer", developer);
     if (developer?.avatar) {
-      console.log("hiii", getImageUrl(developer.avatar));
       setPreviewURL(getImageUrl(developer.avatar));
     }
   }, [developer]);
 
-  // // Clean up object URL when component unmounts or when previewURL changes
-  // useEffect(() => {
-  //   return () => {
-  //     if (previewURL && previewURL.startsWith("blob:")) {
-  //       URL.revokeObjectURL(previewURL);
-  //     }
-  //   };
-  // }, [previewURL]);
+  // Clean up object URL when component unmounts or when previewURL changes
+  useEffect(() => {
+    return () => {
+      if (previewURL && previewURL.startsWith("blob:")) {
+        URL.revokeObjectURL(previewURL);
+      }
+    };
+  }, [previewURL]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files;
-      console.log("file", file);
       if (file && file[0]) {
-        console.log("previewURL", previewURL);
         // Revoke previous object URL if it exists
         if (previewURL && previewURL.startsWith("blob:")) {
-          console.log("hi");
           URL.revokeObjectURL(previewURL);
         }
-        console.log("file", file);
         // Create new preview URL
         const newPreviewURL = URL.createObjectURL(file[0]);
-        console.log("newPreviewURL", newPreviewURL);
         setPreviewURL(newPreviewURL);
         setImageError(false); // Reset error state when new file is selected
-        console.log("hiiiiii");
         const fileArray: File[] = Array.from(file);
-        console.log("fileArray", fileArray);
         setAvatar(fileArray);
       }
     },
@@ -126,7 +117,7 @@ export default function AccountDetailsForm({
       }
     },
   });
-  console.log("hi1");
+
   const resumeUploadMutation = useMutation({
     mutationFn: (data: { userId: string; file: File }) =>
       uploadFile(data.userId, data.file, "resume"),
@@ -134,7 +125,7 @@ export default function AccountDetailsForm({
       toast.success("Resume uploaded successfully!");
     },
   });
-  console.log("hi2");
+
   const handleResumeDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles?.length > 0) {
       setResume(acceptedFiles[0]);
@@ -150,7 +141,7 @@ export default function AccountDetailsForm({
       setResume(null);
     }
   }, [developer?.resume]);
-  console.log("hi3");
+
   const deleteMutation = useMutation({
     mutationFn: (userId: string) => {
       if (!developer?.resume) {
@@ -167,7 +158,7 @@ export default function AccountDetailsForm({
       throw err;
     },
   });
-  console.log("hi4");
+
   const handleDelete = useCallback(() => {
     if (!developer) {
       console.error("Developer is undefined. Cannot proceed with delete.");
@@ -177,7 +168,7 @@ export default function AccountDetailsForm({
     mutation.mutate({ id: developer?._id, data: { resume: "" } });
     setResume(null);
   }, [deleteMutation, developer]);
-  console.log("hi5");
+
   const {
     register,
     handleSubmit,
@@ -194,21 +185,17 @@ export default function AccountDetailsForm({
 
   const onSubmit = async (data: any) => {
     try {
-      console.log("Form submitted", data);
+
       if (!developer?._id) {
-        console.log("No developer ID");
         return;
       }
 
       const userId = developer._id;
-      console.log("Processing with userId:", userId);
-
       let avatarKey, resumeKey;
       const updateData: any = { ...developer, ...data };
 
       if (avatar[0]) {
         const avatarUpload = await uploadFile(userId, avatar[0], "avatars");
-        console.log("avatarUpload", avatarUpload);
         avatarKey = avatarUpload.data[0];
         updateData.avatar = avatarKey;
       } else {
@@ -216,13 +203,11 @@ export default function AccountDetailsForm({
         delete updateData.avatar;
       }
 
-      console.log("resume", resume);
       if (resume) {
         const resumeUpload = await resumeUploadMutation.mutateAsync({
           userId,
           file: resume,
         });
-        console.log("resumeUpload", resumeUpload);
         resumeKey = resumeUpload.data[0];
         updateData.resume = resumeKey;
       }
@@ -257,25 +242,7 @@ export default function AccountDetailsForm({
         <Box
           component="form"
           noValidate
-          onSubmit={(e) => {
-            e.preventDefault();
-            console.log(
-              "Raw form data:",
-              Object.fromEntries(new FormData(e.target as HTMLFormElement))
-            );
-            try {
-              console.log("Before handleSubmit");
-              return handleSubmit(
-                (data) => {
-                  console.log("Form success:", data);
-                  onSubmit(data);
-                },
-                (err) => console.error("Form validation errors:", err)
-              )(e);
-            } catch (error) {
-              console.error("Form submission error:", error);
-            }
-          }}
+          onSubmit={handleSubmit(onSubmit)}
           sx={{
             display: "flex",
             flexDirection: "column",
@@ -444,9 +411,6 @@ export default function AccountDetailsForm({
           </Box>
 
           <CustomButton
-            rightHandleClick={() => {
-              console.log("Right button clicked");
-            }}
             leftButtonsx={{
               borderTop: "1px solid",
               borderColor:
