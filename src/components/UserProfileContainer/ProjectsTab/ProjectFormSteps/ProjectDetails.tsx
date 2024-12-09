@@ -5,6 +5,7 @@ import {
   Stack,
   Switch,
   TextField,
+  Tooltip,
   Typography,
   useMediaQuery,
   useTheme,
@@ -12,6 +13,7 @@ import {
 import Box from "@mui/material/Box";
 import { useFieldArray, useForm } from "react-hook-form";
 
+import { InfoOutlined } from "@mui/icons-material";
 import {
   categoryOptions,
   licenseOptions,
@@ -22,7 +24,6 @@ import { ProjectForm } from "../../../../configs/types/projectTypes";
 import { useFormContext } from "../../../../context/FormContext/FormContext";
 import CustomButton from "../../../common/CustomButton/CustomButton";
 import CustomDropdown from "../../../common/CustomDropdown/CustomDropdown";
-import { InputStyles } from "../../../common/InputStyles/InputStyles";
 import ErrorMessages from "../../../common/Messages/ErrorMessages/ErrorMessages";
 
 interface StepperProps {
@@ -87,7 +88,7 @@ export default function ProjectDetails({ handleActiveStep }: StepperProps) {
         display="flex"
         flexDirection="row"
         flexWrap={isMediumScreen ? "wrap" : "nowrap"}
-        sx={{ mt: isMediumScreen ? "0rem" : "1.5rem", ml: "-0.5rem" }}
+        sx={{ mt: isMediumScreen ? "0rem" : "1.5rem", ml: "-0.5rem", mb: 4 }}
       >
         <CustomDropdown
           options={categoryOptions}
@@ -105,20 +106,15 @@ export default function ProjectDetails({ handleActiveStep }: StepperProps) {
           name="license"
         />
       </Stack>
-      <Box
-        sx={{
-          mt: 4,
-        }}
-      >
+      <Box sx={{ mb: 3 }}>
         <Typography
           sx={{
             width: "100%",
-            py: 0.5,
-            color: "#8C8C95",
+            color:
+              theme.palette.mode === "dark" ? "primary.main" : "text.primary",
+            fontSize: "0.875rem",
             fontWeight: "400",
-            fontSize: "0.8571428571428571rem",
             lineHeight: "1.4375em",
-            mt: 2,
           }}
           variant="h5"
         >
@@ -152,16 +148,18 @@ export default function ProjectDetails({ handleActiveStep }: StepperProps) {
                 placeholder="Deliverable"
                 sx={{
                   width: "auto",
-                  ...InputStyles(theme),
-                  "& input": {
-                    fontSize: "1rem",
-                  },
                 }}
                 size="small"
+                inputProps={{
+                  sx: {
+                    color: "text.secondary",
+                  },
+                }}
                 helperText={
                   <ErrorMessages
                     name={`deliverables.${index}.name`}
                     errors={errors}
+                    sx={{ height: "50%" }}
                   />
                 }
               />
@@ -191,16 +189,15 @@ export default function ProjectDetails({ handleActiveStep }: StepperProps) {
           </IconButton>
         </Stack>
       </Box>
-      <Box>
+      <Box sx={{ mb: 2 }}>
         <Typography
           sx={{
             width: "100%",
-            py: 0.5,
-            color: "#8C8C95",
+            color:
+              theme.palette.mode === "dark" ? "primary.main" : "text.primary",
+            fontSize: "0.875rem",
             fontWeight: "400",
-            fontSize: "0.8571428571428571rem",
             lineHeight: "1.4375em",
-            mt: 2,
           }}
           variant="h5"
         >
@@ -220,7 +217,7 @@ export default function ProjectDetails({ handleActiveStep }: StepperProps) {
               key={sitemap.id}
               sx={{
                 position: "relative",
-                minHeight: "3rem",
+                minHeight: "4rem",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "flex-start",
@@ -233,12 +230,13 @@ export default function ProjectDetails({ handleActiveStep }: StepperProps) {
                 })}
                 sx={{
                   width: "auto",
-                  ...InputStyles(theme),
-                  "& input": {
-                    fontSize: "1rem",
-                  },
                 }}
                 placeholder="Sitemap"
+                inputProps={{
+                  sx: {
+                    color: "text.secondary",
+                  },
+                }}
                 size="small"
                 helperText={
                   <ErrorMessages
@@ -273,21 +271,38 @@ export default function ProjectDetails({ handleActiveStep }: StepperProps) {
           </IconButton>
         </Stack>
       </Box>
-      <Box>
-        <Typography
-          sx={{
-            width: "100%",
-            py: 0.5,
-            color: "#8C8C95",
-            fontWeight: "400",
-            fontSize: "0.8571428571428571rem",
-            lineHeight: "1.4375em",
-            mt: 2,
-          }}
-          variant="h5"
+      <Box sx={{ mb: 3 }}>
+        <Box
+          display="flex"
+          alignItems="center"
+          gap={1}
+          justifyContent="flex-start"
         >
-          Project Roles
-        </Typography>
+          <Typography
+            sx={{
+              color:
+                theme.palette.mode === "dark" ? "primary.main" : "text.primary",
+              fontSize: "0.875rem",
+              fontWeight: "400",
+              lineHeight: "1.4375em",
+            }}
+            variant="h5"
+          >
+            Project Roles
+          </Typography>
+          <Tooltip
+            title="Toggle the switch if this role requires a project collaborator."
+            arrow
+            placement="right"
+          >
+            <InfoOutlined
+              sx={{
+                color: "#8C8C95",
+                fontSize: "1.1rem",
+              }}
+            />
+          </Tooltip>
+        </Box>
         <Stack
           display="flex"
           flexDirection="row"
@@ -313,15 +328,21 @@ export default function ProjectDetails({ handleActiveStep }: StepperProps) {
                 alignItems="center"
                 flexDirection="row"
                 sx={{
-                  border: "1px solid #ccc",
-                  borderRadius: "0.5rem",
+                  borderRadius: "0.2rem",
                   width: "14.625rem",
                   px: "0.5rem",
                   height: "2.65rem",
-                  backgroundColor:
+                  "&:hover": {
+                    borderColor:
+                      theme.palette.mode === "dark"
+                        ? "rgb(100, 100, 100)"
+                        : "#000000",
+                  },
+                  border: "1px solid",
+                  borderColor:
                     theme.palette.mode === "dark"
-                      ? "background.secondary"
-                      : "background.default",
+                      ? "rgb(82, 82, 82)"
+                      : "rgb(196, 196, 196)",
                 }}
               >
                 <TextField
@@ -335,9 +356,10 @@ export default function ProjectDetails({ handleActiveStep }: StepperProps) {
                   })}
                   sx={{
                     height: "75%",
-                    ...InputStyles(theme),
-                    "& input": {
-                      fontSize: "1rem",
+                  }}
+                  inputProps={{
+                    sx: {
+                      color: "text.secondary",
                     },
                   }}
                   helperText={
@@ -348,13 +370,18 @@ export default function ProjectDetails({ handleActiveStep }: StepperProps) {
                     />
                   }
                 />
-                <Switch
-                  id={`roles-requiresCollaborator-${index}`}
-                  defaultChecked={role.requiresCollaborator}
-                  {...register(`roles.${index}.requiresCollaborator`, {
-                    required: false,
-                  })}
-                />
+                <Tooltip
+                  title="Toggle if this role requires a collaborator"
+                  arrow
+                >
+                  <Switch
+                    id={`roles-requiresCollaborator-${index}`}
+                    defaultChecked={role.requiresCollaborator}
+                    {...register(`roles.${index}.requiresCollaborator`, {
+                      required: false,
+                    })}
+                  />
+                </Tooltip>
               </Box>
               {index > 0 && (
                 <IconButton
@@ -386,12 +413,13 @@ export default function ProjectDetails({ handleActiveStep }: StepperProps) {
         <Typography
           sx={{
             width: "100%",
-            py: 0.5,
-            color: "#8C8C95",
+            my: 0.5,
+            color:
+              theme.palette.mode === "dark" ? "primary.main" : "text.primary",
+            fontSize: "0.875rem",
             fontWeight: "400",
-            fontSize: "0.8571428571428571rem",
             lineHeight: "1.4375em",
-            mt: 2,
+            mb: 2,
           }}
           variant="h5"
         >
@@ -403,7 +431,7 @@ export default function ProjectDetails({ handleActiveStep }: StepperProps) {
           alignItems="center"
           justifyContent="flex-start"
           flexWrap="wrap"
-          sx={{ mt: 1, py: 1, width: "100%" }}
+          sx={{ py: 1, width: "100%" }}
         >
           {UserStoryFields.map((userStory, index) => (
             <Box
@@ -415,45 +443,51 @@ export default function ProjectDetails({ handleActiveStep }: StepperProps) {
                 justifyContent: "flex-start",
                 width: "100%",
                 mb: 2,
-                backgroundColor:
-                  theme.palette.mode === "dark"
-                    ? "background.secondary"
-                    : "background.default",
               }}
             >
-              <TextField
-                error={!!(errors as any)[`userStories.${index}.name`]}
-                {...register(`userStories.${index}.name` as const, {
-                  required: "This is required.",
-                })}
-                fullWidth
-                variant="standard"
+              <Box
+                display="flex"
+                flexDirection="row"
+                justifyContent="flex-start"
+                alignItems="center"
                 sx={{
-                  width: "95%",
-                  ...InputStyles(theme),
-                  "& input": {
-                    fontSize: "1.1rem",
-                    ...InputStyles(theme),
-                  },
+                  width: "100%",
                 }}
-                placeholder="Userstory"
-                size="medium"
-                helperText={
-                  <ErrorMessages
-                    name={`userStories.${index}.name`}
-                    errors={errors}
-                  />
-                }
-              />
-              {index > 0 && (
-                <IconButton
-                  aria-label="delete"
-                  onClick={() => UserStoryRemove(index)}
-                  sx={{ position: "absolute", right: -1, top: 5 }}
-                >
-                  <ClearIcon sx={{ fontSize: 22 }} />
-                </IconButton>
-              )}
+              >
+                <TextField
+                  error={!!(errors as any)[`userStories.${index}.name`]}
+                  {...register(`userStories.${index}.name` as const, {
+                    required: "This is required.",
+                  })}
+                  fullWidth
+                  variant="standard"
+                  sx={{ width: "95%", mb: 2 }}
+                  inputProps={{
+                    sx: {
+                      color: "text.secondary",
+                      fontSize: "0.87rem",
+                    },
+                  }}
+                  placeholder="Userstory"
+                  size="small"
+                  helperText={
+                    <ErrorMessages
+                      name={`userStories.${index}.name`}
+                      errors={errors}
+                    />
+                  }
+                />
+                {index > 0 && (
+                  <IconButton
+                    aria-label="delete"
+                    onClick={() => UserStoryRemove(index)}
+                    size="small"
+                    sx={{ mb: 2 }}
+                  >
+                    <ClearIcon sx={{ fontSize: 16 }} />
+                  </IconButton>
+                )}
+              </Box>
             </Box>
           ))}
           <IconButton
