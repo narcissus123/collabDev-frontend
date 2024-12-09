@@ -25,6 +25,7 @@ import CustomModal from "../../common/CustomModal/CustomModal";
 import Input from "../../common/Input/Input";
 import { User } from "../../../configs/types/userTypes";
 import { useAuth } from "../../../context/AuthContext/AuthContext";
+import { getImageUrl } from "../../../core/utils/ImageUtils/imageUtils";
 
 interface RequestFormProps {
   openInviteModal: boolean;
@@ -136,7 +137,7 @@ const InvitationForm = ({
             <Avatar
               sx={{ bgcolor: red[500], width: 39, height: 39 }}
               aria-label="project owner"
-              src={`https://collabdev-resume-storage-2024.s3.us-east-2.amazonaws.com/${userData?.avatar}`}
+              src={getImageUrl(userData?.avatar)}
             />
             <Typography
               sx={{

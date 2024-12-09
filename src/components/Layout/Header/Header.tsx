@@ -213,7 +213,7 @@ export default function Header() {
                   height: isMediumScreen ? "2.1rem" : "2.3rem",
                   color: "white",
                 }}
-                src={`https://collabdev-resume-storage-2024.s3.us-east-2.amazonaws.com/${userInfo?.avatar}`}
+                src={getImageUrl(userInfo?.avatar)}
               >
                 {userInfo?.name[0]}
               </Avatar>

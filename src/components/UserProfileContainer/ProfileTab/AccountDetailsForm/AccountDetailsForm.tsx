@@ -23,6 +23,7 @@ import {
 import ResponsiveDialog from "../../../common/CustomModal/ConfirmationModal";
 import AvatarUpload from "../../../common/Avatar/Avatar";
 import { useAuth } from "../../../../context/AuthContext/AuthContext";
+import { getImageUrl } from "../../../../core/utils/ImageUtils/imageUtils";
 
 interface AccountDetailsFormProps {
   open: boolean;
@@ -55,9 +56,7 @@ export default function AccountDetailsForm({
 
   useEffect(() => {
     if (developer?.avatar) {
-      setPreviewURL(
-        `https://collabdev-resume-storage-2024.s3.us-east-2.amazonaws.com/${developer.avatar}`
-      );
+      setPreviewURL(getImageUrl(developer.avatar));
     }
   }, [developer]);
 
