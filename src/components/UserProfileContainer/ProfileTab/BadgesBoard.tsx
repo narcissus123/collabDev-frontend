@@ -46,10 +46,6 @@ const BadgesBoard = ({
     setIsDeleteMode(true);
   };
 
-  console.log(
-    "https://collabdev-prod-storage-2024.s3.us-east-2.amazonaws.com/${path}",
-    `https://collabdev-prod-storage-2024.s3.us-east-2.amazonaws.com/${path}`
-  );
   const handleBadgeSelect = (index: number) => {
     setSelectedBadges((prev) =>
       prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
