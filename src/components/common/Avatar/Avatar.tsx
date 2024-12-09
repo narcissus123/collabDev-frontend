@@ -31,6 +31,7 @@ const AvatarUpload = ({
   register,
   userName = "",
 }: AvatarUploadProps) => {
+  console.log("previewURL", previewURL);
   return (
     <Box>
       <label htmlFor="avatar" style={{ cursor: "pointer" }}>

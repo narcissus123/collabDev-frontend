@@ -186,6 +186,7 @@ export default function AccountDetailsForm({
 
       if (avatar[0]) {
         const avatarUpload = await uploadFile(userId, avatar[0], "avatars");
+        console.log("avatarUpload", avatarUpload);
         avatarKey = avatarUpload.data[0];
         updateData.avatar = avatarKey;
       } else {
@@ -193,11 +194,13 @@ export default function AccountDetailsForm({
         delete updateData.avatar;
       }
 
+      console.log("resume", resume);
       if (resume) {
         const resumeUpload = await resumeUploadMutation.mutateAsync({
           userId,
           file: resume,
         });
+        console.log("resumeUpload", resumeUpload);
         resumeKey = resumeUpload.data[0];
         updateData.resume = resumeKey;
       }
