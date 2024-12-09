@@ -88,7 +88,7 @@ function ProjectCard({ project }: ProjectCardProps) {
   };
 
   return (
-    <Grid item xs={12} md={5.8} lg={3.8}>
+    <Grid item xs={12} md={5.8} lg={3.8} sx={{ mb: 3 }}>
       <Card
         sx={{
           height: "100%",

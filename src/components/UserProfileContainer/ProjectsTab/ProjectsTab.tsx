@@ -106,8 +106,12 @@ export default function ProjectsTab() {
             <Stack
               display="flex"
               flexDirection="row"
-              gap={2}
-              sx={{ flexWrap: "wrap", ml: 2, mt: 3 }}
+              justifyContent="space-around"
+              sx={{
+                flexWrap: "wrap",
+                my: 2,
+                mt: 3,
+              }}
             >
               {myprojects?.map((project: ProjectType, index: Key) => (
                 <ProjectCard project={project} key={index} />
@@ -119,13 +123,13 @@ export default function ProjectsTab() {
                   xs={12}
                   md={5.8}
                   lg={3.8}
-                  sx={{ width: "100%", maxWidth: "25.314rem" }}
+                  sx={{ width: "100%", maxWidth: "25.314rem", mb: 3 }}
                 >
                   <Card
                     sx={{
                       height: "100%",
                       minHeight: "21rem",
-                      maxWidth: "25.314rem",
+                      maxWidth: myprojects?.length === 0 ? "25.314rem" : "auto",
                       display: "flex",
                       flexDirection: "column",
                       gap: 1,
