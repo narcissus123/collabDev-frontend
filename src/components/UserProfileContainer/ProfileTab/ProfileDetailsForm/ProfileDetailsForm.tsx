@@ -138,7 +138,7 @@ export default function ProfileDetailsForm({
             display: "flex",
             flexDirection: "column",
             gap: 7,
-            mt: "-3rem",
+            mt: "0rem",
             alignItems: "space-between",
           }}
         >

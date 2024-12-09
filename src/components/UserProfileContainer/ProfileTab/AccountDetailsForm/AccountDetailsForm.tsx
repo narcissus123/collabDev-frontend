@@ -241,18 +241,16 @@ export default function AccountDetailsForm({
         >
           <Box>
             {/* Avatar image */}
-            {developer?.avatar !== "" && (
-              <AvatarUpload
-                previewURL={previewURL}
-                imageError={imageError}
-                handleFileChange={handleFileChange}
-                fileInputRef={fileInputRef}
-                setImageError={setImageError}
-                register={register}
-                userName={developer?.name}
-                isVisible={developer?.avatar !== ""}
-              />
-            )}
+            <AvatarUpload
+              previewURL={previewURL}
+              imageError={imageError}
+              handleFileChange={handleFileChange}
+              fileInputRef={fileInputRef}
+              setImageError={setImageError}
+              register={register}
+              userName={developer?.name}
+              isVisible={developer?.avatar !== ""}
+            />
           </Box>
           {UserAccounInputData.map((data) => (
             <Box sx={{ mb: 3 }} key={uuidv4()}>

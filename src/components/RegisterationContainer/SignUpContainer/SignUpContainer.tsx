@@ -59,7 +59,7 @@ export default function SignUpContainer({
         const user = response.data.userWithoutPassword;
         setCurrentUser(user);
         history("/");
-        toast.success("You are successfully signed up!");
+        // toast.success("You are successfully signed up!");
       } else {
         if (response.status === 400 || response.status === 403) {
           toast.error("Email or password is wrong.");
