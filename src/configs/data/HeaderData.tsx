@@ -1,6 +1,6 @@
 import { AccountCircle } from "@mui/icons-material";
 import Logout from "@mui/icons-material/Logout";
-import Settings from "@mui/icons-material/Settings";
+// import Settings from "@mui/icons-material/Settings";
 import { useMediaQuery, useTheme } from "@mui/material";
 
 export const userProfileMenuItems = (userInfo: any) => {
@@ -13,12 +13,12 @@ export const userProfileMenuItems = (userInfo: any) => {
       icon: <AccountCircle fontSize={isMediumScreen ? "small" : "medium"} />,
       to: `/profile/${userInfo?._id}`,
     },
-    {
-      text: " Settings",
-      divider: false,
-      icon: <Settings fontSize={isMediumScreen ? "small" : "medium"} />,
-      to: "#",
-    },
+    // {
+    //   text: " Settings",
+    //   divider: false,
+    //   icon: <Settings fontSize={isMediumScreen ? "small" : "medium"} />,
+    //   to: "#",
+    // },
     {
       text: " Logout",
       divider: false,

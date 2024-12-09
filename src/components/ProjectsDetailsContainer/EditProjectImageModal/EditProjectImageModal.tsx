@@ -79,54 +79,59 @@ export const EditProjectImageModal = ({
   };
 
   return (
-    <CustomModal
-      open={openEditImageModal}
-      handleClose={() => handleClose()}
-      framesx={{
-        width: 600,
-      }}
-      headersx={{
-        borderBottom: "1px solid",
-        borderColor:
-          theme.palette.mode === "dark" ? "secondary.main" : "border.secondary",
-      }}
-      title="Project Cover Image"
-    >
+    <>
       <ToastContainer />
-      <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)}>
-        <Box
-          sx={{
-            border: "1px solid",
-            borderColor: theme.palette.mode === "dark" ? "#33c0ee" : "#B9B9BF",
-          }}
-        >
-          <DropBox onDrop={onCoverImageDrop} />
+      <CustomModal
+        open={openEditImageModal}
+        handleClose={() => handleClose()}
+        framesx={{
+          width: 600,
+        }}
+        headersx={{
+          borderBottom: "1px solid",
+          borderColor:
+            theme.palette.mode === "dark"
+              ? "secondary.main"
+              : "border.secondary",
+        }}
+        title="Project Cover Image"
+      >
+        <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)}>
+          <Box
+            sx={{
+              border: "1px solid",
+              borderColor:
+                theme.palette.mode === "dark" ? "#33c0ee" : "#B9B9BF",
+            }}
+          >
+            <DropBox onDrop={onCoverImageDrop} />
+          </Box>
+          <Stack
+            direction={"row"}
+            justifyContent="flex-start"
+            spacing={2}
+            sx={{
+              p: 1,
+              overflowX: "auto",
+            }}
+          >
+            {coverImageImages?.map((image, index) => {
+              return (
+                <img
+                  key={index}
+                  src={URL.createObjectURL(image)}
+                  alt={image.name}
+                  style={{
+                    maxWidth: "100px",
+                    maxHeight: "100px",
+                  }}
+                />
+              );
+            })}
+          </Stack>
+          <CustomButton righButtonText="UPload" />
         </Box>
-        <Stack
-          direction={"row"}
-          justifyContent="flex-start"
-          spacing={2}
-          sx={{
-            p: 1,
-            overflowX: "auto",
-          }}
-        >
-          {coverImageImages?.map((image, index) => {
-            return (
-              <img
-                key={index}
-                src={URL.createObjectURL(image)}
-                alt={image.name}
-                style={{
-                  maxWidth: "100px",
-                  maxHeight: "100px",
-                }}
-              />
-            );
-          })}
-        </Stack>
-        <CustomButton righButtonText="UPload" />
-      </Box>
-    </CustomModal>
+      </CustomModal>
+    </>
   );
 };

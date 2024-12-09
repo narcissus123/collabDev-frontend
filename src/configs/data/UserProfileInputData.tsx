@@ -14,7 +14,7 @@ const ProfileDetailsInputData: any[] = [
     placeholder:
       "Share a brief description about yourself, your interests, and what you do.",
     type: "text",
-    required: true,
+    required: false,
     fullWidth: true,
     formLabel: true,
     multiline: true,
@@ -22,7 +22,7 @@ const ProfileDetailsInputData: any[] = [
     register: {
       name: "about",
       schema: {
-        required: "This is required.",
+        required: false,
       },
     },
   },

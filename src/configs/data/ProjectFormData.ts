@@ -73,21 +73,6 @@ export const ProjectFormInputData = [
       },
     },
   },
-  {
-    labelText: "Links",
-    id: "links",
-    name: "links",
-    autoComplete: "false",
-    placeholder: "Links",
-    type: "text",
-    required: false,
-    multiline: false,
-    formLabel: true,
-    variant: "outlined",
-    register: {
-      name: "links",
-    },
-  },
 ];
 
 export const ProjectFormPreviewData = [

@@ -28,7 +28,6 @@ interface AccountDetailsFormProps {
   open: boolean;
   handleClose: () => void;
   developer: User | undefined;
-  handleProfileInfo: () => void;
 }
 
 interface FormValues {
@@ -43,7 +42,6 @@ export default function AccountDetailsForm({
   open,
   handleClose,
   developer,
-  handleProfileInfo,
 }: AccountDetailsFormProps) {
   const theme = useTheme();
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
@@ -109,7 +107,6 @@ export default function AccountDetailsForm({
         queryClient.refetchQueries({
           queryKey: ["getUserById", developer?._id],
         });
-        handleProfileInfo();
       }
     },
   });
@@ -214,6 +211,7 @@ export default function AccountDetailsForm({
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
+      <ToastContainer />
       <CustomModal
         open={open}
         handleClose={() => handleClose()}
@@ -241,21 +239,17 @@ export default function AccountDetailsForm({
             alignItems: "space-between",
           }}
         >
-          <ToastContainer />
           <Box>
             {/* Avatar image */}
-            {developer?.avatar !== "" && (
-              <AvatarUpload
-                previewURL={previewURL}
-                imageError={imageError}
-                handleFileChange={handleFileChange}
-                fileInputRef={fileInputRef}
-                setImageError={setImageError}
-                register={register}
-                userName={developer?.name}
-                isVisible={developer?.avatar !== ""}
-              />
-            )}
+            <AvatarUpload
+              previewURL={previewURL}
+              imageError={imageError}
+              handleFileChange={handleFileChange}
+              fileInputRef={fileInputRef}
+              setImageError={setImageError}
+              register={register}
+              userName={developer?.name}
+            />
           </Box>
           {UserAccounInputData.map((data) => (
             <Box sx={{ mb: 3 }} key={uuidv4()}>

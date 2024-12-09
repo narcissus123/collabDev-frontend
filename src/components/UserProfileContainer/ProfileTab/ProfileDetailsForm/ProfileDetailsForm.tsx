@@ -17,7 +17,7 @@ import { useFieldArray, useForm, Controller } from "react-hook-form";
 import { ToastContainer, toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import {
   ProfileDetailsInputData,
   socialMediaPlatforms,
@@ -33,7 +33,7 @@ interface ProfileDetailsFormProps {
   openProfileDetailsModal: boolean;
   handleClose: () => void;
   profileTabInfo: User;
-  handleProfileInfo: (userInfo: User) => void;
+  onSuccess: () => void;
 }
 
 interface FormValues {
@@ -47,11 +47,10 @@ export default function ProfileDetailsForm({
   openProfileDetailsModal,
   handleClose,
   profileTabInfo,
-  handleProfileInfo,
+  onSuccess,
 }: ProfileDetailsFormProps) {
   const theme = useTheme();
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
-  const queryClient = useQueryClient();
 
   const {
     control,
@@ -89,13 +88,7 @@ export default function ProfileDetailsForm({
     onSuccess: (response: any) => {
       if (response) {
         toast.success("Your account information updated successfully!");
-        queryClient.invalidateQueries({
-          queryKey: ["getUserById", profileTabInfo?._id],
-        });
-        queryClient.refetchQueries({
-          queryKey: ["getUserById", profileTabInfo?._id],
-        });
-        handleProfileInfo(response);
+        onSuccess();
       }
     },
   });
@@ -118,254 +111,229 @@ export default function ProfileDetailsForm({
     }
   };
   return (
-    <CustomModal
-      open={openProfileDetailsModal}
-      handleClose={handleClose}
-      framesx={{
-        width: 600,
-        maxHeight: "90vh",
-        overflowY: "auto",
-      }}
-      headersx={{
-        borderBottom: "1px solid",
-        borderColor:
-          theme.palette.mode === "dark" ? "secondary.main" : "border.secondary",
-      }}
-      title="Profile Details"
-    >
-      <Box
-        component="form"
-        noValidate
-        onSubmit={handleSubmit(onSubmit)}
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 7,
-          mt: "-3rem",
-          alignItems: "space-between",
+    <>
+      <ToastContainer />
+      <CustomModal
+        open={openProfileDetailsModal}
+        handleClose={handleClose}
+        framesx={{
+          width: 600,
+          maxHeight: "90vh",
+          overflowY: "auto",
         }}
+        headersx={{
+          borderBottom: "1px solid",
+          borderColor:
+            theme.palette.mode === "dark"
+              ? "secondary.main"
+              : "border.secondary",
+        }}
+        title="Profile Details"
       >
-        <ToastContainer />
+        <Box
+          component="form"
+          noValidate
+          onSubmit={handleSubmit(onSubmit)}
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 7,
+            mt: "0rem",
+            alignItems: "space-between",
+          }}
+        >
+          {ProfileDetailsInputData.map((data, index) => (
+            <Box key={uuidv4()}>
+              <Typography
+                sx={{
+                  width: "100%",
+                  color:
+                    theme.palette.mode === "dark"
+                      ? "text.secondary"
+                      : "border.secondary",
+                  fontSize: "0.9rem",
+                }}
+              >
+                {data.labelText}
+              </Typography>
+              <Input
+                key={index}
+                id={data.id}
+                ty={data.type}
+                placeholder={data.placeholder}
+                sx={data.sx}
+                margin={data.margin as "normal" | "dense"}
+                inputSize={isMediumScreen ? "small" : "medium"}
+                required={data.required}
+                fullWidth={data.fullWidth}
+                multiline={data.multiline}
+                variant={data.variant as "standard" | "outlined" | "filled"}
+                errors={errors}
+                {...(register &&
+                  register(data?.register?.name as "about", {
+                    ...data?.register?.schema,
+                  }))}
+              />
+            </Box>
+          ))}
 
-        {ProfileDetailsInputData.map((data, index) => (
-          <Box key={uuidv4()}>
+          <Box>
             <Typography
               sx={{
                 width: "100%",
+                my: 1,
+                color:
+                  theme.palette.mode === "dark"
+                    ? "text.secondary"
+                    : "border.secondary",
+              }}
+            >
+              Social Media Links
+            </Typography>
+            <Stack spacing={2}>
+              {socialMediaFields.map((item, index) => {
+                return (
+                  <Stack
+                    key={item.id}
+                    direction="row"
+                    spacing={2}
+                    alignItems="center"
+                  >
+                    <Controller
+                      name={`socialMedia.${index}.platform`}
+                      control={control}
+                      rules={{ required: "Platform is required" }}
+                      render={({ field }) => {
+                        return (
+                          <FormControl sx={{ minWidth: 120 }} size="small">
+                            <Select
+                              {...field}
+                              labelId={`platform-label-${index}`}
+                              error={!!errors.socialMedia?.[index]?.platform}
+                              sx={{ color: "text.secondary" }}
+                            >
+                              {socialMediaPlatforms.map((platform) => (
+                                <MenuItem
+                                  key={platform}
+                                  value={platform}
+                                  sx={{ color: "text.secondary" }}
+                                >
+                                  {platform}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        );
+                      }}
+                    />
+                    <TextField
+                      {...register(`socialMedia.${index}.url`, {
+                        required: "URL is required",
+                      })}
+                      placeholder="URL"
+                      size="small"
+                      error={!!errors.socialMedia?.[index]?.url}
+                      sx={{ flexGrow: 1, ...InputStyles(theme) }}
+                    />
+                    <IconButton
+                      aria-label="delete"
+                      onClick={() => socialMediaRemove(index)}
+                      size="small"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Stack>
+                );
+              })}
+              <Button
+                variant="outlined"
+                onClick={() => socialMediaAppend({ platform: "", url: "" })}
+              >
+                Add New Social Media
+              </Button>
+            </Stack>
+          </Box>
+
+          <Box>
+            <Typography
+              sx={{
+                width: "100%",
+                my: 1,
                 color:
                   theme.palette.mode === "dark"
                     ? "text.secondary"
                     : "border.secondary",
                 fontSize: "0.9rem",
-                position: "relative",
-                "&::after": {
-                  content: '"*"',
-                  marginLeft: "4px",
-                  position: "absolute",
-                  top: 0,
-                },
               }}
             >
-              {data.labelText}
+              Skills
             </Typography>
-            <Input
-              key={index}
-              id={data.id}
-              ty={data.type}
-              placeholder={data.placeholder}
-              sx={data.sx}
-              margin={data.margin as "normal" | "dense"}
-              inputSize={isMediumScreen ? "small" : "medium"}
-              required={data.required}
-              fullWidth={data.fullWidth}
-              multiline={data.multiline}
-              variant={data.variant as "standard" | "outlined" | "filled"}
-              errors={errors}
-              {...(register &&
-                register(data.register.name as "about", {
-                  ...data.register.schema,
-                }))}
+            <Controller
+              name="skills"
+              control={control}
+              render={({ field, fieldState }) => (
+                <MuiChipsInput
+                  {...field}
+                  hideClearAll
+                  error={fieldState.invalid}
+                  sx={{
+                    maxHeight: "8rem",
+                    overflowY: "auto",
+                    width: "100%",
+                    ...InputStyles(theme),
+                  }}
+                />
+              )}
             />
           </Box>
-        ))}
 
-        <Box>
-          <Typography
-            sx={{
-              width: "100%",
-              my: 1,
-              color:
-                theme.palette.mode === "dark"
-                  ? "text.secondary"
-                  : "border.secondary",
-              fontSize: "0.9rem",
-              position: "relative",
-              "&::after": {
-                content: '"*"',
-                marginLeft: "4px",
-                position: "absolute",
-                top: 0,
-              },
-            }}
-          >
-            Social Media Links
-          </Typography>
-          <Stack spacing={2}>
-            {socialMediaFields.map((item, index) => {
-              return (
-                <Stack
-                  key={item.id}
-                  direction="row"
-                  spacing={2}
-                  alignItems="center"
-                >
-                  <Controller
-                    name={`socialMedia.${index}.platform`}
-                    control={control}
-                    rules={{ required: "Platform is required" }}
-                    render={({ field }) => {
-                      return (
-                        <FormControl sx={{ minWidth: 120 }} size="small">
-                          <Select
-                            {...field}
-                            labelId={`platform-label-${index}`}
-                            error={!!errors.socialMedia?.[index]?.platform}
-                            sx={{ color: "text.secondary" }}
-                          >
-                            {socialMediaPlatforms.map((platform) => (
-                              <MenuItem
-                                key={platform}
-                                value={platform}
-                                sx={{ color: "text.secondary" }}
-                              >
-                                {platform}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                      );
-                    }}
-                  />
-                  <TextField
-                    {...register(`socialMedia.${index}.url`, {
-                      required: "URL is required",
-                    })}
-                    placeholder="URL"
-                    size="small"
-                    error={!!errors.socialMedia?.[index]?.url}
-                    sx={{ flexGrow: 1, ...InputStyles(theme) }}
-                  />
-                  <IconButton
-                    aria-label="delete"
-                    onClick={() => socialMediaRemove(index)}
-                    size="small"
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </Stack>
-              );
-            })}
-            <Button
-              variant="outlined"
-              onClick={() => socialMediaAppend({ platform: "", url: "" })}
+          <Box sx={{ width: "100%" }}>
+            <Typography
+              sx={{
+                width: "100%",
+                my: 1,
+                color:
+                  theme.palette.mode === "dark"
+                    ? "text.secondary"
+                    : "border.secondary",
+                fontSize: "0.9rem",
+              }}
             >
-              Add New Social Media
-            </Button>
-          </Stack>
-        </Box>
+              Languages
+            </Typography>
+            <Controller
+              name="languages"
+              control={control}
+              render={({ field, fieldState }) => (
+                <MuiChipsInput
+                  {...field}
+                  hideClearAll
+                  error={fieldState.invalid}
+                  sx={{
+                    maxHeight: "8rem",
+                    overflowY: "auto",
+                    width: "100%",
+                    ...InputStyles(theme),
+                  }}
+                />
+              )}
+            />
+          </Box>
 
-        <Box>
-          <Typography
-            sx={{
-              width: "100%",
-              my: 1,
-              color:
+          <CustomButton
+            leftButtonsx={{
+              borderTop: "1px solid",
+              borderColor:
                 theme.palette.mode === "dark"
-                  ? "text.secondary"
+                  ? "secondary.main"
                   : "border.secondary",
-              fontSize: "0.9rem",
-              position: "relative",
-              "&::after": {
-                content: '"*"',
-                marginLeft: "4px",
-                position: "absolute",
-                top: 0,
-              },
+              justifyContent: "flex-end",
+              alignItems: "center",
             }}
-          >
-            Skills
-          </Typography>
-          <Controller
-            name="skills"
-            control={control}
-            render={({ field, fieldState }) => (
-              <MuiChipsInput
-                {...field}
-                hideClearAll
-                error={fieldState.invalid}
-                sx={{
-                  maxHeight: "8rem",
-                  overflowY: "auto",
-                  ...InputStyles(theme),
-                }}
-              />
-            )}
+            righButtonText="Edit"
           />
         </Box>
-
-        <Box sx={{ width: "100%" }}>
-          <Typography
-            sx={{
-              width: "100%",
-              my: 1,
-              color:
-                theme.palette.mode === "dark"
-                  ? "text.secondary"
-                  : "border.secondary",
-              fontSize: "0.9rem",
-              position: "relative",
-              "&::after": {
-                content: '"*"',
-                marginLeft: "4px",
-                position: "absolute",
-                top: 0,
-              },
-            }}
-          >
-            Languages
-          </Typography>
-          <Controller
-            name="languages"
-            control={control}
-            render={({ field, fieldState }) => (
-              <MuiChipsInput
-                {...field}
-                hideClearAll
-                error={fieldState.invalid}
-                sx={{
-                  maxHeight: "8rem",
-                  overflowY: "auto",
-                  width: "100%",
-                  ...InputStyles(theme),
-                }}
-              />
-            )}
-          />
-        </Box>
-
-        <CustomButton
-          leftButtonsx={{
-            borderTop: "1px solid",
-            borderColor:
-              theme.palette.mode === "dark"
-                ? "secondary.main"
-                : "border.secondary",
-            justifyContent: "flex-end",
-            alignItems: "center",
-          }}
-          righButtonText="Edit"
-        />
-      </Box>
-    </CustomModal>
+      </CustomModal>
+    </>
   );
 }

@@ -90,6 +90,7 @@ const HeaderControls = ({
         ) : (
           <Tooltip title="Delete messages">
             <IconButton
+              disabled={!counts}
               onClick={() => setIsSelectionMode((prev) => !prev)}
               color={isSelectionMode ? "default" : "primary"}
             >
@@ -101,6 +102,7 @@ const HeaderControls = ({
         )}
         <Tooltip title={`Sort by ${sortBy === "date" ? "status" : "date"}`}>
           <IconButton
+            disabled={!counts}
             onClick={() =>
               setSortBy((prev) => (prev === "date" ? "status" : "date"))
             }
@@ -113,6 +115,7 @@ const HeaderControls = ({
           title={`Switch to ${viewMode === "list" ? "compact" : "list"} view`}
         >
           <IconButton
+            disabled={!counts}
             onClick={() =>
               setViewMode((prev) => (prev === "list" ? "compact" : "list"))
             }

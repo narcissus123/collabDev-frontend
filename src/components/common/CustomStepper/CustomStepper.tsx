@@ -33,7 +33,11 @@ export default function CustomStepper({
     <Box sx={{ width: "100%" }}>
       <Stepper
         activeStep={activeStep}
-        sx={{ mb: "4rem", ...InputStyles(theme) }}
+        sx={{
+          mb: "4rem",
+          height: "2rem",
+          ...InputStyles(theme),
+        }}
       >
         {steps.map((label, index) => {
           const isActive = index === activeStep;

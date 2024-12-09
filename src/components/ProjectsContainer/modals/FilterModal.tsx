@@ -31,6 +31,7 @@ import {
 } from "../../../configs/data/ProjectFilterFormData";
 import CustomButton from "../../common/CustomButton/CustomButton";
 import CustomDatePicker from "../../common/CustomDatePicker/CustomDatePicker";
+import { InputStyles } from "../../common/InputStyles/InputStyles";
 
 function ValueLabelComponent(props: SliderValueLabelProps) {
   const { children, value } = props;
@@ -101,6 +102,13 @@ function FiltertModal({ setQueryString, disabled }: FiltertModalProps) {
     setQueryString(formatedData);
   };
 
+  const statusOptions = [
+    { value: "All", label: "All" },
+    { value: "Seeking Collaborators", label: "Seeking Collaborators" },
+    { value: "In Progress", label: "In Progress" },
+    { value: "Completed", label: "Completed" },
+  ];
+
   return (
     <Box>
       <Button
@@ -152,7 +160,6 @@ function FiltertModal({ setQueryString, disabled }: FiltertModalProps) {
                     : "border.secondary",
                 fontWeight: 600,
                 fontSize: "1rem",
-                mb: "1rem",
               }}
               title="Filter"
             />
@@ -171,9 +178,6 @@ function FiltertModal({ setQueryString, disabled }: FiltertModalProps) {
                 gap={4}
               >
                 <FormControl>
-                  <Typography sx={{ color: "text.secondary" }}>
-                    Date Range
-                  </Typography>
                   <Stack
                     display="flex"
                     flexDirection="row"
@@ -196,7 +200,18 @@ function FiltertModal({ setQueryString, disabled }: FiltertModalProps) {
                 <FormControl>
                   <Typography
                     id="filter-status-label"
-                    sx={{ color: "text.secondary", mb: 1 }}
+                    sx={{
+                      width: "100%",
+                      my: 1,
+                      color:
+                        theme.palette.mode === "dark"
+                          ? "primary.main"
+                          : "text.primary",
+                      fontSize: "0.875rem",
+                      fontWeight: "400",
+                      lineHeight: "1.4375em",
+                      mb: 1,
+                    }}
                   >
                     Status
                   </Typography>
@@ -206,39 +221,77 @@ function FiltertModal({ setQueryString, disabled }: FiltertModalProps) {
                     render={({ field }) => (
                       <Select
                         {...field}
+                        size="small"
                         labelId="filter-status-label"
                         id="filter-status"
                         value={field.value || "All"}
                         onChange={(e) => field.onChange(e.target.value)}
-                        sx={{ color: "text.secondary" }}
+                        sx={{
+                          color: "text.secondary",
+                          backgroundColor:
+                            theme.palette.mode === "dark"
+                              ? "rgb(38, 39, 43)"
+                              : theme.palette.background.default,
+                          "& .MuiOutlinedInput-notchedOutline": {
+                            borderColor:
+                              theme.palette.mode === "dark"
+                                ? "rgb(82, 82, 82)"
+                                : "rgb(196, 196, 196)",
+                          },
+                          "&:hover .MuiOutlinedInput-notchedOutline": {
+                            borderColor:
+                              theme.palette.mode === "dark"
+                                ? "rgb(100, 100, 100)"
+                                : "#000000",
+                          },
+                          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                            borderColor: theme.palette.primary.main,
+                          },
+                          "& .MuiSelect-icon": {
+                            color: theme.palette.text.secondary,
+                          },
+                        }}
                       >
-                        <MenuItem value="All" sx={{ color: "text.secondary" }}>
-                          All
-                        </MenuItem>
-                        <MenuItem
-                          value="Seeking Collaborators"
-                          sx={{ color: "text.secondary" }}
-                        >
-                          Seeking Collaborators
-                        </MenuItem>
-                        <MenuItem
-                          value="In Progress"
-                          sx={{ color: "text.secondary" }}
-                        >
-                          In Progress
-                        </MenuItem>
-                        <MenuItem
-                          value="Completed"
-                          sx={{ color: "text.secondary" }}
-                        >
-                          Completed
-                        </MenuItem>
+                        {statusOptions.map((option) => (
+                          <MenuItem
+                            key={option.value}
+                            value={option.value}
+                            sx={{
+                              color:
+                                theme.palette.mode === "dark"
+                                  ? "#ffffff"
+                                  : theme.palette.text.secondary,
+                              backgroundColor:
+                                theme.palette.mode === "dark"
+                                  ? "black"
+                                  : theme.palette.background.default,
+                              "&:hover": {
+                                backgroundColor: theme.palette.action.hover,
+                              },
+                            }}
+                          >
+                            {option.label}
+                          </MenuItem>
+                        ))}
                       </Select>
                     )}
                   />
                 </FormControl>
                 <FormControl>
-                  <Typography sx={{ color: "text.secondary", mb: 1 }}>
+                  <Typography
+                    sx={{
+                      width: "100%",
+                      my: 1,
+                      color:
+                        theme.palette.mode === "dark"
+                          ? "primary.main"
+                          : "text.primary",
+                      fontSize: "0.875rem",
+                      fontWeight: "400",
+                      lineHeight: "1.4375em",
+                      mb: 1,
+                    }}
+                  >
                     Category
                   </Typography>
                   <Controller
@@ -257,24 +310,54 @@ function FiltertModal({ setQueryString, disabled }: FiltertModalProps) {
                               .includes(state.inputValue.toLowerCase())
                           )
                         }
+                        renderOption={(props, option) => {
+                          const { label } = option;
+                          return (
+                            <Typography
+                              {...props}
+                              sx={{
+                                color:
+                                  theme.palette.mode === "dark"
+                                    ? "white"
+                                    : "text.secondary",
+                              }}
+                            >
+                              {label}
+                            </Typography>
+                          );
+                        }}
                         renderInput={(params) => (
                           <TextField
                             {...params}
                             variant="outlined"
+                            size="small"
                             sx={{
-                              "& .MuiInputBase-input": {
-                                color: "text.secondary",
+                              ...InputStyles(theme),
+                              "& .MuiFormHelperText-root": {
+                                fontSize: "0.8rem",
+                                marginLeft: 0,
                               },
                               "& .MuiOutlinedInput-root": {
-                                "& fieldset": {
-                                  borderColor: "text.secondary",
+                                "& .MuiOutlinedInput-notchedOutline": {
+                                  borderColor:
+                                    theme.palette.mode === "dark"
+                                      ? "rgb(82, 82, 82)"
+                                      : "rgb(196, 196, 196)",
+                                  borderWidth: "1px",
                                 },
-                                "&:hover fieldset": {
-                                  borderColor: "text.secondary",
+                                "&:hover .MuiOutlinedInput-notchedOutline": {
+                                  borderColor:
+                                    theme.palette.mode === "dark"
+                                      ? "rgb(100, 100, 100)"
+                                      : "#000000",
                                 },
-                                "&.Mui-focused fieldset": {
-                                  borderColor: "text.secondary",
-                                },
+                                "&.Mui-focused .MuiOutlinedInput-notchedOutline":
+                                  {
+                                    borderColor:
+                                      theme.palette.mode === "dark"
+                                        ? "primary.main"
+                                        : "primary.main",
+                                  },
                               },
                             }}
                           />
@@ -289,7 +372,20 @@ function FiltertModal({ setQueryString, disabled }: FiltertModalProps) {
                   />
                 </FormControl>
                 <FormControl>
-                  <Typography sx={{ color: "text.secondary", mb: 1 }}>
+                  <Typography
+                    sx={{
+                      width: "100%",
+                      my: 1,
+                      color:
+                        theme.palette.mode === "dark"
+                          ? "primary.main"
+                          : "text.primary",
+                      fontSize: "0.875rem",
+                      fontWeight: "400",
+                      lineHeight: "1.4375em",
+                      mb: 1,
+                    }}
+                  >
                     Technology
                   </Typography>
                   <Controller
@@ -309,8 +405,57 @@ function FiltertModal({ setQueryString, disabled }: FiltertModalProps) {
                               .includes(state.inputValue.toLowerCase())
                           )
                         }
+                        renderOption={(props, option) => {
+                          const { label } = option;
+                          return (
+                            <Typography
+                              {...props}
+                              sx={{
+                                color:
+                                  theme.palette.mode === "dark"
+                                    ? "white"
+                                    : "text.secondary",
+                              }}
+                            >
+                              {label}
+                            </Typography>
+                          );
+                        }}
                         renderInput={(params) => (
-                          <TextField {...params} variant="outlined" />
+                          <TextField
+                            {...params}
+                            variant="outlined"
+                            size="small"
+                            sx={{
+                              ...InputStyles(theme),
+                              "& .MuiFormHelperText-root": {
+                                fontSize: "0.8rem",
+                                marginLeft: 0,
+                              },
+                              "& .MuiOutlinedInput-root": {
+                                "& .MuiOutlinedInput-notchedOutline": {
+                                  borderColor:
+                                    theme.palette.mode === "dark"
+                                      ? "rgb(82, 82, 82)"
+                                      : "rgb(196, 196, 196)",
+                                  borderWidth: "1px",
+                                },
+                                "&:hover .MuiOutlinedInput-notchedOutline": {
+                                  borderColor:
+                                    theme.palette.mode === "dark"
+                                      ? "rgb(100, 100, 100)"
+                                      : "#000000",
+                                },
+                                "&.Mui-focused .MuiOutlinedInput-notchedOutline":
+                                  {
+                                    borderColor:
+                                      theme.palette.mode === "dark"
+                                        ? "primary.main"
+                                        : "primary.main",
+                                  },
+                              },
+                            }}
+                          />
                         )}
                         onChange={(event, value) => field.onChange(value)}
                         value={field.value || []}
@@ -321,7 +466,7 @@ function FiltertModal({ setQueryString, disabled }: FiltertModalProps) {
                     )}
                   />
                 </FormControl>
-                <FormControl sx={{ width: 300 }}>
+                <FormControl sx={{ width: 300, display: "none" }}>
                   <Typography sx={{ color: "text.secondary" }}>
                     likes
                   </Typography>

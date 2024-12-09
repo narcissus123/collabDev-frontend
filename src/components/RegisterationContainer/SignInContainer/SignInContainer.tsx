@@ -15,6 +15,7 @@ import { SignInInputData } from "../../../configs/data/RegistrationInputData";
 import { SignInDeveloper } from "../../../core/services/api/developer-authentication.api";
 import Input from "../../common/Input/Input";
 import { useAuth } from "../../../context/AuthContext/AuthContext";
+import { getImageUrl } from "../../../core/utils/ImageUtils/imageUtils";
 
 interface SignInContainerProps {
   handleSignIn: (signIn: boolean) => void;
@@ -49,10 +50,10 @@ export default function SignInContainer({
     try {
       const response = await SignInDeveloper(data);
       if (response.status === "success") {
-        toast.success("You are successfully signed up!");
         const user = response.data.userWithoutPassword;
         setCurrentUser(user);
         history("/");
+        // toast.success("You are successfully signed in!");
       } else {
         if (response.status === 400 || response.status === 403) {
           toast.error("Email or password is wrong.");
@@ -88,7 +89,7 @@ export default function SignInContainer({
           alt="CollabDev"
         >
           <img
-            src={`${process.env.PUBLIC_URL}/assets/logo/logo-light.webp`}
+            src={getImageUrl("common/logo-light.webp")}
             alt="CollabDev"
             width={isMediumScreen ? "135" : "135"}
             height={isMediumScreen ? "45" : "45"}

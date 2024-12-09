@@ -90,10 +90,6 @@
     "no-shadow": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-shadow": ["error"],
-    "max-len": [
-      "warn",
-      { "code": 170, "ignoreComments": true, "ignoreUrls": true }
-    ],
     "import/prefer-default-export": "off",
     "react/prop-types": "off",
     "@typescript-eslint/no-unused-vars": "off",

@@ -91,25 +91,61 @@ export default function ProjectsTab() {
         }}
       >
         <Grid item xs={12}>
-          <Typography variant="h3" sx={{ py: 3, ml: 2 }} color="text.secondary">
+          <Typography
+            variant="h4"
+            sx={{
+              py: 3,
+              ml: 2,
+              color: theme.palette.mode === "dark" ? "text.secondary" : "",
+              display: "none",
+            }}
+          >
             My Projects
           </Typography>
           <Suspense fallback={<Loading />}>
             <Stack
-              display="flex"
-              flexDirection="row"
-              gap={2}
-              sx={{ flexWrap: "wrap", ml: 2 }}
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                flexWrap: "wrap",
+                gap: "16px",
+                my: 2,
+                mt: 3,
+                ml: 5,
+                "& > *": {
+                  flexGrow: 0,
+                  flexShrink: 0,
+                  width: "calc((100% - 32px) / 3)",
+                  "@media (max-width: 900px)": {
+                    width: "calc((100% - 16px) / 2)",
+                  },
+                  "@media (max-width: 600px)": {
+                    width: "100%",
+                  },
+                },
+              }}
             >
               {myprojects?.map((project: ProjectType, index: Key) => (
-                <ProjectCard project={project} key={index} />
+                <ProjectCard
+                  project={project}
+                  key={index}
+                  ptClassName={{ cardMargin: 0 }}
+                />
               ))}
 
               {apiCallsCompleted && (
-                <Grid item xs={12} md={5.8} lg={3.8} sx={{ width: "100%" }}>
+                <Grid
+                  item
+                  xs={12}
+                  md={5.8}
+                  lg={3.8}
+                  sx={{ width: "100%", maxWidth: "25.314rem", mb: 3 }}
+                >
                   <Card
                     sx={{
                       height: "100%",
+                      minHeight: "18rem",
+                      maxWidth: myprojects?.length === 0 ? "25.314rem" : "auto",
                       display: "flex",
                       flexDirection: "column",
                       gap: 1,
@@ -166,8 +202,15 @@ export default function ProjectsTab() {
             </Stack>
           </Suspense>
         </Grid>
-        <Grid item xs={12} sx={{ my: 3, pb: 10 }}>
-          <Typography variant="h3" sx={{ py: 3, ml: 2 }} color="text.secondary">
+        <Grid item xs={12} sx={{ my: 3, pb: 10, visibility: "hidden" }}>
+          <Typography
+            variant="h4"
+            sx={{
+              py: 3,
+              ml: 2,
+              color: theme.palette.mode === "dark" ? "text.secondary" : "",
+            }}
+          >
             Contributed Projects
           </Typography>
           <Suspense fallback={<Loading />}>
@@ -178,10 +221,22 @@ export default function ProjectsTab() {
               sx={{ flexWrap: "wrap" }}
             >
               {contProjects.length === 0 ? (
-                <Typography sx={{ ml: 3 }}>No projects found</Typography>
+                <Typography
+                  sx={{
+                    ml: 3,
+                    color:
+                      theme.palette.mode === "dark" ? "text.secondary" : "",
+                  }}
+                >
+                  No projects found
+                </Typography>
               ) : (
                 contProjects?.map((project: ProjectType, index: Key) => (
-                  <ProjectCard project={project} key={index} />
+                  <ProjectCard
+                    project={project}
+                    key={index}
+                    ptClassName={{ cardMargin: 0 }}
+                  />
                 ))
               )}
             </Stack>

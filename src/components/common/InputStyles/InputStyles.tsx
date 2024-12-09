@@ -21,9 +21,7 @@ export const InputStyles = (theme: any) => ({
   },
   "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
     borderColor:
-      theme.palette.mode === "dark"
-        ? theme.palette.text.secondary
-        : theme.palette.divider,
+      theme.palette.mode === "dark" ? "rgb(82, 82, 82)" : "rgb(196, 196, 196)",
   },
   "& .MuiAutocomplete-tag": {
     color:
@@ -58,9 +56,18 @@ export const InputStyles = (theme: any) => ({
 });
 
 export const getStepStyles = (theme: any, isActive: any, isCompleted: any) => ({
+  // Style for the icon container
+  "& .MuiStepIcon-root": {
+    color: isActive
+      ? theme.palette.primary.main
+      : isCompleted
+        ? theme.palette.success.main
+        : theme.palette.text.secondary,
+  },
+  // Style for the label
   "& .MuiStepLabel-label": {
     color: isActive
-      ? theme.palette.text.secondary
+      ? theme.palette.primary.main
       : isCompleted
         ? theme.palette.success.main
         : theme.palette.text.secondary,

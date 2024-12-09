@@ -1,3 +1,4 @@
+import { useTheme } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import { ReactNode } from "react";
 
@@ -12,6 +13,7 @@ export default function LabeledTypography({
   children,
   isLargeScreen,
 }: InfoItemProps) {
+  const theme = useTheme();
   return (
     <div>
       <Typography
@@ -24,7 +26,10 @@ export default function LabeledTypography({
           fontStretch: "normal",
 
           fontSize: isLargeScreen ? "0.9rem" : "1.3rem",
-          color: "text.secondary",
+          color:
+            theme.palette.mode === "dark"
+              ? "text.secondary"
+              : "border.secondary",
         }}
       >
         {label}

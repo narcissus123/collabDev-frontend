@@ -35,7 +35,6 @@ const Result = ({ handleActiveStep, handleProjectInfo }: StepperProps) => {
   const isLargeScreen = useMediaQuery(theme.breakpoints.down("lg"));
   const [iseSuccessful, setIsSuccessful] = useState(false);
   const { data, updateFormData } = useFormContext();
-
   const { handleSubmit, reset } = useForm<ProjectForm>({
     defaultValues: getDefaultValues(data),
   });
@@ -72,12 +71,8 @@ const Result = ({ handleActiveStep, handleProjectInfo }: StepperProps) => {
         updateFormData(getDefaultValues());
         reset();
       } else {
-        if (response.status === 400 || response.status === 403) {
-          toast.error("You are not signed in! Please sign in.");
-        } else {
-          toast.error("Something went wrong. Please try later!");
-          console.error(response);
-        }
+        toast.error("Something went wrong. Please try later!");
+        console.error(response);
       }
     } catch (error) {
       toast.error("Something went wrong. Please try later!");
@@ -165,6 +160,14 @@ const Result = ({ handleActiveStep, handleProjectInfo }: StepperProps) => {
               <LabeledTypography label="Tech Stack" isLargeScreen>
                 {data.techStack.map((tech) => tech.value).join(", ")}
               </LabeledTypography>
+              <LabeledTypography label="Links" isLargeScreen>
+                {data.links.map((link, index) => (
+                  <span key={index}>
+                    {link.platform}: {link.url}
+                    <br />
+                  </span>
+                ))}
+              </LabeledTypography>
               <LabeledTypography label="Deliverables" isLargeScreen>
                 {data.deliverables.map((del) => del.name).join(", ")}
               </LabeledTypography>
@@ -186,30 +189,32 @@ const Result = ({ handleActiveStep, handleProjectInfo }: StepperProps) => {
               <LabeledTypography label="Due date: " isLargeScreen>
                 {dateFormatter(data.dueDate)}
               </LabeledTypography>
+              <LabeledTypography label="Wireframes: " isLargeScreen>
+                {data.screenshots.length !== 0 && (
+                  <Stack
+                    display="flex"
+                    direction="row"
+                    justifyContent="flex-start"
+                    gap={2}
+                    sx={{ overflowX: "auto", mb: 10 }}
+                  >
+                    {data.screenshots.map((img) => {
+                      return (
+                        <img
+                          key={uuidv4()}
+                          src={URL.createObjectURL(img)}
+                          alt="project screen shots"
+                          style={{
+                            maxWidth: "100px",
+                            maxHeight: "100px",
+                          }}
+                        />
+                      );
+                    })}
+                  </Stack>
+                )}
+              </LabeledTypography>
             </Box>
-            {data.screenshots.length !== 0 && (
-              <Stack
-                display="flex"
-                direction="row"
-                justifyContent="flex-start"
-                gap={2}
-                sx={{ overflowX: "auto", mb: 10 }}
-              >
-                {data.screenshots.map((img) => {
-                  return (
-                    <img
-                      key={uuidv4()}
-                      src={URL.createObjectURL(img)}
-                      alt="project screen shots"
-                      style={{
-                        maxWidth: "100px",
-                        maxHeight: "100px",
-                      }}
-                    />
-                  );
-                })}
-              </Stack>
-            )}
           </Box>
           <CustomButton
             leftHandleClick={() => handleActiveStep("Project Images")}

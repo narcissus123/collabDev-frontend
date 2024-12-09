@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Paper,
   Stack,
@@ -26,19 +26,18 @@ interface ProfileDetailsFormProps {
   openBadgesModal: boolean;
   handleClose: () => void;
   profileTabInfo: User | undefined;
-  handleProfileInfo: (updatedInfo: User) => void;
   developer: User | undefined;
 }
 
 const BadgesBoard = ({
   profileTabInfo,
   handleClose,
-  handleProfileInfo,
   openBadgesModal,
   developer,
 }: ProfileDetailsFormProps) => {
   const [isDeleteMode, setIsDeleteMode] = useState(false);
   const [selectedBadges, setSelectedBadges] = useState<number[]>([]);
+  const [shouldRefetch, setShouldRefetch] = useState(false);
   const theme = useTheme();
   const { isProfileOwner } = useAuth();
   const { userId } = useParams();
@@ -73,10 +72,23 @@ const BadgesBoard = ({
         queryClient.refetchQueries({
           queryKey: ["getUserById", developer?._id],
         });
-        handleProfileInfo(response);
       }
     },
   });
+
+  // Fetch user data after closing badgesForm modal here for better UX.
+  useEffect(() => {
+    if (shouldRefetch && !openBadgesModal) {
+      queryClient.invalidateQueries({
+        queryKey: ["getUserById", developer?._id],
+      });
+      setShouldRefetch(false);
+    }
+  }, [shouldRefetch, openBadgesModal]);
+
+  const handleFormSuccess = () => {
+    setShouldRefetch(true);
+  };
 
   const deleteMutation = useMutation({
     mutationFn: ({ id, badgeIndex }: { id: string; badgeIndex: number }) => {
@@ -191,6 +203,10 @@ const BadgesBoard = ({
               <Tooltip title="Delete Badge" placement="left">
                 <IconButton
                   aria-label="delete"
+                  disabled={
+                    profileTabInfo?.badges &&
+                    profileTabInfo?.badges.length === 0
+                  }
                   sx={{
                     transition: "transform 0.2s ease-in-out",
                     "&:hover": {
@@ -216,6 +232,7 @@ const BadgesBoard = ({
           alignItems: "center",
           px: 2,
           height: "100%",
+          flex: 1,
         }}
       >
         <Stack
@@ -271,43 +288,39 @@ const BadgesBoard = ({
               )
           )}
         </Stack>
-
-        {isDeleteMode && (
-          <Stack
-            direction="row"
-            spacing={2}
-            sx={{
-              width: "100%",
-              justifyContent: "center",
-              mt: 2,
-            }}
-          >
-            <Button
-              variant="outlined"
-              onClick={handleCancelDelete}
-              size="small"
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="contained"
-              color="error"
-              onClick={handleConfirmDelete}
-              disabled={selectedBadges.length === 0}
-              size="small"
-            >
-              Delete Selected ({selectedBadges.length})
-            </Button>
-          </Stack>
-        )}
       </Stack>
+
+      {isDeleteMode && (
+        <Stack
+          direction="row"
+          spacing={2}
+          sx={{
+            width: "100%",
+            justifyContent: "center",
+            my: 2,
+          }}
+        >
+          <Button variant="outlined" onClick={handleCancelDelete} size="small">
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={handleConfirmDelete}
+            disabled={selectedBadges.length === 0}
+            size="small"
+          >
+            Delete Selected ({selectedBadges.length})
+          </Button>
+        </Stack>
+      )}
 
       {openBadgesModal && profileTabInfo && (
         <BadgesForm
           openBadgesModal={openBadgesModal}
           handleClose={handleClose}
           profileTabInfo={profileTabInfo}
-          handleProfileInfo={handleProfileInfo}
+          onSuccess={handleFormSuccess}
           developer={developer}
         />
       )}

@@ -27,7 +27,7 @@ interface InputProps {
   onBlur: React.FocusEventHandler<HTMLInputElement>;
   name: string;
   margin?: "normal" | "dense";
-  required: boolean;
+  required?: boolean;
   fullWidth?: boolean;
   inputSize?: "medium" | "small";
   labelText?: string;
@@ -67,9 +67,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
     const labelSx: SxProps<Theme> = {
       width: "100%",
-      color:
-        theme.palette.mode === "dark" ? "text.secondary" : "border.secondary",
-      fontSize: "0.9rem",
+      color: theme.palette.mode === "dark" ? "primary.main" : "text.primary",
+      fontSize: "0.875rem",
       position: required ? "relative" : undefined,
       "&::after": required
         ? {
@@ -92,6 +91,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           }
           sx={{
             ...sx,
+            p: 0,
           }}
           label={formLabel ? null : labelText}
           type={ty}
@@ -116,16 +116,12 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
                 color: "text.secondary",
                 opacity: 1,
               },
+              Padding: 0,
               backgroundColor:
-                theme.palette.mode === "dark"
-                  ? "background.secondary"
-                  : "background.default",
+                theme.palette.mode === "dark" ? "" : "background.default",
               color: "text.secondary",
-              "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
-                borderColor:
-                  theme.palette.mode === "dark"
-                    ? "text.secondary"
-                    : theme.palette.divider,
+              "& .MuiOutlinedInput-notchedOutline": {
+                Padding: 2,
               },
             },
           }}
@@ -135,5 +131,6 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     );
   }
 );
+
 Input.displayName = "Input";
 export default Input;

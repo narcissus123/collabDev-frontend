@@ -19,6 +19,7 @@ import { SignUpInputData } from "../../../configs/data/RegistrationInputData";
 import { SignUpDeveloper } from "../../../core/services/api/developer-authentication.api";
 import Input from "../../common/Input/Input";
 import { useAuth } from "../../../context/AuthContext/AuthContext";
+import { getImageUrl } from "../../../core/utils/ImageUtils/imageUtils";
 
 interface FormValues {
   name: string;
@@ -55,10 +56,10 @@ export default function SignUpContainer({
     try {
       const response = await SignUpDeveloper(data);
       if (response.status === "success") {
-        toast.success("You are successfully signed up!");
         const user = response.data.userWithoutPassword;
         setCurrentUser(user);
         history("/");
+        // toast.success("You are successfully signed up!");
       } else {
         if (response.status === 400 || response.status === 403) {
           toast.error("Email or password is wrong.");
@@ -94,7 +95,7 @@ export default function SignUpContainer({
           alt="Logo"
         >
           <img
-            src={`${process.env.PUBLIC_URL}/assets/logo/logo-light.webp`}
+            src={getImageUrl("common/logo-light.webp")}
             alt="Logo"
             width={isMediumScreen ? "135" : "135"}
             height={isMediumScreen ? "45" : "45"}

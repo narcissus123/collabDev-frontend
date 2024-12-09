@@ -39,6 +39,11 @@ interface Tech {
   value: string;
 }
 
+interface ProjectLinks {
+  platform: string;
+  url: string;
+}
+
 export interface ProjectForm {
   title: string;
   description: string;
@@ -48,6 +53,7 @@ export interface ProjectForm {
   contributors: Contributor[];
   roles: Role[];
   location: string;
+  logoStyle?: number;
   category:
     | "Technology"
     | "Education"
@@ -107,7 +113,7 @@ export interface ProjectForm {
   startDate: Date;
   dueDate: Date;
   likes: number;
-  links: string[];
+  links: ProjectLinks[];
   coverImage: File[];
   screenshots: File[];
   sitemap: Array<SiteMap>;
@@ -137,7 +143,8 @@ export interface ProjectType {
   status: string;
   startDate: string;
   dueDate: string;
-  links: string[];
+  links: ProjectLinks[];
+  logoStyle?: number;
   coverImage: string[];
   screenshots: string[];
   solution: string;
@@ -167,7 +174,7 @@ export interface Project {
   status: "In Progress" | "Completed" | "Seeking Collaborators";
   startDate: Date;
   dueDate?: Date | null;
-  links: string[];
+  links: ProjectLinks[];
   coverImage?: string;
   screenshots: string[];
   solution: string;

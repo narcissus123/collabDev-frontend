@@ -62,7 +62,13 @@ function ProjectsList({
   }
 
   return (
-    <Grid container gap={2}>
+    <Grid
+      container
+      sx={{
+        display: "flex",
+        justifyContent: "space-around",
+      }}
+    >
       {project.data.projects.length === 0 ? (
         <Stack
           alignItems="center"
@@ -76,7 +82,13 @@ function ProjectsList({
         </Stack>
       ) : (
         project.data.projects.map((prj: ProjectType, index: Key) => {
-          return <ProjectCard project={prj} key={index} />;
+          return (
+            <ProjectCard
+              project={prj}
+              key={index}
+              ptClassName={{ cardMargin: 3, cardHeight: "100%" }}
+            />
+          );
         })
       )}
     </Grid>
@@ -158,7 +170,7 @@ export default function ProjectsContainer() {
             justifyContent: "flex-start",
             alignItems: "flex-end",
             flexWrap: "wrap",
-            mr: isMediumScreen ? "0rem" : "1.5rem",
+            mx: isMediumScreen ? "-0.5rem" : "0.3rem",
             p: 1,
           }}
           gap={isMediumScreen ? 2 : 1}
@@ -242,7 +254,15 @@ export default function ProjectsContainer() {
           >
             <Suspense
               fallback={
-                <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    mt: 6,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    width: "100%",
+                  }}
+                >
                   Loading...
                 </Box>
               }
@@ -256,27 +276,28 @@ export default function ProjectsContainer() {
               />
             </Suspense>
           </ErrorBoundary>
-          <Stack
-            display="flex"
-            direction="row"
-            spacing={2}
-            mt={2}
-            sx={{ justifyContent: "center" }}
-          >
-            <Button
-              onClick={() => {
-                const nextPage = currentPage - 1;
-                queryParams.set("page", nextPage.toString());
-                startTransition(() => {
-                  navigate({ search: queryParams.toString() });
-                  setQueryString(`?${queryParams.toString()}`);
-                });
-              }}
-              disabled={currentPage === 1}
+          {projectData?.data?.total ? (
+            <Stack
+              display="flex"
+              direction="row"
+              spacing={2}
+              mt={2}
+              sx={{ justifyContent: "center" }}
             >
-              Previous
-            </Button>
-            {projectData?.data?.total && (
+              <Button
+                onClick={() => {
+                  const nextPage = currentPage - 1;
+                  queryParams.set("page", nextPage.toString());
+                  startTransition(() => {
+                    navigate({ search: queryParams.toString() });
+                    setQueryString(`?${queryParams.toString()}`);
+                  });
+                }}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </Button>
+
               <Button
                 disabled={currentPage * pageSize >= projectData?.data?.total}
                 onClick={() => {
@@ -290,8 +311,10 @@ export default function ProjectsContainer() {
               >
                 Next
               </Button>
-            )}
-          </Stack>
+            </Stack>
+          ) : (
+            <></>
+          )}
         </Box>
       </Grid>
     </Stack>

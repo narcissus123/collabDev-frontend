@@ -34,7 +34,33 @@ export default function Auth() {
                 {route.element}
               </Suspense>
             }
-          ></Route>
+          >
+            {route.children && (
+              <Route
+                path={route.children.path}
+                element={
+                  <Suspense
+                    fallback={
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          border: "1px solid red",
+                          mt: 14,
+                          bg: "red",
+                        }}
+                      >
+                        {route.children.path}
+                      </Box>
+                    }
+                  >
+                    {route.children.element}
+                  </Suspense>
+                }
+              />
+            )}
+          </Route>
         ))}
       </Route>
     </Routes>
