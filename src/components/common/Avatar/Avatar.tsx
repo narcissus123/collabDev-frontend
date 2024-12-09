@@ -31,7 +31,6 @@ const AvatarUpload = ({
   register,
   userName = "",
 }: AvatarUploadProps) => {
-  
   return (
     <Box>
       <label htmlFor="avatar" style={{ cursor: "pointer" }}>
