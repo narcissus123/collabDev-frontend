@@ -12,7 +12,8 @@ const baseURL =
 const instance: AxiosInstance = axios.create({
   baseURL,
 });
-
+console.log("process.env.NODE_ENV", process.env.NODE_ENV);
+console.log("baseURL", baseURL);
 const handleUnauthorized = () => {
   SignOutDeveloper();
   // Show a notification

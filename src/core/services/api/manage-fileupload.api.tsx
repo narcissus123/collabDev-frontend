@@ -30,6 +30,7 @@ const uploadFile = async (userId: string, files: FileT, fileType: FileType) => {
       },
     }
   );
+  console.log("response", response);
   return response.data;
 };
 
