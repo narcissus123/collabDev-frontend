@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
-import { ChangeEvent, Ref } from "react";
+import { ChangeEvent, Ref, useEffect } from "react";
 import { UseFormRegister } from "react-hook-form";
 
 interface AvatarUploadProps {
@@ -32,6 +32,10 @@ const AvatarUpload = ({
   userName = "",
 }: AvatarUploadProps) => {
   console.log("previewURL", previewURL);
+  console.log("Avatar rendering", { previewURL, imageError });
+  useEffect(() => {
+    console.log("Avatar effect triggered");
+  });
   return (
     <Box>
       <label htmlFor="avatar" style={{ cursor: "pointer" }}>
@@ -104,8 +108,13 @@ const AvatarUpload = ({
             type="file"
             style={{ display: "none", outline: "none" }}
             required={false}
-            {...register("avatar", { required: true })}
-            onChange={handleFileChange}
+            {...register("avatar", {
+              required: true,
+              onChange: (e) => {
+                console.log("Input change", e);
+                handleFileChange(e);
+              },
+            })}
             ref={fileInputRef}
           />
         </Box>

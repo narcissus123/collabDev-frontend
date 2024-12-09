@@ -55,7 +55,9 @@ export default function AccountDetailsForm({
   const { setCurrentUser } = useAuth();
 
   useEffect(() => {
+    console.log("developer", developer);
     if (developer?.avatar) {
+      console.log("hiii", getImageUrl(developer.avatar));
       setPreviewURL(getImageUrl(developer.avatar));
     }
   }, [developer]);
@@ -74,18 +76,23 @@ export default function AccountDetailsForm({
   const handleFileChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files;
+      console.log("file", file);
       if (file && file[0]) {
+        console.log("previewURL", previewURL);
         // Revoke previous object URL if it exists
         if (previewURL && previewURL.startsWith("blob:")) {
+          console.log("hi");
           URL.revokeObjectURL(previewURL);
         }
-
+        console.log("file", file);
         // Create new preview URL
         const newPreviewURL = URL.createObjectURL(file[0]);
+        console.log("newPreviewURL", newPreviewURL);
         setPreviewURL(newPreviewURL);
         setImageError(false); // Reset error state when new file is selected
-
+        console.log("hiiiiii");
         const fileArray: File[] = Array.from(file);
+        console.log("fileArray", fileArray);
         setAvatar(fileArray);
       }
     },
@@ -109,7 +116,7 @@ export default function AccountDetailsForm({
       }
     },
   });
-
+  console.log("hi1");
   const resumeUploadMutation = useMutation({
     mutationFn: (data: { userId: string; file: File }) =>
       uploadFile(data.userId, data.file, "resume"),
@@ -117,7 +124,7 @@ export default function AccountDetailsForm({
       toast.success("Resume uploaded successfully!");
     },
   });
-
+  console.log("hi2");
   const handleResumeDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles?.length > 0) {
       setResume(acceptedFiles[0]);
@@ -133,7 +140,7 @@ export default function AccountDetailsForm({
       setResume(null);
     }
   }, [developer?.resume]);
-
+  console.log("hi3");
   const deleteMutation = useMutation({
     mutationFn: (userId: string) => {
       if (!developer?.resume) {
@@ -150,7 +157,7 @@ export default function AccountDetailsForm({
       throw err;
     },
   });
-
+  console.log("hi4");
   const handleDelete = useCallback(() => {
     if (!developer) {
       console.error("Developer is undefined. Cannot proceed with delete.");
@@ -160,7 +167,7 @@ export default function AccountDetailsForm({
     mutation.mutate({ id: developer?._id, data: { resume: "" } });
     setResume(null);
   }, [deleteMutation, developer]);
-
+  console.log("hi5");
   const {
     register,
     handleSubmit,
@@ -172,6 +179,7 @@ export default function AccountDetailsForm({
       avatar: developer?.avatar,
       email: developer?.email,
     },
+    mode: "onSubmit",
   });
 
   const onSubmit = async (data: any) => {
@@ -239,16 +247,21 @@ export default function AccountDetailsForm({
         <Box
           component="form"
           noValidate
-          // onSubmit={handleSubmit(onSubmit)}
           onSubmit={(e) => {
             e.preventDefault();
-            console.log("Form submission started");
+            console.log(
+              "Raw form data:",
+              Object.fromEntries(new FormData(e.target as HTMLFormElement))
+            );
             try {
               console.log("Before handleSubmit");
-              return handleSubmit((formData) => {
-                console.log("Inside handleSubmit");
-                onSubmit(formData);
-              })(e);
+              return handleSubmit(
+                (data) => {
+                  console.log("Form success:", data);
+                  onSubmit(data);
+                },
+                (err) => console.error("Form validation errors:", err)
+              )(e);
             } catch (error) {
               console.error("Form submission error:", error);
             }
