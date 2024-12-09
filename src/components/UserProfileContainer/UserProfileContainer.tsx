@@ -1,7 +1,7 @@
 import { Suspense, useCallback, useState } from "react";
 import { useParams } from "react-router";
 
-import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import Skeleton from "@mui/material/Skeleton";
@@ -31,6 +31,7 @@ import {
 
 import { QueryErrorBoundary } from "../common/QueryErrorBoundary/QueryErrorBoundary";
 import { getUploadedFile } from "../../core/services/api/manage-fileupload.api";
+import { getImageUrl } from "../../core/utils/ImageUtils/imageUtils";
 import AccountDetailsForm from "./ProfileTab/AccountDetailsForm/AccountDetailsForm";
 import ProfileTab from "./ProfileTab/ProfileTab";
 import ChatTab from "./ChatTab/ChatTab";
@@ -59,12 +60,6 @@ export default function UserProfileContainer() {
 
   const { data: developer } = data;
 
-  const queryClient = useQueryClient();
-
-  const handleProfileInfo = () => {
-    queryClient.invalidateQueries({ queryKey: ["getUserById", userId] });
-  };
-
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
   };
@@ -76,46 +71,6 @@ export default function UserProfileContainer() {
       [modalName]: !prev[modalName],
     }));
   }, []);
-
-  const renderProfileContent = () => {
-    if (isFetching) {
-      return (
-        <Stack
-          direction={isMediumScreen ? "column" : "row"}
-          justifyContent="space-between"
-          useFlexGap
-          flexWrap="wrap"
-          gap={isMediumScreen ? 2 : 2}
-        >
-          <Skeleton
-            variant="rectangular"
-            sx={{ width: { sx: "100%", md: "70%" }, height: "25rem" }}
-          />
-          <Skeleton
-            variant="rectangular"
-            sx={{
-              width: { sx: "100%", md: "27%" },
-              height: { sx: "12.5rem", md: "25rem" },
-            }}
-          />
-        </Stack>
-      );
-    }
-
-    return (
-      <QueryErrorBoundary>
-        {developer && (
-          <ProfileTab
-            handleBadgesModal={() => toggleModal("openBadgesModal")}
-            handleProfileModal={() => toggleModal("openProfileDetailsModal")}
-            openBadgesModal={modalState.openBadgesModal}
-            openProfileDetailsModal={modalState.openProfileDetailsModal}
-            developer={developer}
-          />
-        )}
-      </QueryErrorBoundary>
-    );
-  };
 
   const handleResumeUpload = async () => {
     const res = await getUploadedFile(developer._id, "resume");
@@ -141,10 +96,10 @@ export default function UserProfileContainer() {
           <Avatar
             src={
               theme.palette.mode === "dark"
-                ? `${process.env.PUBLIC_URL}/assets/images/userProfileBgDark.webp`
-                : `${process.env.PUBLIC_URL}/assets/images/userProfileBgLight.webp`
+                ? getImageUrl("common/userProfileBgDark.webp")
+                : getImageUrl("common/userProfileBgLight.webp")
             }
-            alt="User profile background"
+            alt="background"
             sx={{
               width: "100%",
               height: "100%",
@@ -152,6 +107,7 @@ export default function UserProfileContainer() {
               objectPosition: "bottom",
               backgroundColor: "#142C58",
               borderRadius: "0%",
+              color: "#142C58",
             }}
           />
         </Grid>
@@ -196,7 +152,6 @@ export default function UserProfileContainer() {
             <AccountDetailsForm
               open={modalState.openAccountDetailstModal}
               handleClose={() => toggleModal("openAccountDetailstModal")}
-              handleProfileInfo={handleProfileInfo}
               developer={developer}
             />
           )}
@@ -222,7 +177,7 @@ export default function UserProfileContainer() {
             ) : (
               <Avatar
                 alt="User profile image"
-                src={`https://collabdev-resume-storage-2024.s3.us-east-2.amazonaws.com/${developer?.avatar}`}
+                src={getImageUrl(developer?.avatar)}
                 sx={{
                   cursor: "pointer",
                   width: "100%",
@@ -357,7 +312,45 @@ export default function UserProfileContainer() {
                 overflowY: "auto",
               }}
             >
-              <TabPanel value="1">{renderProfileContent()}</TabPanel>
+              <TabPanel value="1">
+                {isFetching ? (
+                  <Stack
+                    direction={isMediumScreen ? "column" : "row"}
+                    justifyContent="space-between"
+                    useFlexGap
+                    flexWrap="wrap"
+                    gap={isMediumScreen ? 2 : 2}
+                  >
+                    <Skeleton
+                      variant="rectangular"
+                      sx={{ width: { sx: "100%", md: "70%" }, height: "25rem" }}
+                    />
+                    <Skeleton
+                      variant="rectangular"
+                      sx={{
+                        width: { sx: "100%", md: "27%" },
+                        height: { sx: "12.5rem", md: "25rem" },
+                      }}
+                    />
+                  </Stack>
+                ) : (
+                  <QueryErrorBoundary>
+                    {
+                      <ProfileTab
+                        handleBadgesModal={() => toggleModal("openBadgesModal")}
+                        handleProfileModal={() =>
+                          toggleModal("openProfileDetailsModal")
+                        }
+                        openBadgesModal={modalState.openBadgesModal}
+                        openProfileDetailsModal={
+                          modalState.openProfileDetailsModal
+                        }
+                        developer={developer}
+                      />
+                    }
+                  </QueryErrorBoundary>
+                )}
+              </TabPanel>
               <TabPanel value="2">
                 <QueryErrorBoundary>
                   {isFetching ? (
