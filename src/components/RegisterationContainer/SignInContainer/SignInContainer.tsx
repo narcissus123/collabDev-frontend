@@ -50,10 +50,10 @@ export default function SignInContainer({
     try {
       const response = await SignInDeveloper(data);
       if (response.status === "success") {
-        toast.success("You are successfully signed up!");
         const user = response.data.userWithoutPassword;
         setCurrentUser(user);
         history("/");
+        toast.success("You are successfully signed in!");
       } else {
         if (response.status === 400 || response.status === 403) {
           toast.error("Email or password is wrong.");

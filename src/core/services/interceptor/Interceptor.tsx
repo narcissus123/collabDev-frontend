@@ -3,18 +3,11 @@ import { toast } from "react-toastify";
 
 import { getItem } from "../storage/Storage";
 import { SignOutDeveloper } from "../api/developer-authentication.api";
-console.log("process.env:", process.env);
-console.log(
-  "process.env.NODE_ENV === production:",
-  process.env.NODE_ENV === "production"
-);
+
 const baseURL =
   process.env.NODE_ENV === "production"
     ? process.env.REACT_APP_SERVER_URL
     : "http://localhost:8080";
-
-console.log("Current environment:", process.env.NODE_ENV);
-console.log("API URL:", baseURL);
 
 const instance: AxiosInstance = axios.create({
   baseURL,
@@ -34,7 +27,7 @@ instance.interceptors.response.use(
   },
   (error) => {
     // Handling status codes outside the range of 2xx, client and server error responses.
-    console.log("error", error);
+
     if (error.response) {
       const { status, data } = error.response;
       // Handle expected client errors (4xx)
@@ -54,7 +47,7 @@ instance.interceptors.response.use(
         }
         console.error("Client error:", data);
       } else if (status === 500) {
-        console.log("response", error.response);
+        //console.log("response", error.response);
         toast.error(data.message || "Something went wrong.");
       }
     } else {

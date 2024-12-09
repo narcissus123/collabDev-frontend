@@ -28,7 +28,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     setSocket(newSocket);
 
     newSocket.on("connect", () => {
-      console.log("Socket connected successfully");
+      //console.log("Socket connected successfully");
     });
 
     newSocket.on("connect_error", (error) => {

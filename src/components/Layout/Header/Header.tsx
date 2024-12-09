@@ -132,6 +132,7 @@ export default function Header() {
           </Link>
         ))}
       </Toolbar>
+
       {!isMediumScreen && (
         // Search button
         <TextField
@@ -167,161 +168,170 @@ export default function Header() {
           inputRef={inputRef}
         />
       )}
-      {/* dark/light mode button */}
-      <IconButton
+      <Box
         sx={{
-          ml: isMediumScreen ? 4 : 1,
-          color: "black",
-          flex: isMediumScreen ? 1 : 0,
+          marginLeft: "auto",
+          display: "flex",
+          alignItems: "center",
+          gap: 2,
         }}
-        onClick={toggleColorMode}
-        aria-label={
-          theme.palette.mode === "dark"
-            ? "Switch to light mode"
-            : "Switch to dark mode"
-        }
-        color="inherit"
       >
-        {theme.palette.mode === "dark" ? (
-          <Brightness7Icon sx={{ color: "white", fontSize: 30 }} />
-        ) : (
-          <Brightness4Icon color="primary" sx={{ fontSize: 30 }} />
-        )}
-      </IconButton>
-      {isAuthenticated ? (
-        <>
-          <IconButton
-            onClick={handleClick}
-            size="small"
-            sx={{ ml: isMediumScreen ? 0 : 2 }}
-            aria-controls={open ? "account-menu" : undefined}
-            aria-haspopup="true"
-            aria-expanded={open ? "true" : undefined}
-          >
-            <Avatar
-              sx={{
-                width: isMediumScreen ? "2.1rem" : "2.3rem",
-                height: isMediumScreen ? "2.1rem" : "2.3rem",
-                color: "white",
-              }}
-              src={`https://collabdev-resume-storage-2024.s3.us-east-2.amazonaws.com/${userInfo?.avatar}`}
+        {/* dark/light mode button */}
+        <IconButton
+          sx={{
+            ml: isMediumScreen ? 4 : 1,
+            color: "black",
+            // flex: isMediumScreen ? 1 : 0,
+          }}
+          onClick={toggleColorMode}
+          aria-label={
+            theme.palette.mode === "dark"
+              ? "Switch to light mode"
+              : "Switch to dark mode"
+          }
+          color="inherit"
+        >
+          {theme.palette.mode === "dark" ? (
+            <Brightness7Icon sx={{ color: "white", fontSize: 30 }} />
+          ) : (
+            <Brightness4Icon color="primary" sx={{ fontSize: 30 }} />
+          )}
+        </IconButton>
+        {isAuthenticated ? (
+          <>
+            <IconButton
+              onClick={handleClick}
+              size="small"
+              sx={{ ml: isMediumScreen ? 0 : 2 }}
+              aria-controls={open ? "account-menu" : undefined}
+              aria-haspopup="true"
+              aria-expanded={open ? "true" : undefined}
             >
-              {userInfo?.name[0]}
-            </Avatar>
-          </IconButton>
-          <Menu
-            anchorEl={anchorEl}
-            id="account-menu"
-            open={open}
-            onClose={handleClose}
-            onClick={handleClose}
-            PaperProps={{
-              elevation: 3,
-              sx: {
-                overflow: "visible",
-                filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.15))",
-                mt: 1.5,
-                backgroundColor:
-                  theme.palette.mode === "dark"
-                    ? alpha(theme.palette.background.paper, 0.9)
-                    : alpha(theme.palette.background.paper, 0.95),
-                backdropFilter: "blur(8px)",
-                border: `1px solid ${
-                  theme.palette.mode === "dark"
-                    ? alpha(theme.palette.common.white, 0.1)
-                    : alpha(theme.palette.common.black, 0.1)
-                }`,
-                "& .MuiAvatar-root": {
-                  width: 32,
-                  height: 32,
-                  ml: -0.5,
-                  mr: 1,
-                },
-                "&::before": {
-                  content: '""',
-                  display: "block",
-                  position: "absolute",
-                  top: 0,
-                  right: 14,
-                  width: 10,
-                  height: 10,
-                  bgcolor:
+              <Avatar
+                sx={{
+                  width: isMediumScreen ? "2.1rem" : "2.3rem",
+                  height: isMediumScreen ? "2.1rem" : "2.3rem",
+                  color: "white",
+                }}
+                src={`https://collabdev-resume-storage-2024.s3.us-east-2.amazonaws.com/${userInfo?.avatar}`}
+              >
+                {userInfo?.name[0]}
+              </Avatar>
+            </IconButton>
+            <Menu
+              anchorEl={anchorEl}
+              id="account-menu"
+              open={open}
+              onClose={handleClose}
+              onClick={handleClose}
+              PaperProps={{
+                elevation: 3,
+                sx: {
+                  overflow: "visible",
+                  filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.15))",
+                  mt: 1.5,
+                  backgroundColor:
                     theme.palette.mode === "dark"
                       ? alpha(theme.palette.background.paper, 0.9)
                       : alpha(theme.palette.background.paper, 0.95),
-                  transform: "translateY(-50%) rotate(45deg)",
-                  zIndex: 0,
-                  borderLeft: `1px solid ${
+                  backdropFilter: "blur(8px)",
+                  border: `1px solid ${
                     theme.palette.mode === "dark"
                       ? alpha(theme.palette.common.white, 0.1)
                       : alpha(theme.palette.common.black, 0.1)
                   }`,
-                  borderTop: `1px solid ${
-                    theme.palette.mode === "dark"
-                      ? alpha(theme.palette.common.white, 0.1)
-                      : alpha(theme.palette.common.black, 0.1)
-                  }`,
+                  "& .MuiAvatar-root": {
+                    width: 32,
+                    height: 32,
+                    ml: -0.5,
+                    mr: 1,
+                  },
+                  "&::before": {
+                    content: '""',
+                    display: "block",
+                    position: "absolute",
+                    top: 0,
+                    right: 14,
+                    width: 10,
+                    height: 10,
+                    bgcolor:
+                      theme.palette.mode === "dark"
+                        ? alpha(theme.palette.background.paper, 0.9)
+                        : alpha(theme.palette.background.paper, 0.95),
+                    transform: "translateY(-50%) rotate(45deg)",
+                    zIndex: 0,
+                    borderLeft: `1px solid ${
+                      theme.palette.mode === "dark"
+                        ? alpha(theme.palette.common.white, 0.1)
+                        : alpha(theme.palette.common.black, 0.1)
+                    }`,
+                    borderTop: `1px solid ${
+                      theme.palette.mode === "dark"
+                        ? alpha(theme.palette.common.white, 0.1)
+                        : alpha(theme.palette.common.black, 0.1)
+                    }`,
+                  },
                 },
-              },
-            }}
-            transformOrigin={{ horizontal: "right", vertical: "top" }}
-            anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-          >
-            {menuItems.map((item, index) => (
-              <Box key={index}>
-                <Link
-                  to={item.to}
-                  style={{
-                    color:
-                      theme.palette.mode === "dark" ? "#FFFFFF" : "#000000",
-                    textDecoration: "none",
-                    width: "100%",
-                  }}
-                  onClick={handleClose}
-                >
-                  <MenuItem
-                    onClick={handleClose}
-                    sx={{
-                      py: isMediumScreen ? "0.2rem" : "0.25rem",
+              }}
+              transformOrigin={{ horizontal: "right", vertical: "top" }}
+              anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+            >
+              {menuItems.map((item, index) => (
+                <Box key={index}>
+                  <Link
+                    to={item.to}
+                    style={{
+                      color:
+                        theme.palette.mode === "dark" ? "#FFFFFF" : "#000000",
+                      textDecoration: "none",
                       width: "100%",
                     }}
+                    onClick={handleClose}
                   >
-                    {item.icon && <ListItemIcon>{item.icon}</ListItemIcon>}
-                    <Typography
+                    <MenuItem
+                      onClick={handleClose}
                       sx={{
-                        mt: 0.5,
-                        ml: -1,
-                        fontSize: isMediumScreen ? "0.75rem" : "0.9rem",
+                        py: isMediumScreen ? "0.2rem" : "0.25rem",
                         width: "100%",
                       }}
                     >
-                      {item.text}
-                    </Typography>
-                  </MenuItem>
-                </Link>
+                      {item.icon && <ListItemIcon>{item.icon}</ListItemIcon>}
+                      <Typography
+                        sx={{
+                          mt: 0.5,
+                          ml: -1,
+                          fontSize: isMediumScreen ? "0.75rem" : "0.9rem",
+                          width: "100%",
+                        }}
+                      >
+                        {item.text}
+                      </Typography>
+                    </MenuItem>
+                  </Link>
 
-                {item.divider && (
-                  <Divider
-                    sx={{
-                      color:
-                        theme.palette.mode === "dark" ? "#FFFFFF" : "#000000",
-                    }}
-                  />
-                )}
-              </Box>
-            ))}
-          </Menu>
-        </>
-      ) : (
-        <Button
-          variant="outlined"
-          size="small"
-          sx={{ fontSize: "0.7rem", fontWeight: "600", ml: 0.9 }}
-          onClick={() => navigate("/login")}
-        >
-          Sign up / Sign in
-        </Button>
-      )}
+                  {item.divider && (
+                    <Divider
+                      sx={{
+                        color:
+                          theme.palette.mode === "dark" ? "#FFFFFF" : "#000000",
+                      }}
+                    />
+                  )}
+                </Box>
+              ))}
+            </Menu>
+          </>
+        ) : (
+          <Button
+            variant="outlined"
+            size="small"
+            sx={{ fontSize: "0.7rem", fontWeight: "600", ml: 0.9 }}
+            onClick={() => navigate("/login")}
+          >
+            Sign up / Sign in
+          </Button>
+        )}
+      </Box>
     </AppBar>
   );
 }

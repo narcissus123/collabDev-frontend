@@ -82,7 +82,13 @@ function ProjectsList({
         </Stack>
       ) : (
         project.data.projects.map((prj: ProjectType, index: Key) => {
-          return <ProjectCard project={prj} key={index} />;
+          return (
+            <ProjectCard
+              project={prj}
+              key={index}
+              ptClassName={{ cardMargin: 3, cardHeight: "100%" }}
+            />
+          );
         })
       )}
     </Grid>

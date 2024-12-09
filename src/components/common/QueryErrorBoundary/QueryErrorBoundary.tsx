@@ -19,7 +19,7 @@ export const QueryErrorBoundary = ({
         <ErrorBoundary
           onReset={reset}
           fallbackRender={({ error, resetErrorBoundary }) => {
-            console.log("error", error);
+            //console.log("error", error);
             return (
               <Stack
                 sx={{

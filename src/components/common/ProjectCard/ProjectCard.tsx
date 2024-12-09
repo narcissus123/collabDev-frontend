@@ -31,8 +31,14 @@ import { deleteProjectById } from "../../../core/services/api/manage-projects.ap
 import ResponsiveDialog from "../CustomModal/ConfirmationModal";
 import { getImageUrl } from "../../../core/utils/ImageUtils/imageUtils";
 
+interface PtClassName {
+  cardMargin?: number;
+  cardHeight?: string;
+}
+
 interface ProjectCardProps {
   project: ProjectType;
+  ptClassName: PtClassName;
 }
 
 function getStatusColor(status: string) {
@@ -48,7 +54,7 @@ function getStatusColor(status: string) {
   }
 }
 
-function ProjectCard({ project }: ProjectCardProps) {
+function ProjectCard({ project, ptClassName }: ProjectCardProps) {
   const ITEM_HEIGHT = 48;
   const queryClient = useQueryClient();
   const theme = useTheme();
@@ -88,10 +94,16 @@ function ProjectCard({ project }: ProjectCardProps) {
   };
 
   return (
-    <Grid item xs={12} md={5.8} lg={3.8} sx={{ mb: 3 }}>
+    <Grid
+      item
+      xs={12}
+      md={5.8}
+      lg={3.8}
+      sx={{ mb: ptClassName?.cardMargin ? ptClassName?.cardMargin : 0 }}
+    >
       <Card
         sx={{
-          height: "100%",
+          height: ptClassName?.cardHeight ? ptClassName?.cardHeight : "auto",
           display: "flex",
           flexDirection: "column",
           gap: "0rem",
@@ -376,7 +388,8 @@ function ProjectCard({ project }: ProjectCardProps) {
           <IconButton
             aria-label="add to favorites"
             sx={{
-              display: "flex",
+              display: "none",
+              visibility: "hidden",
               alignItems: "center",
               "&:hover": { bgcolor: "transparent" },
             }}

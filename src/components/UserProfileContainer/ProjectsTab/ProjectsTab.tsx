@@ -104,17 +104,33 @@ export default function ProjectsTab() {
           </Typography>
           <Suspense fallback={<Loading />}>
             <Stack
-              display="flex"
-              flexDirection="row"
-              justifyContent="space-around"
               sx={{
+                display: "flex",
+                flexDirection: "row",
                 flexWrap: "wrap",
+                gap: "16px",
                 my: 2,
                 mt: 3,
+                ml: 5,
+                "& > *": {
+                  flexGrow: 0,
+                  flexShrink: 0,
+                  width: "calc((100% - 32px) / 3)",
+                  "@media (max-width: 900px)": {
+                    width: "calc((100% - 16px) / 2)",
+                  },
+                  "@media (max-width: 600px)": {
+                    width: "100%",
+                  },
+                },
               }}
             >
               {myprojects?.map((project: ProjectType, index: Key) => (
-                <ProjectCard project={project} key={index} />
+                <ProjectCard
+                  project={project}
+                  key={index}
+                  ptClassName={{ cardMargin: 0 }}
+                />
               ))}
 
               {apiCallsCompleted && (
@@ -128,7 +144,7 @@ export default function ProjectsTab() {
                   <Card
                     sx={{
                       height: "100%",
-                      minHeight: "21rem",
+                      minHeight: "18rem",
                       maxWidth: myprojects?.length === 0 ? "25.314rem" : "auto",
                       display: "flex",
                       flexDirection: "column",
@@ -216,7 +232,11 @@ export default function ProjectsTab() {
                 </Typography>
               ) : (
                 contProjects?.map((project: ProjectType, index: Key) => (
-                  <ProjectCard project={project} key={index} />
+                  <ProjectCard
+                    project={project}
+                    key={index}
+                    ptClassName={{ cardMargin: 0 }}
+                  />
                 ))
               )}
             </Stack>

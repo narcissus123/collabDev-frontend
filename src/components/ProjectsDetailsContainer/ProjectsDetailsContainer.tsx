@@ -111,11 +111,17 @@ export default function ProjectsDetailsContainer() {
   };
 
   const getDynamicPlaceholder = (name: string) => {
-    const initials = name
+    if (!name) return "";
+
+    let initials = name
       .split(" ")
-      .map((word) => word[0])
-      .join("")
-      .toUpperCase();
+      .map((word: any) => word[0])
+      .slice(0, 2)
+      .join("");
+
+    if (initials.length === 1) {
+      initials = name.length > 1 ? name[0] + name[1] : name[0];
+    }
     return initials;
   };
   const [imageError, setImageError] = useState(false);
@@ -229,6 +235,7 @@ export default function ProjectsDetailsContainer() {
                   initial={getDynamicPlaceholder(project.data.title)}
                   initialStyle={project.data.logoStyle || 0}
                   onStyleChange={handleLogoStyleChange}
+                  isOwner={isProfileOwner(project?.data.owner?._id)}
                 />
               </Box>
             )}
@@ -713,7 +720,7 @@ export default function ProjectsDetailsContainer() {
                   color:
                     theme.palette.mode === "dark" ? "primary.main" : "#15191b",
                   fontSize: isLargeScreen ? "1.2rem" : "1.3rem",
-                  width: "100%",
+                  width: isLargeScreen ? "100%" : "30%",
                 }}
               >
                 The Solution
@@ -766,11 +773,16 @@ export default function ProjectsDetailsContainer() {
                           fontFamily:
                             '"Helvetica Neue", Helvetica, "Segoe UI", Segoe, "Segoe WP", Arial, "Lucida Grande", sans-serif"',
                           fontWeight: "normal",
-                          fontSize: isLargeScreen ? "2rem" : "2rem",
                           color:
                             theme.palette.mode === "dark"
                               ? "text.secondary"
                               : "#424d54",
+                        }}
+                        sx={{
+                          "& .MuiListItemText-secondary": {
+                            fontSize: "0.9rem",
+                            lineHeight: 2,
+                          },
                         }}
                       />
                     </ListItem>

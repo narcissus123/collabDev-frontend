@@ -11,6 +11,7 @@ interface ProjectLogoGeneratorProps {
   initial: string;
   onStyleChange?: (style: number) => void;
   initialStyle?: number;
+  isOwner: boolean;
 }
 
 const LogoContainer = styled(Box)(({ theme }) => ({
@@ -26,6 +27,7 @@ const ProjectLogoGenerator = ({
   initial,
   onStyleChange,
   initialStyle = 0,
+  isOwner = false,
 }: ProjectLogoGeneratorProps) => {
   const [currentStyle, setCurrentStyle] = useState(initialStyle);
 
@@ -40,7 +42,7 @@ const ProjectLogoGenerator = ({
           </linearGradient>
         </defs>
         <rect width="200" height="200" fill="url(#techGradient)" />
-        <g transform="translate(40, 60)">
+        <g transform="translate(50, 50)">
           {initials.split("").map((letter, i) => (
             <g key={i} transform={`translate(${i * 60}, 0)`}>
               <text
@@ -86,7 +88,7 @@ const ProjectLogoGenerator = ({
             fill="url(#artGradient)"
             stroke="none"
           />
-          <g transform="translate(40, 60)">
+          <g transform="translate(90, 60)">
             {initials.split("").map((letter, i) => (
               <text
                 key={i}
@@ -187,38 +189,40 @@ const ProjectLogoGenerator = ({
         <LogoStyles initials={initial} />
       </LogoContainer>
 
-      <Box
-        sx={{
-          position: "absolute",
-          bottom: 16,
-          display: "flex",
-          gap: 2,
-          alignItems: "center",
-        }}
-      >
-        <IconButton
-          size="small"
-          onClick={() => handleStyleChange((currentStyle - 1 + 4) % 4)}
+      {isOwner && (
+        <Box
           sx={{
-            bgcolor: "background.paper",
-            boxShadow: 1,
-            "&:hover": { bgcolor: "background.paper" },
+            position: "absolute",
+            bottom: 16,
+            display: "flex",
+            gap: 2,
+            alignItems: "center",
           }}
         >
-          <ArrowBack sx={{ fontSize: 16 }} />
-        </IconButton>
-        <IconButton
-          size="small"
-          onClick={() => handleStyleChange((currentStyle + 1) % 4)}
-          sx={{
-            bgcolor: "background.paper",
-            boxShadow: 1,
-            "&:hover": { bgcolor: "background.paper" },
-          }}
-        >
-          <ArrowForward sx={{ fontSize: 16 }} />
-        </IconButton>
-      </Box>
+          <IconButton
+            size="small"
+            onClick={() => handleStyleChange((currentStyle - 1 + 4) % 4)}
+            sx={{
+              bgcolor: "background.paper",
+              boxShadow: 1,
+              "&:hover": { bgcolor: "background.paper" },
+            }}
+          >
+            <ArrowBack sx={{ fontSize: 16 }} />
+          </IconButton>
+          <IconButton
+            size="small"
+            onClick={() => handleStyleChange((currentStyle + 1) % 4)}
+            sx={{
+              bgcolor: "background.paper",
+              boxShadow: 1,
+              "&:hover": { bgcolor: "background.paper" },
+            }}
+          >
+            <ArrowForward sx={{ fontSize: 16 }} />
+          </IconButton>
+        </Box>
+      )}
     </Stack>
   );
 };
