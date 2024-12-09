@@ -21,8 +21,6 @@ import { red } from "@mui/material/colors";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-import LockIcon from "@mui/icons-material/Lock";
-import { Tooltip } from "@mui/material";
 import { toast } from "react-toastify";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ProjectType } from "../../../configs/types/projectTypes";
@@ -31,6 +29,7 @@ import formatDate from "../../../core/utils/DateFormatter/formatDate";
 import RequestModal from "../RequestForm/RequestForm";
 import { deleteProjectById } from "../../../core/services/api/manage-projects.api";
 import ResponsiveDialog from "../CustomModal/ConfirmationModal";
+import { getImageUrl } from "../../../core/utils/ImageUtils/imageUtils";
 
 interface ProjectCardProps {
   project: ProjectType;
@@ -113,7 +112,7 @@ function ProjectCard({ project }: ProjectCardProps) {
               <Avatar
                 sx={{ bgcolor: red[500], width: 56, height: 56 }}
                 aria-label="recipe"
-                src={`https://collabdev-resume-storage-2024.s3.us-east-2.amazonaws.com/${project.owner.avatar}`}
+                src={getImageUrl(project.owner.avatar)}
               />
             </Link>
           }
@@ -152,46 +151,6 @@ function ProjectCard({ project }: ProjectCardProps) {
                   horizontal: "right",
                 }}
               >
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  {project.links[0] !== "" ? (
-                    <Link
-                      style={{ textDecoration: "none", width: "100%" }}
-                      to={project.links[0]}
-                    >
-                      <MenuItem
-                        onClick={handleClose}
-                        sx={{ color: "text.secondary" }}
-                      >
-                        View on GitHub
-                      </MenuItem>
-                    </Link>
-                  ) : (
-                    <MenuItem
-                      onClick={handleClose}
-                      sx={{
-                        color: "text.secondary",
-                        cursor: "default",
-                        py: 0.5,
-                        width: "100%",
-                      }}
-                    >
-                      <Typography>View on GitHub</Typography>
-                      <Tooltip
-                        title="View on GitHub"
-                        arrow
-                        sx={{ fontSize: 16 }}
-                      >
-                        <LockIcon
-                          sx={{
-                            fontSize: 16,
-                            color: "error.main",
-                            ml: "0.5rem",
-                          }}
-                        />
-                      </Tooltip>
-                    </MenuItem>
-                  )}
-                </Box>
                 <Link
                   style={{ textDecoration: "none" }}
                   to={`/projects/${project._id}`}
@@ -353,7 +312,7 @@ function ProjectCard({ project }: ProjectCardProps) {
                         sx={{ bgcolor: red[500] }}
                         src={
                           contributor.avatar
-                            ? `https://collabdev-resume-storage-2024.s3.us-east-2.amazonaws.com/${contributor.avatar}`
+                            ? getImageUrl(contributor.avatar)
                             : undefined
                         }
                       >
@@ -406,8 +365,8 @@ function ProjectCard({ project }: ProjectCardProps) {
               <img
                 src={
                   theme.palette.mode === "dark"
-                    ? `${process.env.PUBLIC_URL}/assets/icons/TeamDark.webp`
-                    : `${process.env.PUBLIC_URL}/assets/icons/join.webp`
+                    ? getImageUrl("common/TeamDark.webp")
+                    : getImageUrl("common/join.webp")
                 }
                 alt="join project icon"
                 style={{ width: "32px", height: "32px" }}
