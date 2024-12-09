@@ -236,7 +236,15 @@ export default function AccountDetailsForm({
         <Box
           component="form"
           noValidate
-          onSubmit={handleSubmit(onSubmit)}
+          // onSubmit={handleSubmit(onSubmit)}
+          onSubmit={(e) => {
+            e.preventDefault();
+            console.log("Form submission started");
+            return handleSubmit((formData) => {
+              console.log("Form data:", formData);
+              onSubmit(formData);
+            })(e);
+          }}
           sx={{
             display: "flex",
             flexDirection: "column",
