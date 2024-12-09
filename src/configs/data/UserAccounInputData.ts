@@ -69,7 +69,7 @@ const UserAccounInputData = [
     autoComplete: "",
     placeholder: "Share your bio",
     type: "text",
-    required: true,
+    required: false,
     fullWidth: true,
     multiline: true,
     variant: "standard",

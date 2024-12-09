@@ -107,7 +107,7 @@ const AvatarUpload = ({
             id="avatar"
             type="file"
             style={{ display: "none", outline: "none" }}
-            required={false}
+            // required={false}
             {...register("avatar", {
               required: true,
               onChange: (e) => {
