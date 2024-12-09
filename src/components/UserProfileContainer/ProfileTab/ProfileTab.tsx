@@ -17,6 +17,7 @@ import {
 import { Edit as EditIcon, Add as AddIcon } from "@mui/icons-material";
 import { SocialIcon } from "react-social-icons";
 import { useParams } from "react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import { User } from "../../../configs/types/userTypes";
 import { useAuth } from "../../../context/AuthContext/AuthContext";
 import SkillsModal from "./SkillsModal/SkillsModal";
@@ -45,14 +46,12 @@ export default function ProfileTab({
   const [profileTabInfo, setProfileTabInfo] = useState<User | undefined>(
     developer
   );
+  const queryClient = useQueryClient();
+  const [shouldRefetch, setShouldRefetch] = useState(false);
 
   useEffect(() => {
     setProfileTabInfo(developer);
   }, [developer]);
-
-  const handleProfileInfo = (updatedInfo: User) => {
-    setProfileTabInfo(updatedInfo);
-  };
 
   const sectionStyles = useMemo(
     () => ({
@@ -124,25 +123,6 @@ export default function ProfileTab({
         >
           {title}
         </Typography>
-        {isEmpty && userId && isProfileOwner(userId) && (
-          <Tooltip title={`Add ${title}`}>
-            <IconButton
-              size="small"
-              onClick={handleProfileModal}
-              sx={{
-                color:
-                  theme.palette.mode === "dark"
-                    ? "text.disabled"
-                    : "text.secondary",
-                "&:hover": {
-                  color: "primary.main",
-                },
-              }}
-            >
-              <AddIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        )}
       </Stack>
       {children}
     </Box>
@@ -151,6 +131,20 @@ export default function ProfileTab({
   const EmptyState = ({ text }: { text: string }) => (
     <Typography sx={sectionStyles.emptyState}>{text}</Typography>
   );
+
+  // Fetch user data after closing profileDetailsForm modal here for better UX.
+  useEffect(() => {
+    if (shouldRefetch && !openProfileDetailsModal) {
+      queryClient.invalidateQueries({
+        queryKey: ["getUserById", developer?._id],
+      });
+      setShouldRefetch(false);
+    }
+  }, [shouldRefetch, openProfileDetailsModal]);
+
+  const handleFormSuccess = () => {
+    setShouldRefetch(true);
+  };
 
   return (
     <Stack
@@ -191,7 +185,7 @@ export default function ProfileTab({
               openProfileDetailsModal={openProfileDetailsModal}
               handleClose={handleProfileModal}
               profileTabInfo={profileTabInfo}
-              handleProfileInfo={handleProfileInfo}
+              onSuccess={handleFormSuccess}
             />
           )}
 
@@ -322,7 +316,6 @@ export default function ProfileTab({
         openBadgesModal={openBadgesModal}
         handleClose={handleBadgesModal}
         profileTabInfo={profileTabInfo}
-        handleProfileInfo={handleProfileInfo}
         developer={developer}
       />
     </Stack>
