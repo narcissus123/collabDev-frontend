@@ -60,14 +60,14 @@ export default function AccountDetailsForm({
     }
   }, [developer]);
 
-  // Clean up object URL when component unmounts or when previewURL changes
-  useEffect(() => {
-    return () => {
-      if (previewURL && previewURL.startsWith("blob:")) {
-        URL.revokeObjectURL(previewURL);
-      }
-    };
-  }, [previewURL]);
+  // // Clean up object URL when component unmounts or when previewURL changes
+  // useEffect(() => {
+  //   return () => {
+  //     if (previewURL && previewURL.startsWith("blob:")) {
+  //       URL.revokeObjectURL(previewURL);
+  //     }
+  //   };
+  // }, [previewURL]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -335,6 +335,9 @@ export default function AccountDetailsForm({
           </Box>
 
           <CustomButton
+            rightHandleClick={() => {
+              console.log("Right button clicked");
+            }}
             leftButtonsx={{
               borderTop: "1px solid",
               borderColor:
