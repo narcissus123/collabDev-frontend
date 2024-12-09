@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useFieldArray, useForm, Controller } from "react-hook-form";
+import { v4 as uuidv4 } from "uuid";
 import { ErrorBoundary } from "react-error-boundary";
 import { ToastContainer, toast } from "react-toastify";
 import AddBoxIcon from "@mui/icons-material/AddBox";
@@ -11,9 +12,17 @@ import Stack from "@mui/material/Stack";
 import Switch from "@mui/material/Switch";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { useTheme } from "@mui/material";
-import useMediaQuery from "@mui/material/useMediaQuery";
+import {
+  Button,
+  FormControl,
+  MenuItem,
+  Select,
+  Tooltip,
+  useTheme,
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 
+import { InfoOutlined } from "@mui/icons-material";
 import ErrorFallback from "../../common/ErrorFallback/ErrorFallback";
 import { techStacks } from "../../../configs/data/ProjectFilterFormData";
 import { ProjectFormInputData } from "../../../configs/data/ProjectFormData";
@@ -24,6 +33,18 @@ import CustomModal from "../../common/CustomModal/CustomModal";
 import Input from "../../common/Input/Input";
 import ErrorMessages from "../../common/Messages/ErrorMessages/ErrorMessages";
 import { updateProject } from "../../../core/services/api/manage-projects.api";
+import { InputStyles } from "../../common/InputStyles/InputStyles";
+
+export const linksPlatforms = [
+  "GitHub",
+  "GitHub/frontend",
+  "GitHub/backend",
+  "GitLab/frontend",
+  "GitLab/backend",
+  "GitLab",
+  "Demo",
+  "Others",
+];
 
 interface EditProjectModalProps {
   openEditProjectModal: boolean;
@@ -39,7 +60,6 @@ export default function EditProjectModal({
   project,
 }: EditProjectModalProps) {
   const theme = useTheme();
-  const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   const mappedDeliverables = project.deliverables.map((del: string) => ({
     name: del,
@@ -97,6 +117,15 @@ export default function EditProjectModal({
     name: "sitemap",
   });
 
+  const {
+    fields: linksFields,
+    append: linksAppend,
+    remove: linksRemove,
+  } = useFieldArray<ProjectForm>({
+    name: "links",
+    control,
+  });
+
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: (updatedProject: { id: string; data: ProjectForm }) =>
@@ -136,6 +165,7 @@ export default function EditProjectModal({
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
+      <ToastContainer />
       <CustomModal
         open={openEditProjectModal}
         handleClose={handleClose}
@@ -148,7 +178,6 @@ export default function EditProjectModal({
           flexDirection: "column",
         }}
       >
-        <ToastContainer />
         <Stack
           component="form"
           noValidate
@@ -156,36 +185,40 @@ export default function EditProjectModal({
           sx={{
             display: "flex",
             flexDirection: "column",
-            gap: 2,
           }}
         >
           {ProjectFormInputData.map((proj, index) => (
-            <Input
-              key={index}
-              id={proj.id}
-              ty={proj.type}
-              placeholder={proj.placeholder}
-              labelText={proj.labelText}
-              formLabel={proj.formLabel}
-              inputSize={isMediumScreen ? "small" : "medium"}
-              fullWidth={proj.fullWidth}
-              required={proj.required}
-              multiline={proj.multiline}
-              variant={proj.variant as "standard" | "outlined" | "filled"}
-              errors={errors}
-              {...register(proj?.register?.name as "title" | "description", {
-                ...proj?.register?.schema,
-              })}
-            />
+            <Box key={uuidv4()} sx={{ mb: 5 }}>
+              <Input
+                key={index}
+                id={proj.id}
+                ty={proj.type}
+                placeholder={proj.placeholder}
+                labelText={proj.labelText}
+                formLabel={proj.formLabel}
+                inputSize="small"
+                fullWidth={proj.fullWidth}
+                required={proj.required}
+                multiline={proj.multiline}
+                variant={proj.variant as "standard" | "outlined" | "filled"}
+                errors={errors}
+                {...register(proj?.register?.name as "title" | "description", {
+                  ...proj?.register?.schema,
+                })}
+              />
+            </Box>
           ))}
-          <Box>
+          <Box sx={{ mb: 5 }}>
             <Typography
               sx={{
                 width: "100%",
                 my: 1,
-                color: "#8C8C95",
+                color:
+                  theme.palette.mode === "dark"
+                    ? "primary.main"
+                    : "text.primary",
+                fontSize: "0.875rem",
                 fontWeight: "400",
-                fontSize: "0.8571428571428571rem",
                 lineHeight: "1.4375em",
               }}
               variant="h5"
@@ -208,8 +241,56 @@ export default function EditProjectModal({
                         .includes(state.inputValue.toLowerCase())
                     )
                   }
+                  renderOption={(props, option) => {
+                    const { label } = option;
+                    return (
+                      <Typography
+                        {...props}
+                        sx={{
+                          color:
+                            theme.palette.mode === "dark"
+                              ? "white"
+                              : "text.secondary",
+                        }}
+                      >
+                        {label}
+                      </Typography>
+                    );
+                  }}
                   renderInput={(params) => (
-                    <TextField {...params} variant="outlined" />
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      size="small"
+                      sx={{
+                        ...InputStyles(theme),
+                        "& .MuiFormHelperText-root": {
+                          fontSize: "0.8rem",
+                          marginLeft: 0,
+                        },
+                        "& .MuiOutlinedInput-root": {
+                          "& .MuiOutlinedInput-notchedOutline": {
+                            borderColor:
+                              theme.palette.mode === "dark"
+                                ? "rgb(82, 82, 82)"
+                                : "rgb(196, 196, 196)",
+                            borderWidth: "1px",
+                          },
+                          "&:hover .MuiOutlinedInput-notchedOutline": {
+                            borderColor:
+                              theme.palette.mode === "dark"
+                                ? "rgb(100, 100, 100)"
+                                : "#000000",
+                          },
+                          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                            borderColor:
+                              theme.palette.mode === "dark"
+                                ? "primary.main"
+                                : "primary.main",
+                          },
+                        },
+                      }}
+                    />
                   )}
                   onChange={(event, value) => field.onChange(value)}
                   value={field.value || []}
@@ -220,14 +301,122 @@ export default function EditProjectModal({
               )}
             />
           </Box>
-          <Box sx={{ mt: "1.5rem" }}>
+          <Box sx={{ mb: 5 }}>
             <Typography
               sx={{
                 width: "100%",
-                py: 0.5,
-                color: "#8C8C95",
+                my: 1,
+                color:
+                  theme.palette.mode === "dark"
+                    ? "primary.main"
+                    : "text.primary",
+                fontSize: "0.875rem",
+              }}
+            >
+              Project Links
+            </Typography>
+            <Stack spacing={2}>
+              {linksFields.map((item, index) => {
+                return (
+                  <Stack
+                    key={item.id}
+                    direction="row"
+                    spacing={2}
+                    alignItems="center"
+                  >
+                    <Controller
+                      name={`links.${index}.platform`}
+                      control={control}
+                      rules={{ required: "Platform is required" }}
+                      render={({ field }) => {
+                        return (
+                          <FormControl sx={{ minWidth: 120 }} size="small">
+                            <Select
+                              {...field}
+                              labelId={`platform-label-${index}`}
+                              error={!!errors.links?.[index]?.platform}
+                              sx={{
+                                color: "text.secondary",
+                                borderColor:
+                                  theme.palette.mode === "dark"
+                                    ? "rgb(82, 82, 82)"
+                                    : "rgb(196, 196, 196)",
+                              }}
+                            >
+                              {linksPlatforms.map((platform) => (
+                                <MenuItem
+                                  key={platform}
+                                  value={platform}
+                                  sx={{
+                                    color: "text.secondary",
+                                    borderColor:
+                                      theme.palette.mode === "dark"
+                                        ? "rgb(82, 82, 82)"
+                                        : "rgb(196, 196, 196)",
+                                  }}
+                                >
+                                  {platform}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        );
+                      }}
+                    />
+                    <TextField
+                      {...register(`links.${index}.url`, {
+                        required: "URL is required",
+                      })}
+                      placeholder="URL"
+                      size="small"
+                      error={!!errors.links?.[index]?.url}
+                      sx={{
+                        flexGrow: 1,
+                        ...InputStyles(theme),
+                        "& .MuiOutlinedInput-root": {
+                          "& .MuiOutlinedInput-notchedOutline": {
+                            borderColor:
+                              theme.palette.mode === "dark"
+                                ? "rgb(82, 82, 82)"
+                                : "rgb(196, 196, 196)",
+                          },
+                        },
+                        "&:hover .MuiOutlinedInput-notchedOutline": {
+                          borderColor:
+                            theme.palette.mode === "dark"
+                              ? "rgb(100, 100, 100)"
+                              : "#000000",
+                        },
+                      }}
+                    />
+                    <IconButton
+                      aria-label="delete"
+                      onClick={() => linksRemove(index)}
+                      size="small"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Stack>
+                );
+              })}
+              <Button
+                variant="outlined"
+                onClick={() => linksAppend({ platform: "", url: "" })}
+              >
+                Add New Link
+              </Button>
+            </Stack>
+          </Box>
+          <Box>
+            <Typography
+              sx={{
+                width: "100%",
+                color:
+                  theme.palette.mode === "dark"
+                    ? "primary.main"
+                    : "text.primary",
+                fontSize: "0.875rem",
                 fontWeight: "400",
-                fontSize: "0.8571428571428571rem",
                 lineHeight: "1.4375em",
               }}
               variant="h5"
@@ -241,14 +430,14 @@ export default function EditProjectModal({
               justifyContent="flex-start"
               flexWrap="wrap"
               gap="1rem"
-              sx={{ mt: 2, py: 1 }}
+              sx={{ py: 1 }}
             >
               {deliverablesFields.map((deliverable, index) => (
                 <Box
                   key={deliverable.id}
                   sx={{
                     position: "relative",
-                    minHeight: "5rem",
+                    minHeight: "4rem",
                     display: "flex",
                     flexDirection: "column",
                     justifyContent: "flex-start",
@@ -264,6 +453,11 @@ export default function EditProjectModal({
                       width: "auto",
                     }}
                     size="small"
+                    inputProps={{
+                      sx: {
+                        color: "text.secondary",
+                      },
+                    }}
                     helperText={
                       <ErrorMessages
                         name={`deliverables.${index}.name`}
@@ -298,14 +492,16 @@ export default function EditProjectModal({
               </IconButton>
             </Stack>
           </Box>
-          <Box sx={{ mb: "1.5rem" }}>
+          <Box sx={{ mb: 5 }}>
             <Typography
               sx={{
                 width: "100%",
-                py: 0.5,
-                color: "#8C8C95",
+                color:
+                  theme.palette.mode === "dark"
+                    ? "primary.main"
+                    : "text.primary",
+                fontSize: "0.875rem",
                 fontWeight: "400",
-                fontSize: "0.8571428571428571rem",
                 lineHeight: "1.4375em",
               }}
               variant="h5"
@@ -319,14 +515,14 @@ export default function EditProjectModal({
               justifyContent="flex-start"
               flexWrap="wrap"
               gap="1rem"
-              sx={{ mt: 2, py: 1 }}
+              sx={{ py: 1 }}
             >
               {sitemapFields.map((sitemap, index) => (
                 <Box
                   key={sitemap.id}
                   sx={{
                     position: "relative",
-                    minHeight: "5rem",
+                    minHeight: "4rem",
                     display: "flex",
                     flexDirection: "column",
                     justifyContent: "flex-start",
@@ -341,6 +537,11 @@ export default function EditProjectModal({
                       width: "auto",
                     }}
                     placeholder="Sitemap"
+                    inputProps={{
+                      sx: {
+                        color: "text.secondary",
+                      },
+                    }}
                     size="small"
                     helperText={
                       <ErrorMessages
@@ -376,19 +577,39 @@ export default function EditProjectModal({
             </Stack>
           </Box>
           <Box sx={{ mb: "1.5rem" }}>
-            <Typography
-              sx={{
-                width: "100%",
-                my: "0.8rem",
-                color: "#8C8C95",
-                fontWeight: "400",
-                fontSize: "0.8571428571428571rem",
-                lineHeight: "1.4375em",
-              }}
-              variant="h5"
+            <Box
+              display="flex"
+              alignItems="center"
+              gap={1}
+              justifyContent="flex-start"
             >
-              Project Roles
-            </Typography>
+              <Typography
+                sx={{
+                  color:
+                    theme.palette.mode === "dark"
+                      ? "primary.main"
+                      : "text.primary",
+                  fontSize: "0.875rem",
+                  fontWeight: "400",
+                  lineHeight: "1.4375em",
+                }}
+                variant="h5"
+              >
+                Project Roles
+              </Typography>
+              <Tooltip
+                title="Toggle the switch if this role requires a project collaborator."
+                arrow
+                placement="right"
+              >
+                <InfoOutlined
+                  sx={{
+                    color: "#8C8C95",
+                    fontSize: "1.1rem",
+                  }}
+                />
+              </Tooltip>
+            </Box>
             <Stack
               display="flex"
               flexDirection="row"
@@ -396,14 +617,14 @@ export default function EditProjectModal({
               justifyContent="flex-start"
               flexWrap="wrap"
               gap="1rem"
-              sx={{ mt: 2, py: 1 }}
+              sx={{ py: 1 }}
             >
               {fields.map((role, index) => (
                 <Box
                   key={role.id}
                   sx={{
                     position: "relative",
-                    minHeight: "5rem",
+                    minHeight: "4rem",
                     display: "flex",
                     flexDirection: "column",
                     justifyContent: "flex-start",
@@ -414,11 +635,21 @@ export default function EditProjectModal({
                     alignItems="center"
                     flexDirection="row"
                     sx={{
-                      border: "1px solid #ccc",
-                      borderRadius: "0.5rem",
+                      borderRadius: "0.2rem",
                       width: "14.625rem",
                       px: "0.5rem",
                       height: "2.65rem",
+                      "&:hover": {
+                        borderColor:
+                          theme.palette.mode === "dark"
+                            ? "rgb(100, 100, 100)"
+                            : "#000000",
+                      },
+                      border: "1px solid",
+                      borderColor:
+                        theme.palette.mode === "dark"
+                          ? "rgb(82, 82, 82)"
+                          : "rgb(196, 196, 196)",
                     }}
                   >
                     <TextField
@@ -429,7 +660,14 @@ export default function EditProjectModal({
                       {...register(`roles.${index}.name`, {
                         required: "This is required.",
                       })}
-                      sx={{ height: "75%" }}
+                      sx={{
+                        height: "75%",
+                      }}
+                      inputProps={{
+                        sx: {
+                          color: "text.secondary",
+                        },
+                      }}
                       helperText={
                         <ErrorMessages
                           name={`roles.${index}.name`}
@@ -438,17 +676,18 @@ export default function EditProjectModal({
                         />
                       }
                     />
-                    <Controller
-                      name={`roles.${index}.requiresCollaborator`}
-                      control={control}
-                      render={({ field }) => (
-                        <Switch
-                          {...field}
-                          checked={field.value}
-                          onChange={(e) => field.onChange(e.target.checked)}
-                        />
-                      )}
-                    />
+                    <Tooltip
+                      title="Toggle if this role requires a collaborator"
+                      arrow
+                    >
+                      <Switch
+                        id={`roles-requiresCollaborator-${index}`}
+                        defaultChecked={role.requiresCollaborator}
+                        {...register(`roles.${index}.requiresCollaborator`, {
+                          required: false,
+                        })}
+                      />
+                    </Tooltip>
                   </Box>
                   {index > 0 && (
                     <IconButton
@@ -476,15 +715,19 @@ export default function EditProjectModal({
               </IconButton>
             </Stack>
           </Box>
-          <Box sx={{ my: "1.5rem" }}>
+          <Box>
             <Typography
               sx={{
                 width: "100%",
                 my: 0.5,
-                color: "#8C8C95",
+                color:
+                  theme.palette.mode === "dark"
+                    ? "primary.main"
+                    : "text.primary",
+                fontSize: "0.875rem",
                 fontWeight: "400",
-                fontSize: "0.8571428571428571rem",
                 lineHeight: "1.4375em",
+                mb: 1,
               }}
               variant="h5"
             >
@@ -496,7 +739,7 @@ export default function EditProjectModal({
               alignItems="center"
               justifyContent="flex-start"
               flexWrap="wrap"
-              sx={{ mt: 2, py: 1 }}
+              sx={{ py: 1 }}
             >
               {UserStoryFields.length === 0 && (
                 <Box
@@ -512,6 +755,11 @@ export default function EditProjectModal({
                       required: "This is required.",
                     })}
                     fullWidth
+                    inputProps={{
+                      sx: {
+                        color: "text.secondary",
+                      },
+                    }}
                     variant="standard"
                     sx={{ width: "100%" }}
                   />
@@ -532,7 +780,9 @@ export default function EditProjectModal({
                     flexDirection="row"
                     justifyContent="flex-start"
                     alignItems="center"
-                    sx={{ width: "100%" }}
+                    sx={{
+                      width: "100%",
+                    }}
                   >
                     <TextField
                       error={!!(errors as any)[`userStories.${index}.name`]}
@@ -541,6 +791,12 @@ export default function EditProjectModal({
                       })}
                       fullWidth
                       variant="standard"
+                      inputProps={{
+                        sx: {
+                          color: "text.secondary",
+                          fontSize: "0.87rem",
+                        },
+                      }}
                       sx={{ width: "100%" }}
                     />
                     <IconButton
