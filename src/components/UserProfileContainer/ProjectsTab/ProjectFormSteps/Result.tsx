@@ -20,10 +20,10 @@ import {
 import { useFormContext } from "../../../../context/FormContext/FormContext";
 import { addProject } from "../../../../core/services/api/manage-projects.api";
 import { getItem } from "../../../../core/services/storage/Storage";
-import { createFormData } from "../../../../core/utils/CreateFormData/createFormData";
 import dateFormatter from "../../../../core/utils/DateFormatter/dateFormatter";
 import CustomButton from "../../../common/CustomButton/CustomButton";
 import LabeledTypography from "../../../common/LabeledTypography/LabeledTypography";
+import { getImageUrl } from "../../../../core/utils/ImageUtils/imageUtils";
 
 interface StepperProps {
   handleActiveStep: (step: string) => void;
@@ -49,21 +49,13 @@ const Result = ({ handleActiveStep, handleProjectInfo }: StepperProps) => {
         ...userInput,
         contributionsGuidelines: "",
         owner: { _id: owner._id, name: owner.name, avatar: owner.avatar },
+        deliverables,
+        sitemap,
+        userStories,
+        coverImage: userInput.coverImage[0],
       };
 
-      const formData = createFormData(
-        { ...updateUserInput, deliverables, sitemap, userStories },
-        {
-          files: data?.screenshots || [],
-          name: "screenshots",
-        },
-        {
-          file: data?.coverImage || [],
-          name: "coverImage",
-        }
-      );
-
-      const response = (await addProject(formData)) as any;
+      const response = (await addProject(updateUserInput)) as any;
 
       if (response.status === 201) {
         setIsSuccessful(true);
@@ -111,7 +103,7 @@ const Result = ({ handleActiveStep, handleProjectInfo }: StepperProps) => {
           <Box>
             {data.coverImage.length !== 0 && (
               <img
-                src={URL.createObjectURL(data.coverImage[0])}
+                src={getImageUrl(data.coverImage[0])}
                 alt="project cover"
                 style={{ width: "100%", height: "200px", objectFit: "cover" }}
               />
@@ -202,7 +194,7 @@ const Result = ({ handleActiveStep, handleProjectInfo }: StepperProps) => {
                       return (
                         <img
                           key={uuidv4()}
-                          src={URL.createObjectURL(img)}
+                          src={getImageUrl(img)}
                           alt="project screen shots"
                           style={{
                             maxWidth: "100px",

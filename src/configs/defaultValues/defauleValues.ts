@@ -1,6 +1,6 @@
 import { ProjectForm } from "../types/projectTypes";
 
-export const getDefaultValues = (data?: ProjectForm): ProjectForm => {
+export const getDefaultValues = (data?: Partial<ProjectForm>): ProjectForm => {
   return {
     title: data?.title || "",
     description: data?.description || "",
@@ -20,7 +20,7 @@ export const getDefaultValues = (data?: ProjectForm): ProjectForm => {
     startDate: data?.startDate || new Date(),
     dueDate: data?.dueDate || new Date(),
     likes: data?.likes || 0,
-    logoStyle: 0,
+    logoStyle: data?.logoStyle || 0,
     links: data?.links || [],
     coverImage: data?.coverImage || [],
     screenshots: data?.screenshots || [],
