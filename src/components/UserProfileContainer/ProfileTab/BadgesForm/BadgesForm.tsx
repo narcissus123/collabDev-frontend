@@ -88,13 +88,11 @@ export default function BadgesForm({
 
       const userId = developer._id;
       let badgeKey;
-      console.log("badges", badges);
       if (badges) {
         const BadgesUpload = await badgesUploadMutation.mutateAsync({
           userId,
           file: badges,
         });
-        console.log("BadgesUpload", BadgesUpload);
         badgeKey = BadgesUpload.data;
       }
 
@@ -210,6 +208,7 @@ export default function BadgesForm({
               alignItems: "center",
             }}
             righButtonText="Upload"
+            type="button"
           />
         </Box>
       </CustomModal>

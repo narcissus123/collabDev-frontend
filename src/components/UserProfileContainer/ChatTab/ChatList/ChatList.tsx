@@ -17,6 +17,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import { getAllUserChatMessages } from "../../../../core/services/api/manage-chatMessages.api";
 import { getItem } from "../../../../core/services/storage/Storage";
+import { getImageUrl } from "../../../../core/utils/ImageUtils/imageUtils";
 
 interface User {
   _id: string;
@@ -224,7 +225,7 @@ const ChatList = ({ socket }: ChatListProps) => {
                     src={
                       conversation.participant.avatar &&
                       !imageErrors[conversation.participant._id]
-                        ? `https://collabdev-resume-storage-2024.s3.us-east-2.amazonaws.com/${conversation.participant.avatar}`
+                        ? getImageUrl(conversation.participant.avatar)
                         : undefined
                     }
                     onError={() => {

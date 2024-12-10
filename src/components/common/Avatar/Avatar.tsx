@@ -102,9 +102,12 @@ const AvatarUpload = ({
             id="avatar"
             type="file"
             style={{ display: "none", outline: "none" }}
-            required={false}
-            {...register("avatar", { required: true })}
-            onChange={handleFileChange}
+            {...register("avatar", {
+              required: false,
+              onChange: (e) => {
+                handleFileChange(e);
+              },
+            })}
             ref={fileInputRef}
           />
         </Box>

@@ -331,6 +331,7 @@ export default function ProfileDetailsForm({
               alignItems: "center",
             }}
             righButtonText="Edit"
+            type="button"
           />
         </Box>
       </CustomModal>

@@ -15,6 +15,7 @@ interface CustomButtonProps {
   righButtonText?: string;
   variantLeft?: "contained" | "text" | "outlined" | undefined;
   variantRight?: "contained" | "text" | "outlined" | undefined;
+  type?: "button" | "submit" | "reset";
 }
 
 const CustomButton = ({
@@ -29,6 +30,7 @@ const CustomButton = ({
   righButtonText,
   variantLeft,
   variantRight,
+  type = "submit",
 }: CustomButtonProps) => {
   const theme = useTheme();
   const isLargeScreen = useMediaQuery(theme.breakpoints.down("lg"));
@@ -46,7 +48,7 @@ const CustomButton = ({
           color="inherit"
           onClick={leftHandleClick}
           disabled={leftButtonDisabled}
-          type="submit"
+          type={type}
           variant={variantLeft}
           sx={{
             my: 1,

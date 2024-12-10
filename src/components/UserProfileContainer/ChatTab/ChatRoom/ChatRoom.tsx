@@ -30,6 +30,7 @@ import {
 } from "../../../../configs/types/chatMessageTypes";
 import { getUserChatMessageById } from "../../../../core/services/api/manage-chatMessages.api";
 import { getItem } from "../../../../core/services/storage/Storage";
+import { getImageUrl } from "../../../../core/utils/ImageUtils/imageUtils";
 
 interface ChatRoomProp {
   socket: Socket | null;
@@ -293,7 +294,7 @@ function ChatRoom({ socket }: ChatRoomProp) {
                             }}
                             src={
                               msg.sender.avatar && !imageErrors[msg.sender._id]
-                                ? `https://collabdev-resume-storage-2024.s3.us-east-2.amazonaws.com/${msg.sender.avatar}`
+                                ? getImageUrl(msg.sender.avatar)
                                 : undefined
                             }
                             onError={() => {

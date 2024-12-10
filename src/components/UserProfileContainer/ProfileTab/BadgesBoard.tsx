@@ -20,6 +20,7 @@ import { User } from "../../../configs/types/userTypes";
 import { deleteUploadedFile } from "../../../core/services/api/manage-fileupload.api";
 import { updateUserInfo } from "../../../core/services/api/manage-user.api";
 import { useAuth } from "../../../context/AuthContext/AuthContext";
+import { getImageUrl } from "../../../core/utils/ImageUtils/imageUtils";
 import BadgesForm from "./BadgesForm/BadgesForm";
 
 interface ProfileDetailsFormProps {
@@ -275,7 +276,7 @@ const BadgesBoard = ({
                     />
                   )}
                   <img
-                    src={`https://collabdev-resume-storage-2024.s3.us-east-2.amazonaws.com/${path}`}
+                    src={getImageUrl(path)}
                     alt={`${index}`}
                     width="60px"
                     height="60px"

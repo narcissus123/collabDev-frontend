@@ -19,6 +19,7 @@ import {
   acceptRequestById,
   rejectRequestById,
 } from "../../../../core/services/api/manage-requests.api";
+import { getImageUrl } from "../../../../core/utils/ImageUtils/imageUtils";
 
 interface RequestCardProps {
   request: any;
@@ -126,7 +127,7 @@ const RequestCard = ({
               <Link to={`/profile/${mainUser.id}`}>
                 <Avatar
                   alt={mainUser.name}
-                  src={`https://collabdev-resume-storage-2024.s3.us-east-2.amazonaws.com/${mainUser.avatar}`}
+                  src={getImageUrl(mainUser.avatar)}
                   sx={{
                     width: viewMode === "compact" ? 32 : 40,
                     height: viewMode === "compact" ? 32 : 40,
