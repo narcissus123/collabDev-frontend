@@ -14,10 +14,10 @@ const instance: AxiosInstance = axios.create({
 });
 console.log("process.env.NODE_ENV", process.env.NODE_ENV);
 console.log("baseURL", baseURL);
-const handleUnauthorized = () => {
+const handleUnauthorized = (message: string) => {
   SignOutDeveloper();
   // Show a notification
-  toast.error("Your session has expired. Please log in again.");
+  toast.error(message || "Your session has expired. Please log in again.");
 };
 
 // Response interceptor
@@ -35,8 +35,8 @@ instance.interceptors.response.use(
       if (status >= 400 && status < 500) {
         if (status === 401) {
           // Handle 401 Unauthorized
-          handleUnauthorized();
-          return;
+          handleUnauthorized(error.response.data.message);
+          return error.response;
         } else if (status === 403) {
           toast.error(
             data.message || "You are not authorized to perform this action."
@@ -48,7 +48,6 @@ instance.interceptors.response.use(
         }
         console.error("Client error:", data);
       } else if (status === 500) {
-        //console.log("response", error.response);
         toast.error(data.message || "Something went wrong.");
       }
     } else {

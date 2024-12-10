@@ -9,7 +9,7 @@ import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 
 import { SignInInputData } from "../../../configs/data/RegistrationInputData";
 import { SignInDeveloper } from "../../../core/services/api/developer-authentication.api";
@@ -50,21 +50,14 @@ export default function SignInContainer({
     try {
       const response = await SignInDeveloper(data);
       if (response.status === "success") {
+        toast.success("You are successfully signed in!");
         const user = response.data.userWithoutPassword;
         setCurrentUser(user);
         history("/");
-        // toast.success("You are successfully signed in!");
-      } else {
-        if (response.status === 400 || response.status === 403) {
-          toast.error("Email or password is wrong.");
-        } else {
-          toast.error("Something went wrong! Please try again.");
-        }
       }
       reset();
     } catch (error) {
-      toast.error(String(error));
-      console.error(error);
+      // console.error(error);
     }
   };
 
@@ -77,6 +70,7 @@ export default function SignInContainer({
         p: { xs: 2, sm: 3, md: 4 },
       }}
     >
+      <ToastContainer />
       <Stack spacing={3} alignItems="center">
         <Avatar
           sx={{

@@ -13,7 +13,7 @@ import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 
 import { SignUpInputData } from "../../../configs/data/RegistrationInputData";
 import { SignUpDeveloper } from "../../../core/services/api/developer-authentication.api";
@@ -56,21 +56,14 @@ export default function SignUpContainer({
     try {
       const response = await SignUpDeveloper(data);
       if (response.status === "success") {
+        toast.success("You are successfully signed up!");
         const user = response.data.userWithoutPassword;
         setCurrentUser(user);
         history("/");
-        // toast.success("You are successfully signed up!");
-      } else {
-        if (response.status === 400 || response.status === 403) {
-          toast.error("Email or password is wrong.");
-        } else {
-          toast.error("Something went wrong! Please try again.");
-        }
       }
       reset();
     } catch (error) {
-      toast.error(String(error));
-      console.error(error);
+      // console.error(error);
     }
   };
 
@@ -83,6 +76,7 @@ export default function SignUpContainer({
         p: { xs: 2, sm: 3, md: 4 },
       }}
     >
+      <ToastContainer />
       <Stack spacing={3} alignItems="center">
         <Avatar
           sx={{
