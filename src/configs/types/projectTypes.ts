@@ -115,7 +115,7 @@ export interface ProjectForm {
   likes: number;
   links: ProjectLinks[];
   coverImage: any[];
-  screenshots: [];
+  screenshots: any[];
   sitemap: Array<SiteMap>;
   userStories: Array<UserStory>;
   contributionsGuidelines: string;

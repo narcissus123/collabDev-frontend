@@ -1,13 +1,17 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, Dispatch, SetStateAction } from "react";
 import { UseFormSetValue } from "react-hook-form";
 
-type HookReturnValue = [(acceptedFiles: File[]) => void, File[]];
+type HookReturnValue = [
+  (acceptedFiles: File[]) => void,
+  File[],
+  Dispatch<SetStateAction<File[]>>,
+];
 
 export const useDragAndDrop = (
   multipleImages: boolean,
   setValue: UseFormSetValue<any>,
   fieldName: string,
-  imagesDefaultValue: File[] | []
+  imagesDefaultValue: any[] | []
 ): HookReturnValue => {
   const [images, setImages] = useState<File[]>(imagesDefaultValue);
 
@@ -30,5 +34,5 @@ export const useDragAndDrop = (
     [multipleImages, setValue, fieldName, images]
   );
 
-  return [onDrop, images];
+  return [onDrop, images, setImages];
 };
