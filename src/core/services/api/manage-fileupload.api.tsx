@@ -1,6 +1,6 @@
 import { instance } from "../interceptor/Interceptor";
 
-type FileType = "avatars" | "badges" | "resume";
+type FileType = "avatars" | "badges" | "resume" | "coverImage" | "screenshots";
 type FileT = File | File[];
 
 const getUploadedFile = async (userId: string, fileType: FileType) => {

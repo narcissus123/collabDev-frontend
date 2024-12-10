@@ -9,6 +9,8 @@ import { useFormContext } from "../../../../context/FormContext/FormContext";
 import { useDragAndDrop } from "../../../../hooks/useDragAndDrop";
 import CustomButton from "../../../common/CustomButton/CustomButton";
 import { DropBox } from "../../../common/DropBox/DropBox";
+import { uploadFile } from "../../../../core/services/api/manage-fileupload.api";
+import { useAuth } from "../../../../context/AuthContext/AuthContext";
 
 interface StepperProps {
   handleActiveStep: (step: string) => void;
@@ -16,7 +18,7 @@ interface StepperProps {
 
 export default function ProjectImages({ handleActiveStep }: StepperProps) {
   const { data, updateFormData } = useFormContext();
-
+  const { user } = useAuth();
   const { handleSubmit, setValue } = useForm<ProjectForm>({
     defaultValues: getDefaultValues(data),
   });
@@ -36,18 +38,47 @@ export default function ProjectImages({ handleActiveStep }: StepperProps) {
     data.coverImage
   );
 
-  const onSubmit = (userInput: ProjectForm) => {
-    updateFormData({
-      ...userInput,
-      coverImage: coverImageImages,
-      screenshots: screenshotImages,
-    });
+  const onSubmit = async (userInput: ProjectForm) => {
+    try {
+      if (!user) return;
 
-    handleActiveStep("Result");
+      // Upload cover image first
+      let coverImageUrl;
+      if (coverImageImages?.length > 0) {
+        const coverImageResponse = await uploadFile(
+          user._id,
+          coverImageImages[0],
+          "coverImage"
+        );
+        coverImageUrl = coverImageResponse.data[0];
+      }
+
+      // Upload screenshots/wireframes
+      let screenshotUrls: [] = [];
+      if (screenshotImages?.length > 0) {
+        const screenshotsResponse = await uploadFile(
+          user._id,
+          screenshotImages,
+          "screenshots"
+        );
+        screenshotUrls = screenshotsResponse.data;
+      }
+
+      // Update form data with URLs instead of files
+      updateFormData({
+        ...userInput,
+        coverImage: coverImageUrl && [coverImageUrl],
+        screenshots: screenshotUrls,
+      });
+
+      handleActiveStep("Result");
+    } catch (error) {
+      console.error("Error uploading files:", error);
+    }
   };
 
   const handleDeleteImage = (index: number) => {
-    const updatedImages: File[] = [...data["screenshots"]];
+    const updatedImages: [] = [...data["screenshots"]];
     updatedImages.splice(index, 1);
     updateFormData({ ...data, ["screenshots"]: updatedImages });
     screenshotImages.splice(index, 1);
