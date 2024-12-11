@@ -212,7 +212,7 @@ export default function ProjectsDetailsContainer() {
               boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
             }}
           >
-            {project.data.coverImage[0] && !imageError ? (
+            {project.data.coverImage && !imageError ? (
               <Box
                 component="img"
                 src={getImageUrl(project.data.coverImage)}
