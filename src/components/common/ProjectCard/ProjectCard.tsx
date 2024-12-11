@@ -17,7 +17,7 @@ import {
   useTheme,
   Box,
 } from "@mui/material";
-import { red } from "@mui/material/colors";
+import { grey } from "@mui/material/colors";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -122,7 +122,7 @@ function ProjectCard({ project, ptClassName }: ProjectCardProps) {
           avatar={
             <Link to={`/profile/${project.owner._id}`}>
               <Avatar
-                sx={{ bgcolor: red[500], width: 56, height: 56 }}
+                sx={{ bgcolor: grey[500], width: 56, height: 56 }}
                 aria-label="recipe"
                 src={getImageUrl(project.owner.avatar)}
               />
@@ -321,7 +321,7 @@ function ProjectCard({ project, ptClassName }: ProjectCardProps) {
                     {project?.contributors.map((contributor, i) => (
                       <Avatar
                         key={i}
-                        sx={{ bgcolor: red[500] }}
+                        sx={{ bgcolor: grey[500] }}
                         src={
                           contributor.avatar
                             ? getImageUrl(contributor.avatar)

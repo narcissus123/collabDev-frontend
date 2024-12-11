@@ -36,6 +36,7 @@ import {
 
 import ErrorFallback from "../common/ErrorFallback/ErrorFallback";
 import { ProjectForm } from "../../configs/types/projectTypes";
+import { getImageUrl } from "../../core/utils/ImageUtils/imageUtils";
 import { EditProjectImageModal } from "./EditProjectImageModal/EditProjectImageModal";
 import EditProjectModal from "./EditProjectModal/EditProjectModal";
 import ProjectLogoGenerator from "./ProjectLogoGenerator";
@@ -214,8 +215,8 @@ export default function ProjectsDetailsContainer() {
             {project.data.coverImage[0] && !imageError ? (
               <Box
                 component="img"
-                src={`http://localhost:8080/public/userProfileImages/${project.data.coverImage[0]}?w=600&h=400&fit=crop&auto=format`}
-                srcSet={`http://localhost:8080/public/userProfileImages/${project.data.coverImage[0]}?w=600&h=400&fit=crop&auto=format&dpr=2 2x`}
+                src={getImageUrl(project.data.coverImage)}
+                srcSet={getImageUrl(project.data.coverImage)}
                 alt="project cover"
                 loading="lazy"
                 sx={{

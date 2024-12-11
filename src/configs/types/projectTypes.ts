@@ -114,8 +114,8 @@ export interface ProjectForm {
   dueDate: Date;
   likes: number;
   links: ProjectLinks[];
-  coverImage: File[];
-  screenshots: File[];
+  coverImage: any[];
+  screenshots: any[];
   sitemap: Array<SiteMap>;
   userStories: Array<UserStory>;
   contributionsGuidelines: string;

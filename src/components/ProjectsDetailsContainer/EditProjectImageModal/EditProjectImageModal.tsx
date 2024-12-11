@@ -5,14 +5,15 @@ import { ToastContainer, toast } from "react-toastify";
 
 import { ProjectType } from "../../../configs/types/projectTypes";
 import { updateProject } from "../../../core/services/api/manage-projects.api";
-import { createFormData } from "../../../core/utils/CreateFormData/createFormData";
 import { useDragAndDrop } from "../../../hooks/useDragAndDrop";
 import CustomButton from "../../common/CustomButton/CustomButton";
 import CustomModal from "../../common/CustomModal/CustomModal";
 import { DropBox } from "../../common/DropBox/DropBox";
+import { useAuth } from "../../../context/AuthContext/AuthContext";
+import { uploadFile } from "../../../core/services/api/manage-fileupload.api";
 
 interface FormValues {
-  coverImage: File[] | [];
+  coverImage: string;
 }
 
 interface Props {
@@ -29,10 +30,10 @@ export const EditProjectImageModal = ({
   project,
 }: Props) => {
   const theme = useTheme();
-
+  const { user } = useAuth();
   const { handleSubmit, setValue } = useForm<FormValues>({
     defaultValues: {
-      coverImage: [],
+      coverImage: "",
     },
   });
 
@@ -61,17 +62,24 @@ export const EditProjectImageModal = ({
   });
   const onSubmit = async () => {
     try {
+      if (!user) return;
+
+      let coverImageUrl;
+      if (coverImageImages?.length > 0) {
+        const coverImageResponse = await uploadFile(
+          user._id,
+          coverImageImages[0],
+          "coverImage"
+        );
+        coverImageUrl = coverImageResponse.data[0];
+      }
+
       const updatedInfo = {
         ...project,
-        coverImage: coverImageImages[0] || project.coverImage,
+        coverImage: coverImageUrl,
       };
 
-      const formData = createFormData(updatedInfo, undefined, {
-        file: [updatedInfo?.coverImage],
-        name: "coverImage",
-      });
-
-      mutation.mutate({ id: updatedInfo._id, data: formData });
+      mutation.mutate({ id: updatedInfo._id, data: updatedInfo });
     } catch (error) {
       toast.error("Something went wrong. Please try later!");
       console.error(error);
