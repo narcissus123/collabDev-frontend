@@ -1,5 +1,4 @@
 import {
-  Avatar,
   Box,
   Divider,
   Stack,
@@ -7,7 +6,6 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { red } from "@mui/material/colors";
 import { useForm } from "react-hook-form";
 import { ToastContainer, toast } from "react-toastify";
 
@@ -97,31 +95,29 @@ const RequestForm = ({
               ? "secondary.main"
               : "border.secondary",
         }}
-        cardsx={{
-          borderRadius: "2rem",
-        }}
         headerAvatar={
           <Stack
             display="flex"
             flexDirection="row"
             alignItems="center"
-            gap={1}
             mt={1}
             ml={1}
           >
             <Typography
               variant="h5"
-              sx={{ color: "primary.main", mr: 1, fontSize: "1.1rem" }}
+              sx={{
+                mr: 1,
+                color: "primary.main",
+                fontSize: "1.1rem",
+              }}
             >
               To:
             </Typography>
-            <Avatar
-              sx={{ bgcolor: red[500], width: 39, height: 39 }}
-              aria-label="project owner"
-              src={`http://localhost:8080/public/userProfileImages/${project.owner.avatar}`}
-            />
             <Typography
-              sx={{ color: "primary.main", fontSize: "1.1rem", ml: 1 }}
+              sx={{
+                color: "primary.main",
+                fontSize: "1.1rem",
+              }}
             >
               {project.owner.name}
             </Typography>
@@ -153,13 +149,11 @@ const RequestForm = ({
                 }))}
             />
           ))}
-
           <CustomButton
             framesx={{
               bgcolor: "#F7F7F7",
-              borderEndStartRadius: "1.5rem",
-              borderEndEndRadius: "1.5rem",
-              my: "-1rem",
+              backgroundColor: "text.main",
+              mb: "-1rem",
             }}
             buttonRightsx={{
               my: 2,

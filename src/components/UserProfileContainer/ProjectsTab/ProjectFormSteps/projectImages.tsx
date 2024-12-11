@@ -1,4 +1,4 @@
-import CloseIcon from "@mui/icons-material/Close";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { IconButton, Stack, Typography, useTheme } from "@mui/material";
 import Box from "@mui/material/Box";
 import { useForm } from "react-hook-form";
@@ -30,19 +30,9 @@ export default function ProjectImages({ handleActiveStep }: StepperProps) {
 
   const multipleImages = true;
   const [onScreenshotDrop, screenshotImages, setScreenshotImages] =
-    useDragAndDrop(
-      multipleImages,
-      setValue,
-      "screenshots",
-      [] // Initialize with empty array
-    );
+    useDragAndDrop(multipleImages, setValue, "screenshots", []);
   const [onCoverImageDrop, coverImageImages, setCoverImageImages] =
-    useDragAndDrop(
-      !multipleImages,
-      setValue,
-      "coverImage",
-      [] // Initialize with empty array
-    );
+    useDragAndDrop(!multipleImages, setValue, "coverImage", []);
 
   // Initialize form with existing data
   useEffect(() => {
@@ -197,7 +187,7 @@ export default function ProjectImages({ handleActiveStep }: StepperProps) {
             )
           }
         >
-          <CloseIcon />
+          <DeleteIcon />
         </IconButton>
       </Box>
     );

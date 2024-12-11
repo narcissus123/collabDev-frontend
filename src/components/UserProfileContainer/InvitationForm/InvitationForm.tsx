@@ -1,5 +1,4 @@
 import {
-  Avatar,
   Box,
   Divider,
   InputLabel,
@@ -10,7 +9,6 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { red } from "@mui/material/colors";
 import { Controller, useForm } from "react-hook-form";
 import { ToastContainer, toast } from "react-toastify";
 
@@ -25,7 +23,6 @@ import CustomModal from "../../common/CustomModal/CustomModal";
 import Input from "../../common/Input/Input";
 import { User } from "../../../configs/types/userTypes";
 import { useAuth } from "../../../context/AuthContext/AuthContext";
-import { getImageUrl } from "../../../core/utils/ImageUtils/imageUtils";
 
 interface RequestFormProps {
   openInviteModal: boolean;
@@ -107,20 +104,12 @@ const InvitationForm = ({
         }}
         headersx={{
           borderBottom: "",
-          borderColor:
-            theme.palette.mode === "dark"
-              ? "secondary.main"
-              : "border.secondary",
-        }}
-        cardsx={{
-          borderRadius: "2rem",
         }}
         headerAvatar={
           <Stack
             display="flex"
             flexDirection="row"
             alignItems="center"
-            gap={1}
             mt={1}
             ml={1}
           >
@@ -134,16 +123,10 @@ const InvitationForm = ({
             >
               To:
             </Typography>
-            <Avatar
-              sx={{ bgcolor: red[500], width: 39, height: 39 }}
-              aria-label="project owner"
-              src={getImageUrl(userData?.avatar)}
-            />
             <Typography
               sx={{
                 color: "primary.main",
                 fontSize: "1.1rem",
-                ml: 1,
               }}
             >
               {userData?.name}
@@ -153,7 +136,12 @@ const InvitationForm = ({
         title=""
       >
         <Divider sx={{ mt: "-1rem", backgroundColor: "primary.main" }} />
-        <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)}>
+        <Box
+          component="form"
+          noValidate
+          onSubmit={handleSubmit(onSubmit)}
+          sx={{ backgroundColor: "text.main" }}
+        >
           <Stack
             sx={{
               display: "flex",
@@ -216,9 +204,8 @@ const InvitationForm = ({
           <CustomButton
             framesx={{
               bgcolor: "#F7F7F7",
-              borderEndStartRadius: "1.5rem",
-              borderEndEndRadius: "1.5rem",
-              my: "-1rem",
+              backgroundColor: "text.main",
+              mb: "-1rem",
             }}
             buttonRightsx={{
               my: 2,
