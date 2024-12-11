@@ -21,6 +21,7 @@ import { SelectChangeEvent } from "@mui/material";
 import { useTheme } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
+import { ToastContainer } from "react-toastify";
 import ErrorFallback from "../common/ErrorFallback/ErrorFallback";
 import { getAllProjects } from "../../core/services/api/manage-projects.api";
 import { ProjectType } from "../../configs/types/projectTypes";
@@ -169,6 +170,7 @@ export default function ProjectsContainer() {
             : "background.default",
       }}
     >
+      <ToastContainer />
       <Grid
         item
         xs={12}

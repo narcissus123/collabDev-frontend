@@ -377,7 +377,7 @@ const HomePage = () => {
               <Button
                 variant="outlined"
                 size="large"
-                onClick={() => navigate("/about")}
+                onClick={() => navigate("/about-us")}
                 sx={{
                   mt: 2,
                   py: 1.5,

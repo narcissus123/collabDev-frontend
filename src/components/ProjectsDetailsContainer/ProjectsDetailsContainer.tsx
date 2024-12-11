@@ -27,7 +27,7 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import CategoryIcon from "@mui/icons-material/Category";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import { useAuth } from "../../context/AuthContext/AuthContext";
 import {
   getProjectById,
@@ -181,6 +181,7 @@ export default function ProjectsDetailsContainer() {
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
+      <ToastContainer />
       <Suspense
         fallback={
           <Box
