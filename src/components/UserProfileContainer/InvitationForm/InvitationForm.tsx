@@ -10,7 +10,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 
 import { RequestInputData } from "../../../configs/data/RequestFormData";
 import { ProjectType } from "../../../configs/types/projectTypes";
@@ -93,7 +93,7 @@ const InvitationForm = ({
   return (
     <>
       {" "}
-      <ToastContainer />
+      {/* <ToastContainer /> */}
       <CustomModal
         open={openInviteModal}
         handleClose={() => handleClose()}

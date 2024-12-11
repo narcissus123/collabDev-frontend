@@ -9,7 +9,7 @@ import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 
 import { SignInInputData } from "../../../configs/data/RegistrationInputData";
 import { SignInDeveloper } from "../../../core/services/api/developer-authentication.api";
@@ -70,7 +70,7 @@ export default function SignInContainer({
         p: { xs: 2, sm: 3, md: 4 },
       }}
     >
-      <ToastContainer />
+      {/* <ToastContainer /> */}
       <Stack spacing={3} alignItems="center">
         <Avatar
           sx={{

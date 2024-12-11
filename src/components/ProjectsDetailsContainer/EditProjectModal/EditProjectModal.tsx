@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useFieldArray, useForm, Controller } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
 import { ErrorBoundary } from "react-error-boundary";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import ClearIcon from "@mui/icons-material/Clear";
 import Autocomplete from "@mui/material/Autocomplete";
@@ -165,7 +165,7 @@ export default function EditProjectModal({
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <ToastContainer />
+      {/* <ToastContainer /> */}
       <CustomModal
         open={openEditProjectModal}
         handleClose={handleClose}

@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { ToastContainer } from "react-toastify";
 import { SocketProvider } from "../context/SocketContext/SocketContext";
 import { useAuth } from "../context/AuthContext/AuthContext";
 import UnAuth from "./UnAuth/UnAuth";
@@ -16,6 +17,7 @@ const App: React.FC = () => {
 
   return (
     <>
+      <ToastContainer />
       <SocketProvider>{isAuthenticated ? <Auth /> : <UnAuth />}</SocketProvider>
     </>
   );

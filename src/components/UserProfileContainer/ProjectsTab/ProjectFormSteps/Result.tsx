@@ -9,7 +9,7 @@ import {
 import Box from "@mui/material/Box";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
 
 import { getDefaultValues } from "../../../../configs/defaultValues/defauleValues";
@@ -104,7 +104,7 @@ const Result = ({ handleActiveStep, handleProjectInfo }: StepperProps) => {
         </Box>
       ) : (
         <>
-          <ToastContainer />
+          {/* <ToastContainer /> */}
           <Box>
             {data.coverImage.length !== 0 && (
               <img

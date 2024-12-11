@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Box, Stack, useTheme } from "@mui/material";
 import { useForm } from "react-hook-form";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 
 import { ProjectType } from "../../../configs/types/projectTypes";
 import { updateProject } from "../../../core/services/api/manage-projects.api";
@@ -88,7 +88,7 @@ export const EditProjectImageModal = ({
 
   return (
     <>
-      <ToastContainer />
+      {/* <ToastContainer /> */}
       <CustomModal
         open={openEditImageModal}
         handleClose={() => handleClose()}

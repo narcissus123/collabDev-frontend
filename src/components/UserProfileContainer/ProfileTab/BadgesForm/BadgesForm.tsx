@@ -2,7 +2,7 @@ import { IconButton, useTheme } from "@mui/material";
 import Box from "@mui/material/Box";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -111,7 +111,7 @@ export default function BadgesForm({
 
   return (
     <>
-      <ToastContainer />
+      {/* <ToastContainer /> */}
 
       <CustomModal
         open={openBadgesModal}

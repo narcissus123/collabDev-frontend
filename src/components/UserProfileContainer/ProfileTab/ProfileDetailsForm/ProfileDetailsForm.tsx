@@ -14,7 +14,7 @@ import Button from "@mui/material/Button";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { MuiChipsInput } from "mui-chips-input";
 import { useFieldArray, useForm, Controller } from "react-hook-form";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
 
 import { useMutation } from "@tanstack/react-query";
@@ -112,7 +112,7 @@ export default function ProfileDetailsForm({
   };
   return (
     <>
-      <ToastContainer />
+      {/* <ToastContainer /> */}
       <CustomModal
         open={openProfileDetailsModal}
         handleClose={handleClose}
