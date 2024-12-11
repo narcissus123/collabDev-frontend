@@ -19,6 +19,7 @@ import CustomModal from "../../common/CustomModal/CustomModal";
 import CustomStepper from "../../common/CustomStepper/CustomStepper";
 import { Loading } from "../../common/Loading/Loading";
 import ProjectCard from "../../common/ProjectCard/ProjectCard";
+import { useAuth } from "../../../context/AuthContext/AuthContext";
 import ProjectDetails from "./ProjectFormSteps/ProjectDetails";
 import ProjectImages from "./ProjectFormSteps/projectImages";
 import ProjectOverview from "./ProjectFormSteps/ProjectOverview";
@@ -40,6 +41,7 @@ export default function ProjectsTab() {
   const [apiCallsCompleted, setApiCallsCompleted] = useState(false);
   const [activeStep, setActiveStep] = useState<string>("Project Overview");
   const [addProject, setAddProject] = useState<boolean>(false);
+  const { isProjectOwner } = useAuth();
 
   const handleActiveStep = useCallback((step: string) => {
     setActiveStep(step);
@@ -133,7 +135,7 @@ export default function ProjectsTab() {
                 />
               ))}
 
-              {apiCallsCompleted && (
+              {apiCallsCompleted && userId && isProjectOwner(userId) && (
                 <Grid
                   item
                   xs={12}

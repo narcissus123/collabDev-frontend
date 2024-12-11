@@ -14,7 +14,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import Button from "@mui/material/Button";
 import { useTheme } from "@mui/material";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import { useParams } from "react-router";
 import { User } from "../../../configs/types/userTypes";
 import { deleteUploadedFile } from "../../../core/services/api/manage-fileupload.api";
@@ -161,6 +161,7 @@ const BadgesBoard = ({
         position: "relative",
       }}
     >
+      <ToastContainer />
       <Stack
         sx={{
           display: "flex",

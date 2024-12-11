@@ -44,6 +44,9 @@ export default function BadgesForm({
       if (response) {
         toast.success("Your account information updated successfully!");
         setBadges([]);
+        queryClient.invalidateQueries({
+          queryKey: ["getUserById", developer?._id],
+        });
         onSuccess();
       }
     },
