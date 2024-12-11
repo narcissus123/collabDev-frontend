@@ -323,7 +323,8 @@ export default function ProjectsDetailsContainer() {
                       color: theme.palette.mode === "dark" ? " #A0A0A0" : "",
                     }}
                   />
-                  License: {project.data.license}
+                  License:{" "}
+                  {project.data.license ? project.data.license : "None"}
                 </Typography>
                 <Typography
                   variant="body2"

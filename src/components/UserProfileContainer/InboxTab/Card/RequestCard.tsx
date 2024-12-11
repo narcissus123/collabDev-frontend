@@ -293,6 +293,7 @@ const RequestCard = ({
             request. This action cannot be undone.`}
           handleDelete={() => handleReject(request._id)}
           rightButtonColor="error"
+          textButton="Reject"
         />
       )}
       {openAcceptModal && (
@@ -308,6 +309,7 @@ const RequestCard = ({
             }, discuss project details, and explore collaboration opportunities. This action cannot be undone.`}
           handleDelete={() => handleAccept(request._id)}
           rightButtonColor="success"
+          textButton="Acccept"
         />
       )}
       <Divider />

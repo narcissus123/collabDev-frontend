@@ -69,6 +69,7 @@ function ProjectsList({
         flexDirection: "row",
         flexWrap: "wrap",
         gap: "16px",
+        width: "100%",
         "& > *": {
           flexGrow: 0,
           flexShrink: 0,

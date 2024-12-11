@@ -179,6 +179,7 @@ export const statusOptions = [
 ];
 
 export const licenseOptions = [
+  "",
   "Academic Free License v3.0",
   "Apache license 2.0",
   "Artistic license 2.0",

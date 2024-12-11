@@ -74,6 +74,7 @@ export interface ProjectForm {
     | "Others";
   status: "In Progress" | "Completed" | "Seeking Collaborators";
   license:
+    | ""
     | "Academic Free License v3.0"
     | "Apache license 2.0"
     | "Artistic license 2.0"
@@ -184,6 +185,7 @@ export interface Project {
   userStories: string[];
   contributionsGuidelines?: string;
   license:
+    | ""
     | "Academic Free License v3.0"
     | "Apache license 2.0"
     | "Artistic license 2.0"
