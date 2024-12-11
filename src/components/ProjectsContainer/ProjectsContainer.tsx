@@ -62,11 +62,23 @@ function ProjectsList({
   }
 
   return (
-    <Grid
-      container
+    <Stack
       sx={{
         display: "flex",
-        justifyContent: "space-around",
+        flexDirection: "row",
+        flexWrap: "wrap",
+        gap: "16px",
+        "& > *": {
+          flexGrow: 0,
+          flexShrink: 0,
+          width: "calc((100% - 32px) / 3)",
+          "@media (max-width: 900px)": {
+            width: "calc((100% - 16px) / 2)",
+          },
+          "@media (max-width: 600px)": {
+            width: "100%",
+          },
+        },
       }}
     >
       {project.data.projects.length === 0 ? (
@@ -74,7 +86,7 @@ function ProjectsList({
           alignItems="center"
           spacing={2}
           mt={4}
-          sx={{ width: "100%", pt: "1rem", pb: "4rem" }}
+          sx={{ width: "100%", pt: "1rem" }}
         >
           <Typography color="text.secondary" sx={{ fontSize: "16px" }}>
             No projects found
@@ -86,12 +98,12 @@ function ProjectsList({
             <ProjectCard
               project={prj}
               key={index}
-              ptClassName={{ cardMargin: 3, cardHeight: "100%" }}
+              ptClassName={{ cardMargin: 0, cardHeight: "100%" }}
             />
           );
         })
       )}
-    </Grid>
+    </Stack>
   );
 }
 

@@ -240,12 +240,20 @@ const BadgesBoard = ({
           sx={{
             display: "flex",
             flexDirection: "row",
-            justifyContent: "flex-start",
-            alignItems: "flex-start",
             flexWrap: "wrap",
-            width: "100%",
             gap: "8px",
             rowGap: "8px",
+            "& > *": {
+              flexGrow: 0,
+              flexShrink: 0,
+              width: "calc((100% - 32px) / 3)",
+              "@media (max-width: 900px)": {
+                width: "calc((100% - 16px) / 2)",
+              },
+              "@media (max-width: 600px)": {
+                width: "100%",
+              },
+            },
           }}
         >
           {profileTabInfo?.badges.map(
