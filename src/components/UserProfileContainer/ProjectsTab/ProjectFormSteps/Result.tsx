@@ -19,12 +19,11 @@ import {
 } from "../../../../configs/types/projectTypes";
 import { useFormContext } from "../../../../context/FormContext/FormContext";
 import { addProject } from "../../../../core/services/api/manage-projects.api";
-import { getItem } from "../../../../core/services/storage/Storage";
 import dateFormatter from "../../../../core/utils/DateFormatter/dateFormatter";
 import CustomButton from "../../../common/CustomButton/CustomButton";
 import LabeledTypography from "../../../common/LabeledTypography/LabeledTypography";
 import { getImageUrl } from "../../../../core/utils/ImageUtils/imageUtils";
-import { useAuth } from "@/context/AuthContext/AuthContext";
+import { useAuth } from "../../../../context/AuthContext/AuthContext";
 
 interface StepperProps {
   handleActiveStep: (step: string) => void;
@@ -39,11 +38,11 @@ const Result = ({ handleActiveStep, handleProjectInfo }: StepperProps) => {
   const { handleSubmit, reset } = useForm<ProjectForm>({
     defaultValues: getDefaultValues(data),
   });
-  const {user} = useAuth();
+  const { user } = useAuth();
 
   const onSubmit = async (userInput: ProjectForm) => {
     try {
-      if(!user) return;
+      if (!user) return;
       console.log("user", user);
       const deliverables = userInput.deliverables.map((del) => del.name);
       const sitemap = userInput.sitemap.map((site) => site.name);
@@ -51,7 +50,11 @@ const Result = ({ handleActiveStep, handleProjectInfo }: StepperProps) => {
       const updateUserInput = {
         ...userInput,
         contributionsGuidelines: "",
-        owner: { _id: user._id, name: user.name, avatar: user.avatar ? user.avatar : "" },
+        owner: {
+          _id: user._id,
+          name: user.name,
+          avatar: user.avatar ? user.avatar : "",
+        },
         deliverables,
         sitemap,
         userStories,
