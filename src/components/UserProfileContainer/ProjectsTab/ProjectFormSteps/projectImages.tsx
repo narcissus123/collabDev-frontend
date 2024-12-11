@@ -3,6 +3,7 @@ import { IconButton, Stack, Typography, useTheme } from "@mui/material";
 import Box from "@mui/material/Box";
 import { useForm } from "react-hook-form";
 
+import { useEffect } from "react";
 import { getDefaultValues } from "../../../../configs/defaultValues/defauleValues";
 import { ProjectForm } from "../../../../configs/types/projectTypes";
 import { useFormContext } from "../../../../context/FormContext/FormContext";
@@ -27,19 +28,39 @@ export default function ProjectImages({ handleActiveStep }: StepperProps) {
     defaultValues: getDefaultValues(data),
   });
 
-  // Saving image from the file system.
   const multipleImages = true;
   const [onScreenshotDrop, screenshotImages, setScreenshotImages] =
-    useDragAndDrop(multipleImages, setValue, "screenshots", data.screenshots);
+    useDragAndDrop(
+      multipleImages,
+      setValue,
+      "screenshots",
+      [] // Initialize with empty array
+    );
   const [onCoverImageDrop, coverImageImages, setCoverImageImages] =
-    useDragAndDrop(!multipleImages, setValue, "coverImage", data.coverImage);
+    useDragAndDrop(
+      !multipleImages,
+      setValue,
+      "coverImage",
+      [] // Initialize with empty array
+    );
+
+  // Initialize form with existing data
+  useEffect(() => {
+    if (data.screenshots?.length > 0) {
+      setValue("screenshots", data.screenshots);
+    }
+    if (data.coverImage?.length > 0) {
+      setValue("coverImage", data.coverImage);
+    }
+  }, [data.screenshots, data.coverImage, setValue]);
 
   const onSubmit = async (userInput: ProjectForm) => {
     try {
       if (!user) return;
 
       const updatedData = { ...userInput };
-      // Only upload cover image if there's a new file
+
+      // Handle cover image
       if (coverImageImages?.length > 0 && coverImageImages[0] instanceof File) {
         const coverImageResponse = await uploadFile(
           user._id,
@@ -51,21 +72,20 @@ export default function ProjectImages({ handleActiveStep }: StepperProps) {
         updatedData.coverImage = data.coverImage;
       }
 
-      // Only upload new screenshot files
-      if (screenshotImages?.length > 0 && screenshotImages[0] instanceof File) {
+      // Handle screenshots
+      let newScreenshots: string[] = [...(data.screenshots || [])];
+      const newFiles = screenshotImages.filter((file) => file instanceof File);
+
+      if (newFiles.length > 0) {
         const screenshotsResponse = await uploadFile(
           user._id,
-          screenshotImages,
+          newFiles,
           "screenshots"
         );
-        // Combine existing screenshots with new ones
-        updatedData.screenshots = [
-          ...(data.screenshots || []),
-          ...screenshotsResponse.data,
-        ];
-      } else {
-        updatedData.screenshots = data.screenshots;
+        newScreenshots = [...newScreenshots, ...screenshotsResponse.data];
       }
+
+      updatedData.screenshots = newScreenshots;
       updateFormData(updatedData);
       handleActiveStep("Result");
     } catch (error) {
@@ -89,8 +109,13 @@ export default function ProjectImages({ handleActiveStep }: StepperProps) {
           (url) => url !== imageUrl
         );
         updateFormData({ ...data, screenshots: updatedScreenshots });
-        setScreenshotImages([]);
         setValue("screenshots", updatedScreenshots);
+        // Keep any non-uploaded files in local state
+        setScreenshotImages(
+          screenshotImages.filter(
+            (file) => !(typeof file === "string" && file === imageUrl)
+          )
+        );
       } else {
         await deleteUploadedFile(user._id, "coverImage", imageUrl);
         updateFormData({ ...data, coverImage: [] });
@@ -107,10 +132,10 @@ export default function ProjectImages({ handleActiveStep }: StepperProps) {
       const updatedImages = [...screenshotImages];
       updatedImages.splice(index, 1);
       setScreenshotImages(updatedImages);
-      setValue("screenshots", updatedImages);
+      setValue("screenshots", [...(data.screenshots || []), ...updatedImages]);
     } else {
       setCoverImageImages([]);
-      setValue("coverImage", []);
+      setValue("coverImage", data.coverImage || []);
     }
   };
 
@@ -212,9 +237,14 @@ export default function ProjectImages({ handleActiveStep }: StepperProps) {
           overflowX: "auto",
         }}
       >
-        {!screenshotImages?.length &&
-          data.screenshots?.map((url, index) => renderImage(url, index, true))}
-        {screenshotImages?.map((file, index) => renderImage(file, index, true))}
+        {/* Show existing S3 screenshots */}
+        {data.screenshots?.map((url, index) => renderImage(url, index, true))}
+        {/* Show new screenshots */}
+        {screenshotImages
+          .filter((file) => file instanceof File)
+          .map((file, index) =>
+            renderImage(file, index + (data.screenshots?.length || 0), true)
+          )}
       </Stack>
       <Typography
         sx={{
