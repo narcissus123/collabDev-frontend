@@ -19,7 +19,7 @@ import Stack from "@mui/material/Stack";
 import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
 
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { Tooltip, Zoom } from "@mui/material";
 import { getUserById } from "../../core/services/api/manage-user.api";
 import { useAuth } from "../../context/AuthContext/AuthContext";
@@ -82,7 +82,7 @@ export default function UserProfileContainer() {
 
   return (
     <QueryErrorBoundary>
-      <ToastContainer />
+      {/* <ToastContainer /> */}
       <Grid container sx={{ flexGrow: 1, minHeight: "100vh" }}>
         {/* Background Image Grid */}
         <Grid

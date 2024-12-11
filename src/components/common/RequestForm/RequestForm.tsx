@@ -7,7 +7,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 
 import { RequestInputData } from "../../../configs/data/RequestFormData";
 import { ProjectType } from "../../../configs/types/projectTypes";
@@ -79,7 +79,6 @@ const RequestForm = ({
   return (
     <>
       {" "}
-      <ToastContainer />
       <CustomModal
         open={openRequestModal}
         handleClose={() => handleClose()}

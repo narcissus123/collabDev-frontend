@@ -13,7 +13,7 @@ import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 
 import { SignUpInputData } from "../../../configs/data/RegistrationInputData";
 import { SignUpDeveloper } from "../../../core/services/api/developer-authentication.api";
@@ -76,7 +76,7 @@ export default function SignUpContainer({
         p: { xs: 2, sm: 3, md: 4 },
       }}
     >
-      <ToastContainer />
+      {/* <ToastContainer /> */}
       <Stack spacing={3} alignItems="center">
         <Avatar
           sx={{

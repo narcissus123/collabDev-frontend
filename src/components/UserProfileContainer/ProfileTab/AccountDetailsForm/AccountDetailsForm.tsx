@@ -1,7 +1,7 @@
 import { useRef, ChangeEvent, useState, useCallback, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ErrorBoundary } from "react-error-boundary";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { v4 as uuidv4 } from "uuid";
 import Box from "@mui/material/Box";
@@ -222,7 +222,7 @@ export default function AccountDetailsForm({
       FallbackComponent={ErrorFallback}
       onError={(error) => console.error("Error boundary caught:", error)}
     >
-      <ToastContainer />
+      {/* <ToastContainer /> */}
       <CustomModal
         open={open}
         handleClose={() => handleClose()}
