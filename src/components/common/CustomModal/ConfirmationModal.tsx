@@ -24,6 +24,7 @@ export default function ResponsiveDialog({
   rightButtonColor,
   ptClassName,
   link,
+  textButton,
   hideButton = false,
 }: {
   openDeleteModal: boolean;
@@ -41,6 +42,7 @@ export default function ResponsiveDialog({
     | "success"
     | "warning";
   link?: string;
+  textButton?: string;
   hideButton?: boolean;
 }) {
   const theme = useTheme();
@@ -77,7 +79,7 @@ export default function ResponsiveDialog({
                 color={rightButtonColor}
                 sx={{ ...ptClassName?.deleteColor }}
               >
-                Delete
+                {textButton ? textButton : "Delete"}
               </Button>
             </>
           )}

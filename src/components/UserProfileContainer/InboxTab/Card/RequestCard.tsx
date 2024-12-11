@@ -293,6 +293,7 @@ const RequestCard = ({
             request. This action cannot be undone.`}
           handleDelete={() => handleReject(request._id)}
           rightButtonColor="error"
+          textButton="Reject"
         />
       )}
       {openAcceptModal && (
