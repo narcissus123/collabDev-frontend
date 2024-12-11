@@ -16,7 +16,7 @@ export const getDefaultValues = (data?: Partial<ProjectForm>): ProjectForm => {
     location: data?.location || "",
     category: data?.category || "Technology",
     status: data?.status || "Seeking Collaborators",
-    license: data?.license || "MIT",
+    license: data?.license || "",
     startDate: data?.startDate || new Date(),
     dueDate: data?.dueDate || new Date(),
     likes: data?.likes || 0,

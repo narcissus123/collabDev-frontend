@@ -43,7 +43,6 @@ const Result = ({ handleActiveStep, handleProjectInfo }: StepperProps) => {
   const onSubmit = async (userInput: ProjectForm) => {
     try {
       if (!user) return;
-      console.log("user", user);
       const deliverables = userInput.deliverables.map((del) => del.name);
       const sitemap = userInput.sitemap.map((site) => site.name);
       const userStories = userInput.userStories.map((stories) => stories.name);
@@ -61,7 +60,6 @@ const Result = ({ handleActiveStep, handleProjectInfo }: StepperProps) => {
         coverImage: userInput.coverImage[0],
       };
 
-      console.log("updateUserInput", updateUserInput);
       const response = (await addProject(updateUserInput)) as any;
 
       if (response.status === 201) {
@@ -180,7 +178,7 @@ const Result = ({ handleActiveStep, handleProjectInfo }: StepperProps) => {
                 {data.status}
               </LabeledTypography>
               <LabeledTypography label="License: " isLargeScreen>
-                {data.license}
+                {data.license ? data.license : "None"}
               </LabeledTypography>
               <LabeledTypography label="Start date: " isLargeScreen>
                 {dateFormatter(data.startDate)}
