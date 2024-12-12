@@ -165,7 +165,6 @@ export default function EditProjectModal({
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      {/* <ToastContainer /> */}
       <CustomModal
         open={openEditProjectModal}
         handleClose={handleClose}

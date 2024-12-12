@@ -30,6 +30,7 @@ import RequestModal from "../RequestForm/RequestForm";
 import { deleteProjectById } from "../../../core/services/api/manage-projects.api";
 import ResponsiveDialog from "../CustomModal/ConfirmationModal";
 import { getImageUrl } from "../../../core/utils/ImageUtils/imageUtils";
+import ClickableAvatar from "./ClickableAvatar";
 
 interface PtClassName {
   cardMargin?: number;
@@ -120,13 +121,12 @@ function ProjectCard({ project, ptClassName }: ProjectCardProps) {
             },
           }}
           avatar={
-            <Link to={`/profile/${project.owner._id}`}>
-              <Avatar
-                sx={{ bgcolor: grey[500], width: 56, height: 56 }}
-                aria-label="recipe"
-                src={getImageUrl(project.owner.avatar)}
-              />
-            </Link>
+            <ClickableAvatar
+              userId={project.owner._id}
+              avatarUrl={getImageUrl(project.owner.avatar)}
+              userName={project.owner.name}
+              size={56}
+            />
           }
           action={
             <Box>
