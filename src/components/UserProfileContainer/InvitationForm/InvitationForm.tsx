@@ -93,7 +93,6 @@ const InvitationForm = ({
   return (
     <>
       {" "}
-      {/* <ToastContainer /> */}
       <CustomModal
         open={openInviteModal}
         handleClose={() => handleClose()}

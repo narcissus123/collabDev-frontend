@@ -76,7 +76,6 @@ export default function SignUpContainer({
         p: { xs: 2, sm: 3, md: 4 },
       }}
     >
-      {/* <ToastContainer /> */}
       <Stack spacing={3} alignItems="center">
         <Avatar
           sx={{

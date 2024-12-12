@@ -111,8 +111,6 @@ export default function BadgesForm({
 
   return (
     <>
-      {/* <ToastContainer /> */}
-
       <CustomModal
         open={openBadgesModal}
         handleClose={() => handleClose()}
