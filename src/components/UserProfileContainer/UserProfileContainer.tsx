@@ -82,7 +82,6 @@ export default function UserProfileContainer() {
 
   return (
     <QueryErrorBoundary>
-      {/* <ToastContainer /> */}
       <Grid container sx={{ flexGrow: 1, minHeight: "100vh" }}>
         {/* Background Image Grid */}
         <Grid
@@ -180,7 +179,7 @@ export default function UserProfileContainer() {
                 alt="User profile image"
                 src={getImageUrl(developer?.avatar)}
                 sx={{
-                  cursor: "pointer",
+                  cursor: "default",
                   width: "100%",
                   height: "100%",
                   objectFit: "cover",

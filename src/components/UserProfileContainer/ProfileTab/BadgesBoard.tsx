@@ -161,7 +161,6 @@ const BadgesBoard = ({
         position: "relative",
       }}
     >
-      {/* <ToastContainer /> */}
       <Stack
         sx={{
           display: "flex",

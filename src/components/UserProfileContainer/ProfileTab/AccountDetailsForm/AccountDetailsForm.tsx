@@ -222,7 +222,6 @@ export default function AccountDetailsForm({
       FallbackComponent={ErrorFallback}
       onError={(error) => console.error("Error boundary caught:", error)}
     >
-      {/* <ToastContainer /> */}
       <CustomModal
         open={open}
         handleClose={() => handleClose()}
