@@ -133,7 +133,6 @@ const InboxTab = ({ setValue }: InboxTabProps) => {
 
   return (
     <Box sx={{ width: "100%", maxWidth: "lg", mx: "auto", p: 2 }}>
-
       {/* Header Controls */}
       <HeaderControls
         currentTab={currentTab}
