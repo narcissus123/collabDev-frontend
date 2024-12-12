@@ -181,7 +181,6 @@ export default function ProjectsDetailsContainer() {
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      {/* <ToastContainer /> */}
       <Suspense
         fallback={
           <Box

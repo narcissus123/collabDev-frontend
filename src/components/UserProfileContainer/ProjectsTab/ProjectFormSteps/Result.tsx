@@ -104,7 +104,6 @@ const Result = ({ handleActiveStep, handleProjectInfo }: StepperProps) => {
         </Box>
       ) : (
         <>
-          {/* <ToastContainer /> */}
           <Box>
             {data.coverImage.length !== 0 && (
               <img
