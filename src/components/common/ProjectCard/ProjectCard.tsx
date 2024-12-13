@@ -16,6 +16,7 @@ import {
   Typography,
   useTheme,
   Box,
+  Tooltip,
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { useState } from "react";
@@ -367,23 +368,25 @@ function ProjectCard({ project, ptClassName }: ProjectCardProps) {
         {/* Actions */}
         <CardActions sx={{ px: 2, pt: 0.5 }}>
           {isAuthenticated && !isProfileOwner(project.owner._id) && (
-            <IconButton
-              aria-label="Collaboration Request"
-              sx={{
-                "&:hover": { bgcolor: "transparent" },
-              }}
-              onClick={() => setOpenRequestModal((prev) => !prev)}
-            >
-              <img
-                src={
-                  theme.palette.mode === "dark"
-                    ? getImageUrl("common/TeamDark.webp")
-                    : getImageUrl("common/join.webp")
-                }
-                alt="join project icon"
-                style={{ width: "32px", height: "32px" }}
-              />
-            </IconButton>
+            <Tooltip title="Collaboration request" placement="right">
+              <IconButton
+                aria-label="Collaboration Request"
+                sx={{
+                  "&:hover": { bgcolor: "transparent" },
+                }}
+                onClick={() => setOpenRequestModal((prev) => !prev)}
+              >
+                <img
+                  src={
+                    theme.palette.mode === "dark"
+                      ? getImageUrl("common/TeamDark.webp")
+                      : getImageUrl("common/join.webp")
+                  }
+                  alt="join project icon"
+                  style={{ width: "32px", height: "32px" }}
+                />
+              </IconButton>
+            </Tooltip>
           )}
           <IconButton
             aria-label="add to favorites"
