@@ -9,4 +9,10 @@ export const getUserById = async (studentId: string) => {
   return await instance.get(`api/v1/user/${studentId}`);
 };
 
+export const searchUsers = async (query: string) => {
+  return await instance.get(
+    `api/v1/user/search?q=${encodeURIComponent(query)}`
+  );
+};
+
 export { updateUserInfo };

@@ -1,6 +1,5 @@
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
-import SearchIcon from "@mui/icons-material/Search";
 import {
   Box,
   Button,
@@ -8,7 +7,6 @@ import {
   ListItemIcon,
   Menu,
   MenuItem,
-  TextField,
   Typography,
   alpha,
   useMediaQuery,
@@ -18,13 +16,14 @@ import AppBar from "@mui/material/AppBar";
 import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
 import Toolbar from "@mui/material/Toolbar";
-import { useEffect, useRef, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 
 import { userProfileMenuItems } from "../../../configs/data/HeaderData";
 import { useAuth } from "../../../context/AuthContext/AuthContext";
 import { useMode } from "../../../context/MUIThemeContext/MUIThemeContext";
 import { getImageUrl } from "../../../core/utils/ImageUtils/imageUtils";
+import SearchBox from "../SearchBox/SearchBox";
 
 const navLinkItems = [
   { title: "Projects", url: "/projects" },
@@ -39,17 +38,6 @@ export default function Header() {
   const theme = useTheme();
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
   const { toggleColorMode } = useMode();
-
-  // Search state
-  const [isFocused, setIsFocused] = useState(false);
-  const inputRef = useRef<HTMLInputElement | null>(null);
-  const handleExpand = () => {
-    setIsFocused(!isFocused);
-    inputRef.current?.focus();
-  };
-  const handleBlur = () => {
-    setIsFocused(false);
-  };
 
   // menu state
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -115,10 +103,10 @@ export default function Header() {
         disableGutters={isMediumScreen ? true : false}
       >
         {navLinkItems.map((section) => (
-          <Link
+          <NavLink
             key={section.title}
             to={section.url}
-            style={{
+            style={({ isActive }) => ({
               color: theme.palette.mode === "dark" ? "white" : "#000000",
               fontWeight: "600",
               textDecoration: "none",
@@ -126,47 +114,19 @@ export default function Header() {
               whiteSpace: "nowrap",
               fontSize: isMediumScreen ? "0.8rem" : "1rem",
               width: "auto",
-            }}
+              borderBottom: isActive
+                ? `2px solid ${theme.palette.primary.main}`
+                : "none",
+              paddingBottom: "4px",
+            })}
           >
             {section.title}
-          </Link>
+          </NavLink>
         ))}
       </Toolbar>
-
-      {!isMediumScreen && (
+      {!isMediumScreen && userInfo && (
         // Search button
-        <TextField
-          placeholder="Find Collaborator (Coming Soon)"
-          variant="outlined"
-          size="small"
-          style={{
-            color: theme.palette.mode === "dark" ? "white" : "grey",
-            flex: 1,
-          }}
-          InputProps={{
-            startAdornment: (
-              <SearchIcon
-                onClick={handleExpand}
-                style={{
-                  cursor: "pointer",
-                  color: "inherit",
-                  marginRight: 4,
-                }}
-              />
-            ),
-            style: {
-              color: "inherit",
-              paddingLeft: "0.5rem",
-              backgroundColor: alpha("#FFFFFF", 0.15),
-              borderRadius: "20px",
-              height: "2.3rem",
-              transition: "width 0.5s",
-              width: isFocused ? "15.5rem" : "2.3rem",
-            },
-          }}
-          onBlur={handleBlur}
-          inputRef={inputRef}
-        />
+        <SearchBox />
       )}
       <Box
         sx={{
