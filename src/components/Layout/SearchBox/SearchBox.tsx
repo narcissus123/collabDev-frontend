@@ -185,7 +185,9 @@ const SearchBox = () => {
                 >
                   {user.name.charAt(0).toUpperCase()}
                 </Avatar>
-                <Box component="span">{user.name}</Box>
+                <Box component="span" color="text.secondary">
+                  {user.name}
+                </Box>
               </Box>
             </Link>
           ))}
