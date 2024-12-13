@@ -124,7 +124,7 @@ export default function Header() {
           </NavLink>
         ))}
       </Toolbar>
-      {!isMediumScreen && userInfo && (
+      {!isMediumScreen && (
         // Search button
         <SearchBox />
       )}
