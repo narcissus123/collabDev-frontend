@@ -1,4 +1,3 @@
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ThumbUpOutlinedIcon from "@mui/icons-material/ThumbUpOutlined";
 import {
   Avatar,
@@ -10,8 +9,6 @@ import {
   Chip,
   Grid,
   IconButton,
-  Menu,
-  MenuItem,
   Stack,
   Typography,
   useTheme,
@@ -24,6 +21,8 @@ import { Link } from "react-router-dom";
 
 import { toast } from "react-toastify";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { OpenInNew } from "@mui/icons-material";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { ProjectType } from "../../../configs/types/projectTypes";
 import { useAuth } from "../../../context/AuthContext/AuthContext";
 import formatDate from "../../../core/utils/DateFormatter/formatDate";
@@ -131,78 +130,18 @@ function ProjectCard({ project, ptClassName }: ProjectCardProps) {
           }
           action={
             <Box>
-              <IconButton
-                aria-label="links"
-                id="long-button"
-                aria-controls={open ? "long-menu" : undefined}
-                aria-expanded={open ? "true" : undefined}
-                aria-haspopup="true"
-                onClick={handleClick}
-              >
-                <MoreVertIcon />
-              </IconButton>
-              <Menu
-                id="long-menu"
-                MenuListProps={{
-                  "aria-labelledby": "long-button",
-                }}
-                anchorEl={anchorEl}
-                open={open}
-                onClose={handleClose}
-                PaperProps={{
-                  style: {
-                    maxHeight: ITEM_HEIGHT * 4.5,
-                    width: "20ch",
-                  },
-                }}
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "right",
-                }}
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-              >
-                <Link
-                  style={{ textDecoration: "none" }}
-                  to={`/projects/${project._id}`}
+              {isProjectOwner(project.owner._id) && (
+                <IconButton
+                  aria-label="delete"
+                  onClick={() => {
+                    handleClose();
+                    setOpenDeleteModal(true);
+                  }}
+                  size="small"
                 >
-                  <MenuItem
-                    onClick={handleClose}
-                    sx={{ color: "text.secondary" }}
-                  >
-                    Project details
-                  </MenuItem>
-                </Link>
-                {isProjectOwner(project.owner._id) && (
-                  <IconButton
-                    onClick={() => {
-                      handleClose();
-                      setOpenDeleteModal(true);
-                    }}
-                    sx={{
-                      width: "100%",
-                      py: 0.75,
-                      borderRadius: 0,
-                      display: "flex",
-                      justifyContent: "start",
-                    }}
-                  >
-                    <MenuItem
-                      sx={{
-                        color: "text.secondary",
-                        py: 0,
-                        px: 1,
-                        "&:hover": { bgcolor: "transparent" },
-                      }}
-                    >
-                      Delete project
-                    </MenuItem>
-                  </IconButton>
-                )}
-              </Menu>
-
+                  <DeleteIcon />
+                </IconButton>
+              )}
               {openDeleteModal && (
                 <ResponsiveDialog
                   openDeleteModal={openDeleteModal}
@@ -230,18 +169,28 @@ function ProjectCard({ project, ptClassName }: ProjectCardProps) {
             </Box>
           }
           title={
-            <Typography
-              variant="h5"
-              color="text.secondary"
-              sx={{
-                fontWeight: "600",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-              }}
+            <Link
+              style={{ textDecoration: "none" }}
+              to={`/projects/${project._id}`}
             >
-              {project.title}
-            </Typography>
+              <Typography
+                variant="h5"
+                color="text.secondary"
+                sx={{
+                  display: "flex",
+                  justifyContent: "flex-start",
+                  alignItems: "center",
+                  gap: 1,
+                  fontWeight: "600",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {project.title}
+                <OpenInNew sx={{ fontSize: "1rem" }} />
+              </Typography>
+            </Link>
           }
           subheader={
             <Typography
