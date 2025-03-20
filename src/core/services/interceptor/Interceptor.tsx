@@ -29,6 +29,10 @@ instance.interceptors.response.use(
   (error) => {
     // Handling status codes outside the range of 2xx, client and server error responses.
 
+    if (axios.isCancel(error)) {
+      return Promise.reject(error);
+    }
+
     if (error.response) {
       const { status, data } = error.response;
       // Handle expected client errors (4xx)

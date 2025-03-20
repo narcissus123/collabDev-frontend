@@ -7,7 +7,7 @@ import {
   useState,
 } from "react";
 import { useLocation, useNavigate } from "react-router";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { ErrorBoundary } from "react-error-boundary";
 
 import Box from "@mui/material/Box";
@@ -17,7 +17,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
 import Select from "@mui/material/Select";
 import Stack from "@mui/material/Stack";
-import { SelectChangeEvent } from "@mui/material";
+import { SelectChangeEvent, Skeleton } from "@mui/material";
 import { useTheme } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
@@ -30,10 +30,8 @@ import SortModal from "./modals/SortModal";
 import FilterModal from "./modals/FilterModal";
 
 type ProjectData = {
-  data: {
-    projects: ProjectType[];
-    total: number;
-  };
+  projects: ProjectType[];
+  total: number;
 };
 
 function ProjectsList({
@@ -46,18 +44,19 @@ function ProjectsList({
   onPageChange: (page: number) => void;
   onDataChange: (data: ProjectData) => void;
 }) {
-  const { data: project } = useSuspenseQuery({
+  const { data } = useSuspenseQuery({
     queryKey: ["getAllProjects", queryString],
-    queryFn: () => getAllProjects(queryString),
+    queryFn: ({ signal }) => getAllProjects({ signal, queryString }),
+    select: (response) => response.data,
   });
 
   useEffect(() => {
-    if (project) {
-      onDataChange(project);
+    if (data?.projects) {
+      onDataChange(data);
     }
-  }, [project, onDataChange]);
+  }, [data, onDataChange]);
 
-  if (!project?.data?.projects) {
+  if (!data?.projects) {
     return null;
   }
 
@@ -82,7 +81,7 @@ function ProjectsList({
         },
       }}
     >
-      {project.data.projects.length === 0 ? (
+      {data?.projects.length === 0 ? (
         <Stack
           alignItems="center"
           spacing={2}
@@ -94,7 +93,7 @@ function ProjectsList({
           </Typography>
         </Stack>
       ) : (
-        project.data.projects.map((prj: ProjectType, index: Key) => {
+        data?.projects.map((prj: ProjectType, index: Key) => {
           return (
             <ProjectCard
               project={prj}
@@ -111,6 +110,7 @@ function ProjectsList({
 export default function ProjectsContainer() {
   const theme = useTheme();
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const queryClient = useQueryClient();
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -133,6 +133,27 @@ export default function ProjectsContainer() {
       navigate({ search: queryParams.toString() });
     }
   }, []);
+
+  useEffect(() => {
+    // Skip prefetching on mobile devices
+    if (isMediumScreen) return;
+
+    // Only prefetch if there's a next page available
+    if (projectData?.total && currentPage * pageSize < projectData.total) {
+      const nextPage = currentPage + 1;
+      const nextPageQueryString = `?page=${nextPage}&limit=${pageSize}`;
+
+      // Prefetch the next page
+      queryClient.prefetchQuery({
+        queryKey: ["getAllProjects", nextPageQueryString],
+        queryFn: ({ signal }) =>
+          getAllProjects({
+            signal,
+            queryString: nextPageQueryString,
+          }),
+      });
+    }
+  }, [currentPage, pageSize, projectData, queryClient]);
 
   const handleApplyFilters = useCallback(
     (newFilters: any) => {
@@ -202,7 +223,7 @@ export default function ProjectsContainer() {
                   setQueryString(`?${queryParams.toString()}`);
                 });
               }}
-              disabled={projectData?.data?.projects.length === 0}
+              disabled={projectData?.projects.length === 0}
               displayEmpty
               inputProps={{ "aria-label": "Items per page" }}
               size="small"
@@ -230,7 +251,7 @@ export default function ProjectsContainer() {
             <SortModal />
             <FilterModal
               setQueryString={handleApplyFilters}
-              disabled={projectData?.data?.projects.length === 0}
+              disabled={projectData?.projects.length === 0}
             />
           </Stack>
         </Stack>
@@ -267,17 +288,7 @@ export default function ProjectsContainer() {
           >
             <Suspense
               fallback={
-                <Box
-                  sx={{
-                    display: "flex",
-                    mt: 6,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    width: "100%",
-                  }}
-                >
-                  Loading...
-                </Box>
+                <Skeleton variant="rectangular" width="100%" height={811} />
               }
             >
               <ProjectsList
@@ -289,7 +300,7 @@ export default function ProjectsContainer() {
               />
             </Suspense>
           </ErrorBoundary>
-          {projectData?.data?.total ? (
+          {projectData?.total ? (
             <Stack
               display="flex"
               direction="row"
@@ -312,7 +323,7 @@ export default function ProjectsContainer() {
               </Button>
 
               <Button
-                disabled={currentPage * pageSize >= projectData?.data?.total}
+                disabled={currentPage * pageSize >= projectData?.total}
                 onClick={() => {
                   const nextPage = currentPage + 1;
                   queryParams.set("page", nextPage.toString());

@@ -15,24 +15,24 @@ export default function Auth() {
             key={index}
             path={route.path}
             element={
-              <Suspense
-                fallback={
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      border: "1px solid red",
-                      mt: 14,
-                      bg: "red",
-                    }}
-                  >
-                    {route.path}
-                  </Box>
-                }
-              >
-                {route.element}
-              </Suspense>
+              // <Suspense
+              //   fallback={
+              //     <Box
+              //       sx={{
+              //         display: "flex",
+              //         alignItems: "center",
+              //         justifyContent: "center",
+              //         border: "1px solid red",
+              //         mt: 14,
+              //         bg: "red",
+              //       }}
+              //     >
+              // {route.path}
+              // </Box>
+              // }
+              // >
+              route.element
+              // </Suspense>
             }
           >
             {route.children && (

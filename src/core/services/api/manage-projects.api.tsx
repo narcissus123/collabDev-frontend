@@ -29,14 +29,34 @@ export const addCollaborator = async (
   return response;
 };
 
-const getAllProjects = async (params: any) => {
-  const response = await instance.get(`/api/v1/project${params}`);
+interface GetAllProjectsParams {
+  signal?: AbortSignal;
+  queryString: string;
+}
+
+const getAllProjects = async ({
+  signal,
+  queryString,
+}: GetAllProjectsParams) => {
+  const response = await instance.get(`/api/v1/project${queryString}`, {
+    signal,
+  });
   return response.data;
 };
 
-export const getProjectById = async (projectId: any) => {
+interface GetProjectByIdParams {
+  signal?: AbortSignal;
+  projectId: string;
+}
+
+export const getProjectById = async ({
+  signal,
+  projectId,
+}: GetProjectByIdParams) => {
   try {
-    const response = await instance.get(`/api/v1/project/${projectId}`);
+    const response = await instance.get(`/api/v1/project/${projectId}`, {
+      signal,
+    });
     return response.data;
   } catch (error) {
     return error;

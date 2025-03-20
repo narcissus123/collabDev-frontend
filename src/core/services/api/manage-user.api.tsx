@@ -5,8 +5,16 @@ const updateUserInfo = async (userId: string, obj: any) => {
   return response.data;
 };
 
-export const getUserById = async (studentId: string) => {
-  return await instance.get(`api/v1/user/${studentId}`);
+interface GetUserByIdParams {
+  signal?: AbortSignal;
+  userId: string;
+}
+
+export const getUserById = async ({
+  signal,
+  userId: studentId,
+}: GetUserByIdParams) => {
+  return await instance.get(`api/v1/user/${studentId}`, { signal });
 };
 
 export const searchUsers = async (query: string) => {

@@ -52,27 +52,26 @@ export default function ProjectsTab() {
     setActiveStep("Project Overview");
   };
 
-  const { data, error, isFetching } = useSuspenseQuery({
+  const { data } = useSuspenseQuery({
     queryKey: ["getAllProjects", queryString],
-    queryFn: () => getAllProjects(queryString),
-    select: (response) => response?.data ?? [],
+    queryFn: ({ signal }) => getAllProjects({ signal, queryString }),
+    select: (response) => {
+      const projects = response.data.projects ?? [];
+      return categorizeProjects(projects, userId!);
+    },
   });
 
-  useEffect(() => {
-    if (!isFetching && !error) {
-      const { filteredMyProjects, contributedProjects } = categorizeProjects(
-        data.projects,
-        userId!
-      );
-      setMyProjects(filteredMyProjects);
-      setContProjects(contributedProjects);
-      setApiCallsCompleted(true);
-    }
-  }, [isFetching]);
+  const { filteredMyProjects, contributedProjects } = data;
 
-  const handleProjectInfo = (updatedInfo: ProjectType) => {
+  useEffect(() => {
+    setMyProjects(filteredMyProjects);
+    setContProjects(contributedProjects);
+    setApiCallsCompleted(true);
+  }, [filteredMyProjects, contributedProjects]);
+
+  const handleProjectInfo = useCallback((updatedInfo: ProjectType) => {
     setMyProjects((prev) => [...prev, updatedInfo]);
-  };
+  }, []);
 
   return (
     <FormProvider>
