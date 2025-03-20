@@ -1,10 +1,11 @@
 import { Suspense, lazy } from "react";
-import { Skeleton, Stack } from "@mui/material";
+import { Skeleton } from "@mui/material";
 
+import Home from "../pages/Home/Home";
+import Projects from "../pages/Projects/Projects";
+import UserProfile from "../pages/UserProfile/UserProfile";
 import { Config } from "./Config";
 
-const LazyHome = lazy(() => import("../pages/Home/Home"));
-const LazyProjects = lazy(() => import("../pages/Projects/Projects"));
 const LazyChatRoom = lazy(
   () => import("../components/UserProfileContainer/ChatTab/ChatRoom/ChatRoom")
 );
@@ -17,7 +18,7 @@ const LazyCallback = lazy(() => import("../pages/Callback/Callback"));
 const LazyRegisteration = lazy(
   () => import("../pages/Registeration/Registeration")
 );
-const LazyUserProfile = lazy(() => import("../pages/UserProfile/UserProfile"));
+// const LazyUserProfile = lazy(() => import("../pages/UserProfile/UserProfile"));
 const LazyAdminDashboard = lazy(
   () => import("../pages/AdminDashboard/AdminDashboard")
 );
@@ -35,19 +36,11 @@ interface Routes {
 export const commonRoutes = [
   {
     path: Config.Routes.homePage,
-    element: (
-      <Suspense fallback={<Skeleton variant="rectangular" height={400} />}>
-        <LazyHome />
-      </Suspense>
-    ),
+    element: <Home />,
   },
   {
     path: Config.Routes.projectsPage,
-    element: (
-      <Suspense fallback={<Skeleton variant="rectangular" height={400} />}>
-        <LazyProjects />
-      </Suspense>
-    ),
+    element: <Projects />,
   },
   {
     path: Config.Routes.projectDetailsPage,
@@ -67,19 +60,7 @@ export const commonRoutes = [
   },
   {
     path: Config.Routes.userProfilePage,
-    element: (
-      <Suspense
-        fallback={
-          <Stack sx={{ flexDirection: "column", gap: 2 }}>
-            <Skeleton variant="rectangular" width="100%" height={363} />
-            <Skeleton variant="rectangular" width="100%" height={48} />
-            <Skeleton variant="rectangular" width="100%" height={400} />
-          </Stack>
-        }
-      >
-        <LazyUserProfile />
-      </Suspense>
-    ),
+    element: <UserProfile />,
     children: {
       path: Config.Routes.chatPage,
       element: (

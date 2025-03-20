@@ -18,6 +18,7 @@ export const QueryErrorBoundary = ({
       {({ reset }) => (
         <ErrorBoundary
           onReset={reset}
+          onError={(err) => console.log("Error:", err)}
           fallbackRender={({ error, resetErrorBoundary }) => {
             //console.log("error", error);
             return (

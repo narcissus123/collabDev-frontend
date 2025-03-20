@@ -1,6 +1,5 @@
 import { useRef, ChangeEvent, useState, useCallback, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ErrorBoundary } from "react-error-boundary";
 import { toast } from "react-toastify";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { v4 as uuidv4 } from "uuid";
@@ -9,7 +8,6 @@ import { IconButton, useMediaQuery, useTheme } from "@mui/material";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 
 import { useForm } from "react-hook-form";
-import ErrorFallback from "../../../common/ErrorFallback/ErrorFallback";
 import { UserAccounInputData } from "../../../../configs/data/UserAccounInputData";
 import { User } from "../../../../configs/types/userTypes";
 import { updateUserInfo } from "../../../../core/services/api/manage-user.api";
@@ -25,6 +23,7 @@ import ResponsiveDialog from "../../../common/CustomModal/ConfirmationModal";
 // import AvatarUpload from "../../../common/Avatar/Avatar";
 import { useAuth } from "../../../../context/AuthContext/AuthContext";
 import { getImageUrl } from "../../../../core/utils/ImageUtils/imageUtils";
+import { QueryErrorBoundary } from "../../../common/QueryErrorBoundary/QueryErrorBoundary";
 
 interface AccountDetailsFormProps {
   open: boolean;
@@ -218,10 +217,7 @@ export default function AccountDetailsForm({
   };
 
   return (
-    <ErrorBoundary
-      FallbackComponent={ErrorFallback}
-      onError={(error) => console.error("Error boundary caught:", error)}
-    >
+    <QueryErrorBoundary>
       <CustomModal
         open={open}
         handleClose={() => handleClose()}
@@ -434,6 +430,6 @@ export default function AccountDetailsForm({
           rightButtonColor="error"
         />
       )}
-    </ErrorBoundary>
+    </QueryErrorBoundary>
   );
 }

@@ -1,4 +1,4 @@
-import { Suspense, useCallback, useState } from "react";
+import { lazy, Suspense, useCallback, useState } from "react";
 import { useParams } from "react-router";
 
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -35,7 +35,7 @@ import { getImageUrl } from "../../core/utils/ImageUtils/imageUtils";
 import AccountDetailsForm from "./ProfileTab/AccountDetailsForm/AccountDetailsForm";
 import ProfileTab from "./ProfileTab/ProfileTab";
 import ChatTab from "./ChatTab/ChatTab";
-import InboxTab from "./InboxTab/InboxTab";
+const LazyInboxTab = lazy(() => import("./InboxTab/InboxTab"));
 import InvitationForm from "./InvitationForm/InvitationForm";
 import ProjectsTab from "./ProjectsTab/ProjectsTab";
 
@@ -53,12 +53,16 @@ export default function UserProfileContainer() {
     openAccountDetailstModal: false,
   });
 
-  const { data, isFetching } = useSuspenseQuery({
+  const { data: developer } = useSuspenseQuery({
     queryKey: ["getUserById", userId],
-    queryFn: () => getUserById(userId!),
+    queryFn: ({ signal }) => {
+      if (!userId) {
+        throw new Error("Something went wrong!");
+      }
+      return getUserById({ signal, userId });
+    },
+    select: (response) => response.data,
   });
-
-  const { data: developer } = data;
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
@@ -172,9 +176,11 @@ export default function UserProfileContainer() {
               backgroundColor: "white",
             }}
           >
-            {isFetching ? (
-              <Skeleton variant="circular" width="100%" height="100%" />
-            ) : (
+            <Suspense
+              fallback={
+                <Skeleton variant="circular" width="100%" height="100%" />
+              }
+            >
               <Avatar
                 alt="User profile image"
                 src={getImageUrl(developer?.avatar)}
@@ -189,7 +195,7 @@ export default function UserProfileContainer() {
               >
                 {developer?.name[0]}
               </Avatar>
-            )}
+            </Suspense>
           </div>
 
           {/* Profile Info Stack */}
@@ -197,17 +203,19 @@ export default function UserProfileContainer() {
             spacing={2}
             sx={{ alignItems: "center", mt: "-4rem", textAlign: "center" }}
           >
-            {isFetching ? (
-              <Stack
-                spacing={2}
-                sx={{ alignItems: "center", textAlign: "center", pt: 0.5 }}
-              >
-                <Skeleton variant="rectangular" width="8rem" />
-                <Skeleton variant="rectangular" width="22rem" />
-                <Skeleton variant="rectangular" width="8rem" />
-              </Stack>
-            ) : (
-              AccountDetailsData(developer, theme).map((item, index) => (
+            <Suspense
+              fallback={
+                <Stack
+                  spacing={2}
+                  sx={{ alignItems: "center", textAlign: "center", pt: 0.5 }}
+                >
+                  <Skeleton variant="rectangular" width="8rem" />
+                  <Skeleton variant="rectangular" width="22rem" />
+                  <Skeleton variant="rectangular" width="8rem" />
+                </Stack>
+              }
+            >
+              {AccountDetailsData(developer, theme).map((item, index) => (
                 <Typography
                   key={index}
                   variant={item.variant}
@@ -216,8 +224,8 @@ export default function UserProfileContainer() {
                 >
                   {item.child}
                 </Typography>
-              ))
-            )}
+              ))}
+            </Suspense>
 
             {/* Action Buttons */}
             <Stack direction="row" spacing={1}>
@@ -313,28 +321,33 @@ export default function UserProfileContainer() {
               }}
             >
               <TabPanel value="1">
-                {isFetching ? (
-                  <Stack
-                    direction={isMediumScreen ? "column" : "row"}
-                    justifyContent="space-between"
-                    useFlexGap
-                    flexWrap="wrap"
-                    gap={isMediumScreen ? 2 : 2}
+                <QueryErrorBoundary>
+                  <Suspense
+                    fallback={
+                      <Stack
+                        direction={isMediumScreen ? "column" : "row"}
+                        justifyContent="space-between"
+                        useFlexGap
+                        flexWrap="wrap"
+                        gap={isMediumScreen ? 2 : 2}
+                      >
+                        <Skeleton
+                          variant="rectangular"
+                          sx={{
+                            width: { sx: "100%", md: "70%" },
+                            height: "25rem",
+                          }}
+                        />
+                        <Skeleton
+                          variant="rectangular"
+                          sx={{
+                            width: { sx: "100%", md: "27%" },
+                            height: { sx: "12.5rem", md: "25rem" },
+                          }}
+                        />
+                      </Stack>
+                    }
                   >
-                    <Skeleton
-                      variant="rectangular"
-                      sx={{ width: { sx: "100%", md: "70%" }, height: "25rem" }}
-                    />
-                    <Skeleton
-                      variant="rectangular"
-                      sx={{
-                        width: { sx: "100%", md: "27%" },
-                        height: { sx: "12.5rem", md: "25rem" },
-                      }}
-                    />
-                  </Stack>
-                ) : (
-                  <QueryErrorBoundary>
                     {
                       <ProfileTab
                         handleBadgesModal={() => toggleModal("openBadgesModal")}
@@ -348,50 +361,53 @@ export default function UserProfileContainer() {
                         developer={developer}
                       />
                     }
-                  </QueryErrorBoundary>
-                )}
+                  </Suspense>
+                </QueryErrorBoundary>
               </TabPanel>
               <TabPanel value="2">
                 <QueryErrorBoundary>
-                  {isFetching ? (
-                    <Skeleton
-                      variant="rectangular"
-                      width="100%"
-                      height="100%"
-                    />
-                  ) : (
+                  <Suspense
+                    fallback={
+                      <Skeleton
+                        variant="rectangular"
+                        width="100%"
+                        height={400}
+                      />
+                    }
+                  >
                     <ProjectsTab />
-                  )}
+                  </Suspense>
                 </QueryErrorBoundary>
               </TabPanel>
               <TabPanel value="3">
                 <QueryErrorBoundary>
-                  {isFetching ? (
-                    <Skeleton
-                      variant="rectangular"
-                      width="100%"
-                      height="100%"
-                    />
-                  ) : (
-                    userId &&
-                    isProfileOwner(userId) && <InboxTab setValue={setValue} />
-                  )}
+                  <Suspense
+                    fallback={
+                      <Skeleton
+                        variant="rectangular"
+                        width="100%"
+                        height={400}
+                      />
+                    }
+                  >
+                    {userId && isProfileOwner(userId) && (
+                      <LazyInboxTab setValue={setValue} />
+                    )}
+                  </Suspense>
                 </QueryErrorBoundary>
               </TabPanel>
               <TabPanel value="4">
                 <QueryErrorBoundary>
                   <Suspense
-                    fallback={<Skeleton variant="rectangular" height={400} />}
-                  >
-                    {isFetching ? (
+                    fallback={
                       <Skeleton
                         variant="rectangular"
                         width="100%"
-                        height="100%"
+                        height={400}
                       />
-                    ) : (
-                      userId && isProfileOwner(userId) && <ChatTab />
-                    )}
+                    }
+                  >
+                    {userId && isProfileOwner(userId) && <ChatTab />}
                   </Suspense>
                 </QueryErrorBoundary>
               </TabPanel>

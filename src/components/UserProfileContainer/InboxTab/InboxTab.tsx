@@ -38,7 +38,12 @@ const InboxTab = ({ setValue }: InboxTabProps) => {
     isFetching,
   } = useSuspenseQuery<any>({
     queryKey: ["getUserRequests", userId],
-    queryFn: () => getUserRequests(userId!),
+    queryFn: ({ signal }) => {
+      if (!userId) {
+        throw new Error("Somwthing went wrong!");
+      }
+      return getUserRequests({ signal, userId });
+    },
     select: (response) => response?.data ?? [],
   });
 

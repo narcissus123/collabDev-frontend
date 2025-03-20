@@ -30,9 +30,15 @@ const createRequest = async (obj: any) => {
   }
 };
 
-const getUserRequests = async (userId: string) => {
+interface GetUserReuestParams {
+  signal?: AbortSignal;
+  userId: string;
+}
+
+const getUserRequests = async ({ signal, userId }: GetUserReuestParams) => {
   const response = await instance.get<{ data: Request[] }>(
-    `/api/v1/request/${userId}`
+    `/api/v1/request/${userId}`,
+    { signal }
   );
   return response.data;
 };

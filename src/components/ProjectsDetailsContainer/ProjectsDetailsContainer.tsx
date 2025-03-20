@@ -1,5 +1,4 @@
 import { Suspense, useState } from "react";
-import { ErrorBoundary } from "react-error-boundary";
 import { isBefore, addDays, startOfDay } from "date-fns";
 import { useParams } from "react-router-dom";
 import {
@@ -34,9 +33,9 @@ import {
   updateProject,
 } from "../../core/services/api/manage-projects.api";
 
-import ErrorFallback from "../common/ErrorFallback/ErrorFallback";
 import { ProjectForm } from "../../configs/types/projectTypes";
 import { getImageUrl } from "../../core/utils/ImageUtils/imageUtils";
+import { QueryErrorBoundary } from "../common/QueryErrorBoundary/QueryErrorBoundary";
 import { EditProjectImageModal } from "./EditProjectImageModal/EditProjectImageModal";
 import EditProjectModal from "./EditProjectModal/EditProjectModal";
 import ProjectLogoGenerator from "./ProjectLogoGenerator";
@@ -56,7 +55,13 @@ export default function ProjectsDetailsContainer() {
 
   const { data: project } = useSuspenseQuery({
     queryKey: ["getProjectById", projectId],
-    queryFn: () => getProjectById(projectId),
+    queryFn: ({ signal }) => {
+      if (!projectId) {
+        throw new Error("Something went wrong.");
+      }
+      return getProjectById({ signal, projectId });
+    },
+    select: (response) => response.data,
   });
 
   const handleProjectInfo = () => {
@@ -68,7 +73,7 @@ export default function ProjectsDetailsContainer() {
     queryClient.invalidateQueries({ queryKey: ["getProjectById", projectId] });
   };
 
-  if (!project.data) {
+  if (!project) {
     return (
       <Box
         sx={{
@@ -101,7 +106,7 @@ export default function ProjectsDetailsContainer() {
       if (projectId)
         mutation.mutate({
           id: projectId,
-          data: { ...project.data, logoStyle: style },
+          data: { ...project, logoStyle: style },
         });
       queryClient.invalidateQueries({
         queryKey: ["getProjectById", projectId],
@@ -180,7 +185,7 @@ export default function ProjectsDetailsContainer() {
   };
 
   return (
-    <ErrorBoundary FallbackComponent={ErrorFallback}>
+    <QueryErrorBoundary>
       <Suspense
         fallback={
           <Box
@@ -212,11 +217,11 @@ export default function ProjectsDetailsContainer() {
               boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
             }}
           >
-            {project.data.coverImage && !imageError ? (
+            {project.coverImage && !imageError ? (
               <Box
                 component="img"
-                src={getImageUrl(project.data.coverImage)}
-                srcSet={getImageUrl(project.data.coverImage)}
+                src={getImageUrl(project.coverImage)}
+                srcSet={getImageUrl(project.coverImage)}
                 alt="project cover"
                 loading="lazy"
                 sx={{
@@ -233,10 +238,10 @@ export default function ProjectsDetailsContainer() {
             ) : (
               <Box sx={{ my: 6 }}>
                 <ProjectLogoGenerator
-                  initial={getDynamicPlaceholder(project.data.title)}
-                  initialStyle={project.data.logoStyle || 0}
+                  initial={getDynamicPlaceholder(project.title)}
+                  initialStyle={project.logoStyle || 0}
                   onStyleChange={handleLogoStyleChange}
-                  isOwner={isProfileOwner(project?.data.owner?._id)}
+                  isOwner={isProfileOwner(project?.owner?._id)}
                 />
               </Box>
             )}
@@ -277,7 +282,7 @@ export default function ProjectsDetailsContainer() {
                     }}
                   />
                   Start Date:
-                  {new Date(project.data.startDate).toLocaleDateString()}
+                  {new Date(project.startDate).toLocaleDateString()}
                 </Typography>
                 <Typography
                   variant="body2"
@@ -296,15 +301,15 @@ export default function ProjectsDetailsContainer() {
                     }}
                   />
                   Due Date:{" "}
-                  {project.data.status === "In Progress" &&
+                  {project.status === "In Progress" &&
                   isBefore(
-                    new Date(project.data.startDate),
+                    new Date(project.startDate),
                     startOfDay(addDays(new Date(), 1))
                   )
                     ? "Present"
-                    : new Date(project.data.dueDate).toLocaleDateString()
+                    : new Date(project.dueDate).toLocaleDateString()
                       ? "Present"
-                      : new Date(project.data.dueDate).toLocaleDateString()}
+                      : new Date(project.dueDate).toLocaleDateString()}
                 </Typography>
                 <Typography
                   variant="body2"
@@ -322,8 +327,7 @@ export default function ProjectsDetailsContainer() {
                       color: theme.palette.mode === "dark" ? " #A0A0A0" : "",
                     }}
                   />
-                  License:{" "}
-                  {project.data.license ? project.data.license : "None"}
+                  License: {project.license ? project.license : "None"}
                 </Typography>
                 <Typography
                   variant="body2"
@@ -341,7 +345,7 @@ export default function ProjectsDetailsContainer() {
                       color: theme.palette.mode === "dark" ? " #A0A0A0" : "",
                     }}
                   />
-                  Location: {project.data.location}
+                  Location: {project.location}
                 </Typography>
                 <Typography
                   variant="body2"
@@ -359,7 +363,7 @@ export default function ProjectsDetailsContainer() {
                       color: theme.palette.mode === "dark" ? " #A0A0A0" : "",
                     }}
                   />
-                  Category: {project.data.category}
+                  Category: {project.category}
                 </Typography>
                 <Typography
                   variant="body2"
@@ -377,7 +381,7 @@ export default function ProjectsDetailsContainer() {
                       color: theme.palette.mode === "dark" ? " #A0A0A0" : "",
                     }}
                   />
-                  Status: {project.data.status}
+                  Status: {project.status}
                 </Typography>
               </Stack>
             </Box>
@@ -408,7 +412,7 @@ export default function ProjectsDetailsContainer() {
                   setOpenEditImageModal((prev: boolean) => !prev);
                 }}
                 handleProjectImage={handleProjectImage}
-                project={project.data}
+                project={project}
               />
             )}
           </Box>
@@ -421,7 +425,7 @@ export default function ProjectsDetailsContainer() {
               position: "relative",
             }}
           >
-            {isProfileOwner(project?.data.owner?._id) && (
+            {isProfileOwner(project?.owner?._id) && (
               <IconButton
                 aria-label="edit"
                 sx={{
@@ -443,7 +447,7 @@ export default function ProjectsDetailsContainer() {
                   setOpenEditProjectModal((prev: boolean) => !prev);
                 }}
                 handleProjectInfo={handleProjectInfo}
-                project={project.data}
+                project={project}
               />
             )}
             <Stack
@@ -467,7 +471,7 @@ export default function ProjectsDetailsContainer() {
                   width: isLargeScreen ? "100%" : "30%",
                 }}
               >
-                {project.data?.title}
+                {project?.title}
               </Typography>
               <Typography
                 sx={{
@@ -483,7 +487,7 @@ export default function ProjectsDetailsContainer() {
                   width: isLargeScreen ? "100%" : "70%",
                 }}
               >
-                {project.data?.description}
+                {project?.description}
               </Typography>
             </Stack>
             <Stack
@@ -512,9 +516,9 @@ export default function ProjectsDetailsContainer() {
                 Project Links
               </Typography>
 
-              {project.data.links.length > 0 &&
-              Object.keys(project.data.links[0].length > 0) ? (
-                project.data.links.slice(0, 10).map((link: any) => (
+              {project.links.length > 0 &&
+              Object.keys(project.links[0].length > 0) ? (
+                project.links.slice(0, 10).map((link: any) => (
                   <Tooltip
                     key={link.platform + link.url}
                     title={`Visit ${getPlatformLabel(link.platform)}`}
@@ -587,8 +591,8 @@ export default function ProjectsDetailsContainer() {
                     }}
                   />
                 </ListItem>
-                {project.data?.techStack.length > 0 &&
-                  project.data?.techStack.map(
+                {project?.techStack.length > 0 &&
+                  project?.techStack.map(
                     (tech: { id: string; label: string; value: string }) => (
                       <ListItem key={tech.id} sx={{ p: 0 }}>
                         <ListItemText
@@ -627,7 +631,7 @@ export default function ProjectsDetailsContainer() {
                     }}
                   />
                 </ListItem>
-                {project.data?.roles.map(
+                {project?.roles.map(
                   (role: { name: string; requiresCollaborator: boolean }) => (
                     <ListItem key={role.name} sx={{ p: 0 }}>
                       <ListItemText
@@ -678,7 +682,7 @@ export default function ProjectsDetailsContainer() {
                     }}
                   />
                 </ListItem>
-                {project.data?.deliverables.map(
+                {project?.deliverables.map(
                   (deliverable: string, index: number) => {
                     return (
                       <ListItem
@@ -741,7 +745,7 @@ export default function ProjectsDetailsContainer() {
                   width: isLargeScreen ? "100%" : "70%",
                 }}
               >
-                {project.data?.solution}
+                {project?.solution}
               </Typography>
             </Stack>
             <Stack spacing={4}>
@@ -759,37 +763,35 @@ export default function ProjectsDetailsContainer() {
                 Features
               </Typography>
               <List sx={{ p: 0 }}>
-                {project.data?.userStories.map(
-                  (feature: string, index: number) => (
-                    <ListItem
-                      key={index}
-                      sx={{
-                        p: 0,
-                        paddingLeft: isSmallScreen ? "0rem" : "2rem",
-                        marginTop: "-0.9rem",
+                {project?.userStories.map((feature: string, index: number) => (
+                  <ListItem
+                    key={index}
+                    sx={{
+                      p: 0,
+                      paddingLeft: isSmallScreen ? "0rem" : "2rem",
+                      marginTop: "-0.9rem",
+                    }}
+                  >
+                    <ListItemText
+                      secondary={`\u2022 ${feature}`}
+                      secondaryTypographyProps={{
+                        fontFamily:
+                          '"Helvetica Neue", Helvetica, "Segoe UI", Segoe, "Segoe WP", Arial, "Lucida Grande", sans-serif"',
+                        fontWeight: "normal",
+                        color:
+                          theme.palette.mode === "dark"
+                            ? "text.secondary"
+                            : "#424d54",
                       }}
-                    >
-                      <ListItemText
-                        secondary={`\u2022 ${feature}`}
-                        secondaryTypographyProps={{
-                          fontFamily:
-                            '"Helvetica Neue", Helvetica, "Segoe UI", Segoe, "Segoe WP", Arial, "Lucida Grande", sans-serif"',
-                          fontWeight: "normal",
-                          color:
-                            theme.palette.mode === "dark"
-                              ? "text.secondary"
-                              : "#424d54",
-                        }}
-                        sx={{
-                          "& .MuiListItemText-secondary": {
-                            fontSize: "0.9rem",
-                            lineHeight: 2,
-                          },
-                        }}
-                      />
-                    </ListItem>
-                  )
-                )}
+                      sx={{
+                        "& .MuiListItemText-secondary": {
+                          fontSize: "0.9rem",
+                          lineHeight: 2,
+                        },
+                      }}
+                    />
+                  </ListItem>
+                ))}
               </List>
             </Stack>
             <Stack spacing={4}>
@@ -814,7 +816,7 @@ export default function ProjectsDetailsContainer() {
                   justifyContent: "center",
                 }}
               >
-                {project.data?.sitemap.map((item: string, index: number) => (
+                {project?.sitemap.map((item: string, index: number) => (
                   <Box
                     key={index}
                     sx={{
@@ -839,6 +841,6 @@ export default function ProjectsDetailsContainer() {
           </Box>
         </Box>
       </Suspense>
-    </ErrorBoundary>
+    </QueryErrorBoundary>
   );
 }
